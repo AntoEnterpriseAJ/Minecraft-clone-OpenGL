@@ -135,9 +135,15 @@ int main()
 
 	// BUFFER:
 	float vertices[] = {
-		-0.5f, -0.5f, 0.0f,
-		 0.5f, -0.5f, 0.0f,
-		 0.0f,  0.5f, 0.0f
+		-0.5f, -0.5f, 0.0f, // bottom left
+		 0.5f, -0.5f, 0.0f, // bottom right
+		 0.5f,  0.5f, 0.0f, // top right
+		-0.5f,  0.5f, 0.0f  // top left
+	};
+
+	unsigned int indices[] = {
+		0, 1, 2,
+		2, 3, 0
 	};
 
 	// VAO (VERTEX ARRAY OBJECT):
@@ -154,9 +160,17 @@ int main()
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
 	glEnableVertexAttribArray(0);
 
+	// EBO (ELEMENT BUFFER OBJECT)
+	unsigned int EBO;
+	glGenBuffers(1, &EBO);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
+
 	// UNBIND THE VAO 
 	glBindVertexArray(0);
 
+	// WIREFRAME MODE
+	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
 	/* Loop until the user closes the window */
 	while (!glfwWindowShouldClose(window))
@@ -165,11 +179,10 @@ int main()
 
 		/* Render here */
 		glClearColor(0.2, 0.2, 0.4, 1.0);
-		glClear(GL_COLOR_BUFFER_BIT);
+		glClear(GL_COLOR_BUFFER_BIT);	
 		
 		glBindVertexArray(VAO);
-		glBindBuffer(GL_ARRAY_BUFFER, VBO);
-		glDrawArrays(GL_TRIANGLES, 0, 3);
+		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
 		/* Swap front and back buffers */
 		glfwSwapBuffers(window);
