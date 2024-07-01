@@ -1,9 +1,12 @@
 #include "glad/glad.h"
 #include "GLFW/glfw3.h"
-#include "include/Shader.h"
+
+#define STB_IMAGE_IMPLEMENTATION
+#include "stb_image.h"
 
 #include <string>
 #include <iostream>
+#include "include/Shader.h"
 
 int initOpenGL();
 
@@ -54,22 +57,55 @@ int main()
 	// CODE:
 	
 	// SHADER:
-	const char* vertexShaderPath = "res/shaders/vertex.vsh";
-	const char* fragmentShaderPath = "res/shaders/fragment.fsh";
+	const char* vertexShaderPath = "res/shaders/vertex.vert";
+	const char* fragmentShaderPath = "res/shaders/fragment.frag";
 	
 	Shader shaderProgram(vertexShaderPath, fragmentShaderPath);
 	shaderProgram.use();
 
+	// LOAD IMAGE:
+	int width, height, nrChannels;
+	unsigned char* imgData = stbi_load("res/images/img2.jpg", &width, &height, &nrChannels, 0);
+	if (!imgData)
+	{
+		std::cout << "Failed to load texture\n";
+	}
+
+	// CREATE TEXTURE:
+	unsigned int texture;
+	glGenTextures(1, &texture);
+	glBindTexture(GL_TEXTURE_2D, texture);
+
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_R, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+	
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, imgData);
+	glGenerateMipmap(GL_TEXTURE_2D);
+	
+	// FREE THE IMAGE MEMORY:
+	stbi_image_free(imgData);
+
 	// BUFFER:
 	float vertices[] = {
-		// positions         // colors
-		 0.5f, -0.5f, 0.0f,  1.0f, 0.0f, 0.0f,   // bottom right
-		-0.5f, -0.5f, 0.0f,  0.0f, 1.0f, 0.0f,   // bottom left
-		 0.0f,  0.5f, 0.0f,  0.0f, 0.0f, 1.0f    // top 
+		// positions          // colors           // texture coords
+		 0.5f,  0.5f, 0.0f,   1.0f, 0.0f, 0.0f,   1.0f, 1.0f,   // top right
+		 0.5f, -0.5f, 0.0f,   0.0f, 1.0f, 0.0f,   1.0f, 0.0f,   // bottom right
+		-0.5f, -0.5f, 0.0f,   0.0f, 0.0f, 1.0f,   0.0f, 0.0f,   // bottom left
+		-0.5f,  0.5f, 0.0f,   1.0f, 1.0f, 0.0f,   0.0f, 1.0f    // top left 
 	};
 
 	unsigned int indices[] = {
-		0, 1, 2,
+		2, 1, 0,
+		0, 3, 2
+	};
+
+	float textureCoords[] =
+	{
+		0.0f, 0.0f,  //top left
+		1.0f, 0.0f,  //bottom left
+		0.5f, 1.0f,  //top center
 	};
 
 	// VAO (VERTEX ARRAY OBJECT):
@@ -83,10 +119,13 @@ int main()
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
-	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(3 * sizeof(float)));
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0); // positions
+	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(3 * sizeof(float))); // colors
+	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6 * sizeof(float))); // tex coords
+
 	glEnableVertexAttribArray(0);
 	glEnableVertexAttribArray(1);
+	glEnableVertexAttribArray(2);
 	
 	// EBO (ELEMENT BUFFER OBJECT)
 	unsigned int EBO;
@@ -97,10 +136,12 @@ int main()
 	// UNBIND THE VAO 
 	glBindVertexArray(0);
 
-	// WIREFRAME MODE
+	// RENDER MODE
 	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 
 	/* Loop until the user closes the window */
+	float xValue = 0.0f;
+	float offset = 0.00005f;
 	while (!glfwWindowShouldClose(window))
 	{
 		processInput(window);
@@ -109,8 +150,22 @@ int main()
 		glClearColor(0.2, 0.2, 0.4, 1.0);
 		glClear(GL_COLOR_BUFFER_BIT);	
 		
+
+		//int uniformLocation = glGetUniformLocation(shaderProgram.getID(), "offset");
+		//glUniform3f(uniformLocation, xValue, 0.0f, 0.0f);
+
+		shaderProgram.setVec3("offset", xValue, 0.0f, 0.0f);
+
+		if (xValue + offset > 0.5f || xValue + offset < -0.5f)
+		{
+			offset = -offset;
+		}
+
+		xValue += offset;
+
+		glBindTexture(GL_TEXTURE_2D, texture);
 		glBindVertexArray(VAO);
-		glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_INT, 0);
+		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
 		/* Swap front and back buffers */
 		glfwSwapBuffers(window);

@@ -59,6 +59,8 @@ int initOpenGL()
 		return -1;
 	}
 
+	std::cout << glGetString(GL_VERSION) << "\n";
+
 	int flags; glGetIntegerv(GL_CONTEXT_FLAGS, &flags);
 	if (flags & GL_CONTEXT_FLAG_DEBUG_BIT)
 	{
