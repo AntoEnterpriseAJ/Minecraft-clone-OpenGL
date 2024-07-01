@@ -99,14 +99,7 @@ int main()
 	unsigned int indices[] = {
 		2, 1, 0,
 		0, 3, 2
-	};
-
-	float textureCoords[] =
-	{
-		0.0f, 0.0f,  //top left
-		1.0f, 0.0f,  //bottom left
-		0.5f, 1.0f,  //top center
-	};
+	}; 
 
 	// VAO (VERTEX ARRAY OBJECT):
 	unsigned int VAO;
