@@ -61,17 +61,38 @@ int main()
 	const char* fragmentShaderPath = "res/shaders/fragment.frag";
 	
 	Shader shaderProgram(vertexShaderPath, fragmentShaderPath);
-	shaderProgram.use();
 
-	// LOAD IMAGE:
+	// LOAD IMAGE1:
 	int width, height, nrChannels;
-	unsigned char* imgData = stbi_load("res/images/img2.jpg", &width, &height, &nrChannels, 0);
-	if (!imgData)
+	unsigned char* imgData1 = stbi_load("res/images/img2.jpg", &width, &height, &nrChannels, 0);
+	if (!imgData1)
 	{
 		std::cout << "Failed to load texture\n";
 	}
 
-	// CREATE TEXTURE:
+	// LOAD IMAGE2:
+	int width2, height2, nrChannels2;
+	unsigned char* imgData2 = stbi_load("res/images/img1.jpg", &width2, &height2, &nrChannels2, 0);
+	if (!imgData2)
+	{
+		std::cout << "Failed to load texture\n";
+	}
+
+	// CREATE TEXTURE2:
+	unsigned int texture2;
+	glGenTextures(1, &texture2);
+	glBindTexture(GL_TEXTURE_2D, texture2);
+
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_R, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width2, height2, 0, GL_RGB, GL_UNSIGNED_BYTE, imgData2);
+	glGenerateMipmap(GL_TEXTURE_2D);
+
+
+	// CREATE TEXTURE1:
 	unsigned int texture;
 	glGenTextures(1, &texture);
 	glBindTexture(GL_TEXTURE_2D, texture);
@@ -81,11 +102,12 @@ int main()
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
 	
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, imgData);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, imgData1);
 	glGenerateMipmap(GL_TEXTURE_2D);
 	
 	// FREE THE IMAGE MEMORY:
-	stbi_image_free(imgData);
+	stbi_image_free(imgData1);
+	stbi_image_free(imgData2);
 
 	// BUFFER:
 	float vertices[] = {
@@ -132,9 +154,18 @@ int main()
 	// RENDER MODE
 	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 
+	// SHADER:
+	shaderProgram.use();
+	shaderProgram.setInt("ourTexture", 0);
+	shaderProgram.setInt("ourTexture2", 1);
+
+	int opacityLocation = glGetUniformLocation(shaderProgram.getID(), "opacity");
+	float currentOpacity = 0.0f;
+	glUniform1f(opacityLocation, currentOpacity);
+
 	/* Loop until the user closes the window */
 	float xValue = 0.0f;
-	float offset = 0.00005f;
+	float offset = 0.005f;
 	while (!glfwWindowShouldClose(window))
 	{
 		processInput(window);
@@ -153,10 +184,25 @@ int main()
 		{
 			offset = -offset;
 		}
-
 		xValue += offset;
 
+		float opacityIncrement = 0.05f;
+		if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS)
+		{
+			glUniform1f(opacityLocation, (currentOpacity < 1.0f) ? (currentOpacity + opacityIncrement) : 1.0f);
+			currentOpacity = currentOpacity + opacityIncrement;
+		}
+		else if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS)
+		{
+			glUniform1f(opacityLocation, (currentOpacity > 0.0f) ? (currentOpacity - opacityIncrement) : 0.0f);
+			currentOpacity = currentOpacity - opacityIncrement;
+		}
+
+		glActiveTexture(GL_TEXTURE0);
 		glBindTexture(GL_TEXTURE_2D, texture);
+		glActiveTexture(GL_TEXTURE1);
+		glBindTexture(GL_TEXTURE_2D, texture2);
+
 		glBindVertexArray(VAO);
 		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
@@ -167,6 +213,8 @@ int main()
 	}
 
 	// Cleanup
+	glDeleteTextures(1, &texture);
+	glDeleteTextures(1, &texture2);
 	glDeleteVertexArrays(1, &VAO);
 	glDeleteBuffers(1, &VBO);
 	glDeleteBuffers(1, &EBO);
