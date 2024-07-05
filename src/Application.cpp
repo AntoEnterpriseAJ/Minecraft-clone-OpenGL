@@ -66,6 +66,9 @@ int main()
 	
 	Shader shaderProgram(vertexShaderPath, fragmentShaderPath);
 
+	//STB
+	stbi_set_flip_vertically_on_load(true);
+
 	// LOAD IMAGE1:
 	int width, height, nrChannels;
 	unsigned char* imgData1 = stbi_load("res/images/img2.jpg", &width, &height, &nrChannels, 0);
@@ -182,6 +185,15 @@ int main()
 		//int uniformLocation = glGetUniformLocation(shaderProgram.getID(), "offset");
 		//glUniform3f(uniformLocation, xValue, 0.0f, 0.0f);
 
+		//GLM MATHS:
+		glm::mat4 trans = glm::mat4(1.0f);
+		trans = glm::rotate(trans, (float)glfwGetTime(), glm::vec3(0.0f, 0.0f, 1.0f));
+		trans = glm::translate(trans, glm::vec3(0.5f, -0.5f, 0.0f));
+
+
+		unsigned int transformLoc = glGetUniformLocation(shaderProgram.getID(), "transform");
+		glUniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(trans));
+
 		shaderProgram.setVec3("offset", xValue, 0.0f, 0.0f);
 
 		if (xValue + offset > 0.5f || xValue + offset < -0.5f)
@@ -209,6 +221,15 @@ int main()
 
 		glBindVertexArray(VAO);
 		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+
+		glm::mat4 trans2 = glm::mat4(1.0f);
+		trans2 = glm::translate(trans2, glm::vec3(-0.5f, 0.5f, 0.0f));
+		float value = std::abs(sin(glfwGetTime()));
+		trans2 = glm::scale(trans2, glm::vec3(value, value, value));
+		glUniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(trans2));
+
+		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+
 
 		/* Swap front and back buffers */
 		glfwSwapBuffers(window);
