@@ -186,13 +186,24 @@ int main()
 		//glUniform3f(uniformLocation, xValue, 0.0f, 0.0f);
 
 		//GLM MATHS:
-		glm::mat4 trans = glm::mat4(1.0f);
-		trans = glm::rotate(trans, (float)glfwGetTime(), glm::vec3(0.0f, 0.0f, 1.0f));
-		trans = glm::translate(trans, glm::vec3(0.5f, -0.5f, 0.0f));
+		glm::mat4 model = glm::mat4(1.0f);
+		model = glm::rotate(model, glm::radians(-55.0f), glm::vec3(1.0f, 0.0f, 0.0f));
 
+		unsigned int transformLoc = glGetUniformLocation(shaderProgram.getID(), "model");
+		glUniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(model));
 
-		unsigned int transformLoc = glGetUniformLocation(shaderProgram.getID(), "transform");
-		glUniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(trans));
+		glm::mat4 view = glm::mat4(1.0f);
+		// note that we're translating the scene in the reverse direction of where we want to move
+		view = glm::translate(view, glm::vec3(0.0f, 0.0f, -3.0f));
+
+		unsigned int viewLoc = glGetUniformLocation(shaderProgram.getID(), "view");
+		glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(view));
+
+		glm::mat4 projection;
+		projection = glm::perspective(glm::radians(45.0f), 800.0f / 600.0f, 0.1f, 100.0f);
+
+		unsigned int projectionLoc = glGetUniformLocation(shaderProgram.getID(), "projection");
+		glUniformMatrix4fv(projectionLoc, 1, GL_FALSE, glm::value_ptr(projection));
 
 		shaderProgram.setVec3("offset", xValue, 0.0f, 0.0f);
 
@@ -222,13 +233,6 @@ int main()
 		glBindVertexArray(VAO);
 		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
-		glm::mat4 trans2 = glm::mat4(1.0f);
-		trans2 = glm::translate(trans2, glm::vec3(-0.5f, 0.5f, 0.0f));
-		float value = std::abs(sin(glfwGetTime()));
-		trans2 = glm::scale(trans2, glm::vec3(value, value, value));
-		glUniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(trans2));
-
-		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
 
 		/* Swap front and back buffers */
