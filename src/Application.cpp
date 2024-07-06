@@ -10,6 +10,7 @@
 
 #include <string>
 #include <iostream>
+#include <random>
 #include "include/Shader.h"
 
 int initOpenGL();
@@ -25,6 +26,17 @@ void processInput(GLFWwindow* window)
 	{
 		glfwSetWindowShouldClose(window, true);
 	}
+}
+
+#include <random>
+
+float randomf(float lowerBound, float upperBound)
+{
+    std::random_device rd{};
+    std::mt19937 mt{ rd() };
+
+    std::uniform_real_distribution<float> dis(lowerBound, upperBound);
+    return dis(mt);
 }
 
 int main()
@@ -161,6 +173,26 @@ int main()
 		-0.5f,  0.5f, -0.5f,  0.0f, 1.0f
 	};
 
+	constexpr unsigned int cubePosCount = 10;
+	glm::vec3 cubePositions[] = {
+	glm::vec3(0.0f,  0.0f,  0.0f),
+	glm::vec3(2.0f,  5.0f, -15.0f),
+	glm::vec3(-1.5f, -2.2f, -2.5f),
+	glm::vec3(-3.8f, -2.0f, -12.3f),
+	glm::vec3(2.4f, -0.4f, -3.5f),
+	glm::vec3(-1.7f,  3.0f, -7.5f),
+	glm::vec3(1.3f, -2.0f, -2.5f),
+	glm::vec3(1.5f,  2.0f, -2.5f),
+	glm::vec3(1.5f,  0.2f, -1.5f),
+	glm::vec3(-1.3f,  1.0f, -1.5f)
+	};
+
+	glm::vec3 rotationAxes[cubePosCount];
+	for (int i = 0; i < cubePosCount; ++i)
+	{
+		rotationAxes[i] = glm::vec3(randomf(0.0f, 0.8f), randomf(0.0f, 0.8f), randomf(0.0f, 0.8f));
+	}
+
 	//unsigned int indices[] = {
 	//	2, 1, 0,
 	//	0, 3, 2
@@ -193,6 +225,7 @@ int main()
 	glBindVertexArray(0);
 
 	// RENDER MODE
+	glEnable(GL_DEPTH_TEST);
 	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 
 	// SHADER:
@@ -205,58 +238,13 @@ int main()
 	glUniform1f(opacityLocation, currentOpacity);
 
 	/* Loop until the user closes the window */
-	float xValue = 0.0f;
-	float offset = 0.005f;
 	while (!glfwWindowShouldClose(window))
 	{
 		processInput(window);
 
 		/* Render here */
 		glClearColor(0.2f, 0.2f, 0.4f, 1.0f);
-		glClear(GL_COLOR_BUFFER_BIT);	
-		
-		//int uniformLocation = glGetUniformLocation(shaderProgram.getID(), "offset");
-		//glUniform3f(uniformLocation, xValue, 0.0f, 0.0f);
-
-		//GLM MATHS:
-		glm::mat4 model = glm::mat4(1.0f);
-		/*model = glm::rotate(model, (float)glfwGetTime() * glm::radians(50.0f), glm::vec3(1.0f, 1.0f, 0.0f));*/
-
-		unsigned int transformLoc = glGetUniformLocation(shaderProgram.getID(), "model");
-		glUniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(model));
-
-		glm::mat4 view = glm::mat4(1.0f);
-		// note that we're translating the scene in the reverse direction of where we want to move
-		view = glm::translate(view, glm::vec3(0.0f, 0.0f, -3.0f));
-
-		unsigned int viewLoc = glGetUniformLocation(shaderProgram.getID(), "view");
-		glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(view));
-
-		glm::mat4 projection;
-		projection = glm::perspective(glm::radians(45.0f), 800.0f / 600.0f, 0.1f, 100.0f);
-
-		unsigned int projectionLoc = glGetUniformLocation(shaderProgram.getID(), "projection");
-		glUniformMatrix4fv(projectionLoc, 1, GL_FALSE, glm::value_ptr(projection));
-
-		shaderProgram.setVec3("offset", xValue, 0.0f, 0.0f);
-
-		if (xValue + offset > 0.5f || xValue + offset < -0.5f)
-		{
-			offset = -offset;
-		}
-		xValue += offset;
-
-		float opacityIncrement = 0.05f;
-		if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS)
-		{
-			glUniform1f(opacityLocation, (currentOpacity < 1.0f) ? (currentOpacity + opacityIncrement) : 1.0f);
-			currentOpacity = currentOpacity + opacityIncrement;
-		}
-		else if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS)
-		{
-			glUniform1f(opacityLocation, (currentOpacity > 0.0f) ? (currentOpacity - opacityIncrement) : 0.0f);
-			currentOpacity = currentOpacity - opacityIncrement;
-		}
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		glActiveTexture(GL_TEXTURE0);
 		glBindTexture(GL_TEXTURE_2D, texture);
@@ -264,11 +252,46 @@ int main()
 		glBindTexture(GL_TEXTURE_2D, texture2);
 
 		glBindVertexArray(VAO);
-		//glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
-		glDrawArrays(GL_TRIANGLES, 0, 36);
 
+		//GLM MATHS:
 
+		for (int i = 0; i < cubePosCount; ++i)
+		{
+			glm::mat4 model = glm::mat4(1.0f);
+			model = glm::translate(model, cubePositions[i]);
+			model = glm::rotate(model, (float)glfwGetTime() * glm::radians(60.0f), rotationAxes[i]);
 
+			unsigned int modelLoc = glGetUniformLocation(shaderProgram.getID(), "model");
+			glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
+
+			glm::mat4 view = glm::mat4(1.0f);
+			// note that we're translating the scene in the reverse direction of where we want to move
+			view = glm::translate(view, glm::vec3(0.0f, 0.0f, -3.0f));
+
+			unsigned int viewLoc = glGetUniformLocation(shaderProgram.getID(), "view");
+			glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(view));
+
+			glm::mat4 projection;
+			projection = glm::perspective(glm::radians(45.0f), 800.0f / 600.0f, 0.1f, 100.0f);
+
+			unsigned int projectionLoc = glGetUniformLocation(shaderProgram.getID(), "projection");
+			glUniformMatrix4fv(projectionLoc, 1, GL_FALSE, glm::value_ptr(projection));
+
+			float opacityIncrement = 0.05f;
+			if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS)
+			{
+				glUniform1f(opacityLocation, (currentOpacity < 1.0f) ? (currentOpacity + opacityIncrement) : 1.0f);
+				currentOpacity = currentOpacity + opacityIncrement;
+			}
+			else if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS)
+			{
+				glUniform1f(opacityLocation, (currentOpacity > 0.0f) ? (currentOpacity - opacityIncrement) : 0.0f);
+				currentOpacity = currentOpacity - opacityIncrement;
+			}
+
+			//glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+			glDrawArrays(GL_TRIANGLES, 0, 36);
+		}
 
 		/* Swap front and back buffers */
 		glfwSwapBuffers(window);
