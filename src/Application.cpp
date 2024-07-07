@@ -28,8 +28,6 @@ void processInput(GLFWwindow* window)
 	}
 }
 
-#include <random>
-
 float randomf(float lowerBound, float upperBound)
 {
     std::random_device rd{};
@@ -38,6 +36,10 @@ float randomf(float lowerBound, float upperBound)
     std::uniform_real_distribution<float> dis(lowerBound, upperBound);
     return dis(mt);
 }
+
+// DELTA TIME
+float deltaTime = 0.0f;
+float lastFrame = 0.0f;
 
 int main()
 {
@@ -241,7 +243,7 @@ int main()
 	glm::vec3 cameraPos = glm::vec3(0.0f, 0.0f, 3.0f);
 	glm::vec3 cameraFront = glm::vec3(0.0f, 0.0f, -1.0f);
 	glm::vec3 cameraUp = glm::vec3(0.0f, 1.0f, 0.0f);
-	const float cameraSpeed = 0.05f;
+	float cameraSpeed = 2.5f;
 
 	/* Loop until the user closes the window */
 	while (!glfwWindowShouldClose(window))
@@ -272,21 +274,27 @@ int main()
 		}
 
 		// CAMERA CONTROLS:
+
+		float currentFrame = glfwGetTime();
+		deltaTime = currentFrame - lastFrame;
+		lastFrame = currentFrame;
+		float currentCameraSpeed = cameraSpeed * deltaTime;
+
 		if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
 		{
-			cameraPos += cameraFront * cameraSpeed;
+			cameraPos += cameraFront * currentCameraSpeed;
 		}
 		if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
 		{
-			cameraPos -= cameraFront * cameraSpeed;
+			cameraPos -= cameraFront * currentCameraSpeed;
 		}
 		if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
 		{
-			cameraPos += glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed;
+			cameraPos += glm::normalize(glm::cross(cameraFront, cameraUp)) * currentCameraSpeed;
 		}
 		if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
 		{
-			cameraPos -= glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed;
+			cameraPos -= glm::normalize(glm::cross(cameraFront, cameraUp)) * currentCameraSpeed;
 		}
 
 		//GLM MATHS:
