@@ -253,41 +253,44 @@ int main()
 
 		glBindVertexArray(VAO);
 
+		float opacityIncrement = 0.05f;
+		if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS)
+		{
+			glUniform1f(opacityLocation, (currentOpacity < 1.0f) ? (currentOpacity + opacityIncrement) : 1.0f);
+			currentOpacity = currentOpacity + opacityIncrement;
+		}
+		else if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS)
+		{
+			glUniform1f(opacityLocation, (currentOpacity > 0.0f) ? (currentOpacity - opacityIncrement) : 0.0f);
+			currentOpacity = currentOpacity - opacityIncrement;
+		}
+
 		//GLM MATHS:
 
 		for (int i = 0; i < cubePosCount; ++i)
 		{
 			glm::mat4 model = glm::mat4(1.0f);
 			model = glm::translate(model, cubePositions[i]);
+
 			model = glm::rotate(model, (float)glfwGetTime() * glm::radians(60.0f), rotationAxes[i]);
 
 			unsigned int modelLoc = glGetUniformLocation(shaderProgram.getID(), "model");
 			glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
 
-			glm::mat4 view = glm::mat4(1.0f);
-			// note that we're translating the scene in the reverse direction of where we want to move
-			view = glm::translate(view, glm::vec3(0.0f, 0.0f, -3.0f));
+			const float radius = 10.0f;
+			float camX = cos(glfwGetTime()) * radius;
+			float camZ = sin(glfwGetTime()) * radius; 
+			glm::mat4 view;
+			view = glm::lookAt(glm::vec3(camX, 0.0f, camZ), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.1f, 0.0f));
 
 			unsigned int viewLoc = glGetUniformLocation(shaderProgram.getID(), "view");
 			glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(view));
 
 			glm::mat4 projection;
 			projection = glm::perspective(glm::radians(45.0f), 800.0f / 600.0f, 0.1f, 100.0f);
-
+			
 			unsigned int projectionLoc = glGetUniformLocation(shaderProgram.getID(), "projection");
 			glUniformMatrix4fv(projectionLoc, 1, GL_FALSE, glm::value_ptr(projection));
-
-			float opacityIncrement = 0.05f;
-			if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS)
-			{
-				glUniform1f(opacityLocation, (currentOpacity < 1.0f) ? (currentOpacity + opacityIncrement) : 1.0f);
-				currentOpacity = currentOpacity + opacityIncrement;
-			}
-			else if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS)
-			{
-				glUniform1f(opacityLocation, (currentOpacity > 0.0f) ? (currentOpacity - opacityIncrement) : 0.0f);
-				currentOpacity = currentOpacity - opacityIncrement;
-			}
 
 			//glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 			glDrawArrays(GL_TRIANGLES, 0, 36);
