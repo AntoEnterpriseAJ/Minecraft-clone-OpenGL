@@ -237,6 +237,12 @@ int main()
 	float currentOpacity = 0.0f;
 	glUniform1f(opacityLocation, currentOpacity);
 
+	// CAMERA:
+	glm::vec3 cameraPos = glm::vec3(0.0f, 0.0f, 3.0f);
+	glm::vec3 cameraFront = glm::vec3(0.0f, 0.0f, -1.0f);
+	glm::vec3 cameraUp = glm::vec3(0.0f, 1.0f, 0.0f);
+	const float cameraSpeed = 0.05f;
+
 	/* Loop until the user closes the window */
 	while (!glfwWindowShouldClose(window))
 	{
@@ -265,6 +271,24 @@ int main()
 			currentOpacity = currentOpacity - opacityIncrement;
 		}
 
+		// CAMERA CONTROLS:
+		if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
+		{
+			cameraPos += cameraFront * cameraSpeed;
+		}
+		if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
+		{
+			cameraPos -= cameraFront * cameraSpeed;
+		}
+		if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
+		{
+			cameraPos += glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed;
+		}
+		if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
+		{
+			cameraPos -= glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed;
+		}
+
 		//GLM MATHS:
 
 		for (int i = 0; i < cubePosCount; ++i)
@@ -277,11 +301,9 @@ int main()
 			unsigned int modelLoc = glGetUniformLocation(shaderProgram.getID(), "model");
 			glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
 
-			const float radius = 10.0f;
-			float camX = cos(glfwGetTime()) * radius;
-			float camZ = sin(glfwGetTime()) * radius; 
+			//VIEW:
 			glm::mat4 view;
-			view = glm::lookAt(glm::vec3(camX, 0.0f, camZ), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.1f, 0.0f));
+			view = glm::lookAt(cameraPos, cameraPos + cameraFront, cameraUp);
 
 			unsigned int viewLoc = glGetUniformLocation(shaderProgram.getID(), "view");
 			glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(view));
