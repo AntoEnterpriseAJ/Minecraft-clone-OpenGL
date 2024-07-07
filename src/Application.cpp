@@ -37,6 +37,46 @@ float randomf(float lowerBound, float upperBound)
     return dis(mt);
 }
 
+// CAMERA
+glm::vec3 cameraFront = glm::vec3(0.0f, 0.0f, -1.0f);
+
+float yaw = -90.0f;
+float pitch = 0.0f;
+
+// MOUSE
+bool firstMouse = true;
+float mouseLastX = 400, mouseLastY = 300;
+
+void mouse_callback(GLFWwindow* window, double xPos, double yPos)
+{
+	if (firstMouse) // initially set to true
+	{
+		mouseLastX = xPos;
+		mouseLastY = yPos;
+		firstMouse = false;
+	}
+
+	const float sensitivity = 0.1f;
+
+	float xOffset = (xPos - mouseLastX) * sensitivity;
+	float yOffset = (mouseLastY - yPos) * sensitivity;
+
+	mouseLastX = xPos;
+	mouseLastY = yPos;
+
+	yaw += xOffset;
+	pitch += yOffset;
+
+	if (pitch > 89.9f) pitch = 89.9f;
+	else if (pitch < -89.9f) pitch = -89.9f;
+
+	glm::vec3 direction;
+	direction.x = cos(glm::radians(pitch)) * cos(glm::radians(yaw));
+	direction.y = sin(glm::radians(pitch));
+	direction.z = cos(glm::radians(pitch)) * sin(glm::radians(yaw));
+	cameraFront = glm::normalize(direction);
+}
+
 // DELTA TIME
 float deltaTime = 0.0f;
 float lastFrame = 0.0f;
@@ -71,6 +111,10 @@ int main()
 	// set the size of rendering for openGL, resize viewport as the window resizes
 	glViewport(0, 0, 800, 600);
 	glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
+
+	// GLFW mouse
+	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+	glfwSetCursorPosCallback(window, mouse_callback);
 
 	// CODE:
 	
@@ -241,7 +285,6 @@ int main()
 
 	// CAMERA:
 	glm::vec3 cameraPos = glm::vec3(0.0f, 0.0f, 3.0f);
-	glm::vec3 cameraFront = glm::vec3(0.0f, 0.0f, -1.0f);
 	glm::vec3 cameraUp = glm::vec3(0.0f, 1.0f, 0.0f);
 	float cameraSpeed = 2.5f;
 
