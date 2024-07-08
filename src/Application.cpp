@@ -12,70 +12,25 @@
 #include <iostream>
 #include <random>
 #include "include/Shader.h"
+#include "include/Camera.h"
+
 
 int initOpenGL();
+void processInput(GLFWwindow* window);
+float randomf(float lowerBound, float upperBound);
+void framebuffer_size_callback(GLFWwindow* window, int width, int height);
+void mouse_callback(GLFWwindow* window, double xpos, double ypos);
+void scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
 
-void framebuffer_size_callback(GLFWwindow* window, int width, int height)
-{
-	glViewport(0, 0, width, height);
-}
-
-void processInput(GLFWwindow* window)
-{
-	if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
-	{
-		glfwSetWindowShouldClose(window, true);
-	}
-}
-
-float randomf(float lowerBound, float upperBound)
-{
-    std::random_device rd{};
-    std::mt19937 mt{ rd() };
-
-    std::uniform_real_distribution<float> dis(lowerBound, upperBound);
-    return dis(mt);
-}
+// SETTINGS
+constexpr float screenWidth = 800.0f;
+constexpr float screenHeight = 600.0f;
 
 // CAMERA
-glm::vec3 cameraFront = glm::vec3(0.0f, 0.0f, -1.0f);
-
-float yaw = -90.0f;
-float pitch = 0.0f;
-
-// MOUSE
+Camera camera{ glm::vec3(0.0f, 0.0f, 3.0f) };
+float lastMouseX = screenWidth / 2.0f;
+float lastMouseY = screenHeight / 2.0f;
 bool firstMouse = true;
-float mouseLastX = 400, mouseLastY = 300;
-
-void mouse_callback(GLFWwindow* window, double xPos, double yPos)
-{
-	if (firstMouse) // initially set to true
-	{
-		mouseLastX = xPos;
-		mouseLastY = yPos;
-		firstMouse = false;
-	}
-
-	const float sensitivity = 0.1f;
-
-	float xOffset = (xPos - mouseLastX) * sensitivity;
-	float yOffset = (mouseLastY - yPos) * sensitivity;
-
-	mouseLastX = xPos;
-	mouseLastY = yPos;
-
-	yaw += xOffset;
-	pitch += yOffset;
-
-	if (pitch > 89.9f) pitch = 89.9f;
-	else if (pitch < -89.9f) pitch = -89.9f;
-
-	glm::vec3 direction;
-	direction.x = cos(glm::radians(pitch)) * cos(glm::radians(yaw));
-	direction.y = sin(glm::radians(pitch));
-	direction.z = cos(glm::radians(pitch)) * sin(glm::radians(yaw));
-	cameraFront = glm::normalize(direction);
-}
 
 // DELTA TIME
 float deltaTime = 0.0f;
@@ -94,7 +49,7 @@ int main()
 	glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, true);
 
 	GLFWwindow* window;
-	window = glfwCreateWindow(800, 600, "Hello world", NULL, NULL);
+	window = glfwCreateWindow(screenWidth, screenHeight, "Test", NULL, NULL);
 
 	if (window == nullptr)
 	{
@@ -108,13 +63,12 @@ int main()
 	// INIT OPENGL UTIL FUNCTION
 	initOpenGL();
 
-	// set the size of rendering for openGL, resize viewport as the window resizes
-	glViewport(0, 0, 800, 600);
+	glViewport(0, 0, screenWidth, screenHeight);
 	glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
 
-	// GLFW mouse
 	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 	glfwSetCursorPosCallback(window, mouse_callback);
+	glfwSetScrollCallback(window, scroll_callback);
 
 	// CODE:
 	
@@ -170,7 +124,7 @@ int main()
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, imgData1);
 	glGenerateMipmap(GL_TEXTURE_2D);
 	
-	// FREE THE IMAGE MEMORY:
+	// FREE THE IMAGES MEMORY:
 	stbi_image_free(imgData1);
 	stbi_image_free(imgData2);
 
@@ -283,11 +237,6 @@ int main()
 	float currentOpacity = 0.0f;
 	glUniform1f(opacityLocation, currentOpacity);
 
-	// CAMERA:
-	glm::vec3 cameraPos = glm::vec3(0.0f, 0.0f, 3.0f);
-	glm::vec3 cameraUp = glm::vec3(0.0f, 1.0f, 0.0f);
-	float cameraSpeed = 2.5f;
-
 	/* Loop until the user closes the window */
 	while (!glfwWindowShouldClose(window))
 	{
@@ -321,23 +270,22 @@ int main()
 		float currentFrame = glfwGetTime();
 		deltaTime = currentFrame - lastFrame;
 		lastFrame = currentFrame;
-		float currentCameraSpeed = cameraSpeed * deltaTime;
 
 		if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
 		{
-			cameraPos += cameraFront * currentCameraSpeed;
+			camera.processKeyboard(Camera::FORWARD, deltaTime);
 		}
 		if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
 		{
-			cameraPos -= cameraFront * currentCameraSpeed;
+			camera.processKeyboard(Camera::BACKWARD, deltaTime);
 		}
 		if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
 		{
-			cameraPos += glm::normalize(glm::cross(cameraFront, cameraUp)) * currentCameraSpeed;
+			camera.processKeyboard(Camera::RIGHT, deltaTime);
 		}
 		if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
 		{
-			cameraPos -= glm::normalize(glm::cross(cameraFront, cameraUp)) * currentCameraSpeed;
+			camera.processKeyboard(Camera::LEFT, deltaTime);
 		}
 
 		//GLM MATHS:
@@ -352,15 +300,14 @@ int main()
 			unsigned int modelLoc = glGetUniformLocation(shaderProgram.getID(), "model");
 			glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
 
-			//VIEW:
 			glm::mat4 view;
-			view = glm::lookAt(cameraPos, cameraPos + cameraFront, cameraUp);
+			view = camera.getViewMatrix();
 
 			unsigned int viewLoc = glGetUniformLocation(shaderProgram.getID(), "view");
 			glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(view));
 
 			glm::mat4 projection;
-			projection = glm::perspective(glm::radians(45.0f), 800.0f / 600.0f, 0.1f, 100.0f);
+			projection = glm::perspective(glm::radians(camera.getFOV()), screenWidth / screenHeight, 0.1f, 100.0f);
 			
 			unsigned int projectionLoc = glGetUniformLocation(shaderProgram.getID(), "projection");
 			glUniformMatrix4fv(projectionLoc, 1, GL_FALSE, glm::value_ptr(projection));
@@ -384,4 +331,50 @@ int main()
 
 	glfwTerminate();
 	return 0;
+}
+
+
+void framebuffer_size_callback(GLFWwindow* window, int width, int height)
+{
+	glViewport(0, 0, width, height);
+}
+
+void mouse_callback(GLFWwindow* window, double xpos, double ypos)
+{
+	if (firstMouse)
+	{
+		lastMouseX = xpos;
+		lastMouseY = ypos;
+		firstMouse = false;	
+	}
+
+	float yawOffset = xpos - lastMouseX;
+	float pitchOffset = lastMouseY - ypos;
+
+	lastMouseX = xpos;
+	lastMouseY = ypos;
+
+	camera.processMouseCursor(yawOffset, pitchOffset);
+}
+
+void scroll_callback(GLFWwindow* window, double xoffset, double yoffset)
+{
+	camera.processMouseScroll(yoffset);
+}
+
+void processInput(GLFWwindow* window)
+{
+	if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
+	{
+		glfwSetWindowShouldClose(window, true);
+	}
+}
+
+float randomf(float lowerBound, float upperBound)
+{
+	std::random_device rd{};
+	std::mt19937 mt{ rd() };
+
+	std::uniform_real_distribution<float> dis(lowerBound, upperBound);
+	return dis(mt);
 }
