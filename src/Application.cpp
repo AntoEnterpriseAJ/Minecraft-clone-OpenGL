@@ -83,7 +83,7 @@ int main()
 
 	// LOAD IMAGE1:
 	int width, height, nrChannels;
-	unsigned char* imgData1 = stbi_load("res/images/img2.jpg", &width, &height, &nrChannels, 0);
+	unsigned char* imgData1 = stbi_load("res/images/highResBox.jpg", &width, &height, &nrChannels, 0);
 	if (!imgData1)
 	{
 		std::cout << "Failed to load texture\n";
@@ -99,7 +99,7 @@ int main()
 
 	// LOAD IMAGE3:
 	int width3, height3, nrChannels3;
-	unsigned char* imgData3 = stbi_load("res/images/grass.jpg", &width3, &height3, &nrChannels3, 0);
+	unsigned char* imgData3 = stbi_load("res/images/ground.jpg", &width3, &height3, &nrChannels3, 0);
 	if (!imgData3)
 	{
 		std::cout << "Failed to load texture\n";
@@ -138,8 +138,8 @@ int main()
 
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_MIRRORED_REPEAT);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_MIRRORED_REPEAT);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width3, height3, 0, GL_RGB, GL_UNSIGNED_BYTE, imgData3);
 	glGenerateMipmap(GL_TEXTURE_2D);
@@ -280,7 +280,7 @@ int main()
 		processInput(window);
 
 		/* Render here */
-		glClearColor(0.2f, 0.2f, 0.4f, 1.0f);
+		glClearColor(0.2f, 0.5f, 0.5f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		// GROUND
