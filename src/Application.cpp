@@ -97,38 +97,86 @@ int main()
 		std::cout << "Failed to load texture\n";
 	}
 
-	// CREATE TEXTURE2:
-	unsigned int texture2;
-	glGenTextures(1, &texture2);
-	glBindTexture(GL_TEXTURE_2D, texture2);
-
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_R, GL_REPEAT);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width2, height2, 0, GL_RGB, GL_UNSIGNED_BYTE, imgData2);
-	glGenerateMipmap(GL_TEXTURE_2D);
-
+	// LOAD IMAGE3:
+	int width3, height3, nrChannels3;
+	unsigned char* imgData3 = stbi_load("res/images/grass.jpg", &width3, &height3, &nrChannels3, 0);
+	if (!imgData3)
+	{
+		std::cout << "Failed to load texture\n";
+	}
 
 	// CREATE TEXTURE1:
 	unsigned int texture;
 	glGenTextures(1, &texture);
 	glBindTexture(GL_TEXTURE_2D, texture);
 
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_R, GL_REPEAT);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
 	
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, imgData1);
 	glGenerateMipmap(GL_TEXTURE_2D);
-	
+
+	// CREATE TEXTURE2:
+	unsigned int texture2;
+	glGenTextures(1, &texture2);
+	glBindTexture(GL_TEXTURE_2D, texture2);
+
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width2, height2, 0, GL_RGB, GL_UNSIGNED_BYTE, imgData2);
+	glGenerateMipmap(GL_TEXTURE_2D);
+
+	// CREATE TEXTURE3:
+	unsigned int texture3;
+	glGenTextures(1, &texture3);
+	glBindTexture(GL_TEXTURE_2D, texture3);
+
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_MIRRORED_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_MIRRORED_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width3, height3, 0, GL_RGB, GL_UNSIGNED_BYTE, imgData3);
+	glGenerateMipmap(GL_TEXTURE_2D);
+
 	// FREE THE IMAGES MEMORY:
 	stbi_image_free(imgData1);
 	stbi_image_free(imgData2);
+	stbi_image_free(imgData3);
 
-	// BUFFER:
+	// GROUND
+	float groundVertices[] = {
+		// positions          // texture coords
+		-50.0f, -0.5f,  50.0f,  0.0f,  0.0f,
+		 50.0f, -0.5f,  50.0f,  50.0f, 0.0f,
+		 50.0f, -0.5f, -50.0f,  50.0f, 50.0f,
+		 50.0f, -0.5f, -50.0f,  50.0f, 50.0f,
+		-50.0f, -0.5f, -50.0f,  0.0f,  50.0f,
+		-50.0f, -0.5f,  50.0f,  0.0f,  0.0f
+	};
+
+	unsigned int groundVAO, groundVBO;
+	glGenVertexArrays(1, &groundVAO);
+	glGenBuffers(1, &groundVBO);
+
+	glBindVertexArray(groundVAO);
+	glBindBuffer(GL_ARRAY_BUFFER, groundVBO);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(groundVertices), groundVertices, GL_STATIC_DRAW);
+
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
+	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
+
+	glEnableVertexAttribArray(0);
+	glEnableVertexAttribArray(1);
+
+	glBindVertexArray(0);
+
+	// CUBES:
 	float vertices[] = {
 		-0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
 		 0.5f, -0.5f, -0.5f,  1.0f, 0.0f,
@@ -193,11 +241,6 @@ int main()
 		rotationAxes[i] = glm::vec3(randomf(0.0f, 0.8f), randomf(0.0f, 0.8f), randomf(0.0f, 0.8f));
 	}
 
-	//unsigned int indices[] = {
-	//	2, 1, 0,
-	//	0, 3, 2
-	//}; 
-
 	// VAO (VERTEX ARRAY OBJECT):
 	unsigned int VAO;
 	glGenVertexArrays(1, &VAO);
@@ -214,12 +257,6 @@ int main()
 
 	glEnableVertexAttribArray(0);
 	glEnableVertexAttribArray(1);
-	
-	// EBO (ELEMENT BUFFER OBJECT)
-	//unsigned int EBO;
-	//glGenBuffers(1, &EBO);
-	//glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-	//glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
 
 	// UNBIND THE VAO 
 	glBindVertexArray(0);
@@ -246,13 +283,24 @@ int main()
 		glClearColor(0.2f, 0.2f, 0.4f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+		// GROUND
+		glBindVertexArray(groundVAO);
+		glm::mat4 model(1.0f);
+		unsigned int modelLocation = glGetUniformLocation(shaderProgram.getID(), "model");
+		glUniformMatrix4fv(modelLocation, 1, GL_FALSE, glm::value_ptr(model));
+		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_2D, texture3);
+
+		glDrawArrays(GL_TRIANGLES, 0, 6);
+
+		// CUBES
 		glActiveTexture(GL_TEXTURE0);
 		glBindTexture(GL_TEXTURE_2D, texture);
 		glActiveTexture(GL_TEXTURE1);
 		glBindTexture(GL_TEXTURE_2D, texture2);
 
 		glBindVertexArray(VAO);
-
+			
 		float opacityIncrement = 0.05f;
 		if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS)
 		{
@@ -266,7 +314,6 @@ int main()
 		}
 
 		// CAMERA CONTROLS:
-
 		float currentFrame = glfwGetTime();
 		deltaTime = currentFrame - lastFrame;
 		lastFrame = currentFrame;
@@ -289,7 +336,6 @@ int main()
 		}
 
 		//GLM MATHS:
-
 		for (int i = 0; i < cubePosCount; ++i)
 		{
 			glm::mat4 model = glm::mat4(1.0f);
@@ -325,8 +371,12 @@ int main()
 	// Cleanup
 	glDeleteTextures(1, &texture);
 	glDeleteTextures(1, &texture2);
+	glDeleteTextures(1, &texture3);
+
 	glDeleteVertexArrays(1, &VAO);
+	glDeleteVertexArrays(1, &groundVAO);
 	glDeleteBuffers(1, &VBO);
+	glDeleteBuffers(1, &groundVBO);
 	//glDeleteBuffers(1, &EBO);
 
 	glfwTerminate();
