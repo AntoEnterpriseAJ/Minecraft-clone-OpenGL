@@ -13,6 +13,8 @@
 #include <random>
 #include "include/Shader.h"
 #include "include/Camera.h"
+#include "include/VertexBuffer.h"
+#include "include/ElementBuffer.h"
 
 
 int initOpenGL();
@@ -160,13 +162,11 @@ int main()
 		-50.0f, -0.5f,  50.0f,  0.0f,  0.0f
 	};
 
-	unsigned int groundVAO, groundVBO;
+	unsigned int groundVAO;
 	glGenVertexArrays(1, &groundVAO);
-	glGenBuffers(1, &groundVBO);
-
 	glBindVertexArray(groundVAO);
-	glBindBuffer(GL_ARRAY_BUFFER, groundVBO);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(groundVertices), groundVertices, GL_STATIC_DRAW);
+
+	VertexBuffer groundVB(groundVertices, sizeof(groundVertices));
 
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
 	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
@@ -177,7 +177,7 @@ int main()
 	glBindVertexArray(0);
 
 	// CUBES:
-	float vertices[] = {
+	float cubesVertices[] = {
 		-0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
 		 0.5f, -0.5f, -0.5f,  1.0f, 0.0f,
 		 0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
@@ -247,10 +247,7 @@ int main()
 	glBindVertexArray(VAO);
 
 	// VBO (VERTEX BUFFER OBJECT):
-	unsigned int VBO;
-	glGenBuffers(1, &VBO);
-	glBindBuffer(GL_ARRAY_BUFFER, VBO);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+	VertexBuffer cubesVBO(cubesVertices, sizeof(cubesVertices));
 
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0); // positions
 	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float))); // tex coords
@@ -375,8 +372,6 @@ int main()
 
 	glDeleteVertexArrays(1, &VAO);
 	glDeleteVertexArrays(1, &groundVAO);
-	glDeleteBuffers(1, &VBO);
-	glDeleteBuffers(1, &groundVBO);
 	//glDeleteBuffers(1, &EBO);
 
 	glfwTerminate();

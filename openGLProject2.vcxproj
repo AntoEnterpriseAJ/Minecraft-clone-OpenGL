@@ -138,12 +138,16 @@
     <ClCompile Include="Dependencies\GLAD\src\glad.c" />
     <ClCompile Include="src\Application.cpp" />
     <ClCompile Include="src\Camera.cpp" />
+    <ClCompile Include="src\ElementBuffer.cpp" />
     <ClCompile Include="src\initOpenGL.cpp" />
     <ClCompile Include="src\Shader.cpp" />
+    <ClCompile Include="src\VertexBuffer.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\include\Camera.h" />
+    <ClInclude Include="src\include\ElementBuffer.h" />
     <ClInclude Include="src\include\Shader.h" />
+    <ClInclude Include="src\include\VertexBuffer.h" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="C:\Users\Anto\Downloads\img1.jpg" />
