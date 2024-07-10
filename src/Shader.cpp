@@ -84,44 +84,52 @@ Shader::~Shader()
 	glDeleteProgram(m_ID);
 }
 
-void Shader::use()
+void Shader::use() const
 {
 	glUseProgram(m_ID);
 }
 
-void Shader::setBool(const std::string& name, bool value) const
+int Shader::getUniformLocation(const std::string& name) const
 {
-	glUniform1i(glGetUniformLocation(m_ID, name.c_str()), (int)value);
+	if (m_locationCache.contains(name))
+		return m_locationCache.at(name);
+
+	return glGetUniformLocation(m_ID, name.c_str());
+}
+
+void Shader::setBool(const std::string& name, bool value) const
+{	
+	glUniform1i(getUniformLocation(name), value);
 }
 
 void Shader::setInt(const std::string& name, int value) const
 {
-	glUniform1i(glGetUniformLocation(m_ID, name.c_str()), value);
+	glUniform1i(getUniformLocation(name), value);
 }
 
 void Shader::setFloat(const std::string& name, float value) const
 {
-	glUniform1f(glGetUniformLocation(m_ID, name.c_str()), value);
+	glUniform1f(getUniformLocation(name), value);
 }
 
 void Shader::setVec4(const std::string& name, float x, float y, float z, float w) const
 {
-	glUniform4f(glGetUniformLocation(m_ID, name.c_str()), x, y, z, w);
+	glUniform4f(getUniformLocation(name), x, y, z, w);
 }
 
 void Shader::setVec3(const std::string& name, float x, float y, float z) const
 {
-	glUniform3f(glGetUniformLocation(m_ID, name.c_str()), x, y, z);
+	glUniform3f(getUniformLocation(name), x, y, z);
 }
 
 void Shader::setVec4(const std::string& name, float value) const
 {
-	glUniform4f(glGetUniformLocation(m_ID, name.c_str()), value, value, value, value);
+	glUniform4f(getUniformLocation(name), value, value, value, value);
 }
 
 void Shader::setMat4(const std::string& name, const glm::mat4& mat) const
 {
-	glUniformMatrix4fv(glGetUniformLocation(m_ID, name.c_str()), 1, GL_FALSE, glm::value_ptr(mat));
+	glUniformMatrix4fv(getUniformLocation(name), 1, GL_FALSE, glm::value_ptr(mat));
 }
 
 unsigned int Shader::getID() const
