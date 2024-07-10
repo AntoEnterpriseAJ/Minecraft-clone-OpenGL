@@ -28,13 +28,13 @@ public:
 		RIGHT,
 	};
 
-	glm::mat4 getViewMatrix();
+	glm::mat4 getViewMatrix() const;
 	void processKeyboard(CameraMovement direction, float deltaTime);
 	void processMouseScroll(float yOffset);
 	void processMouseCursor(double yawOffset, double pitchOffset);
-	float getFOV();
+	float getFOV() const;
 
-	Camera(glm::vec3 pos, glm::vec3 front = { 0.0f, 0.0f, -1.0f }, glm::vec3 up = { 0.0f, 1.0f, 0.0f }, float yaw = DEFAULT::yaw, float pitch = DEFAULT::pitch);
+	explicit Camera(glm::vec3 pos, glm::vec3 front = { 0.0f, 0.0f, -1.0f }, glm::vec3 up = { 0.0f, 1.0f, 0.0f }, float yaw = DEFAULT::yaw, float pitch = DEFAULT::pitch);
 
 private:
 	void updateVectors();

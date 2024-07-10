@@ -4,7 +4,7 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
-glm::mat4 Camera::getViewMatrix() {
+glm::mat4 Camera::getViewMatrix() const{
 	// view = translation * rotation
 	glm::mat4 viewMatrix{
 		glm::vec4(m_right.x, m_up.x, -m_front.x, 0.0f),
@@ -67,7 +67,7 @@ void Camera::processMouseCursor(double yawOffset, double pitchOffset)
 	updateVectors();
 }
 
-float Camera::getFOV()
+float Camera::getFOV() const
 {
 	return m_FOV;
 }

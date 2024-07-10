@@ -19,8 +19,8 @@ int initOpenGL();
 void processInput(GLFWwindow* window);
 float randomf(float lowerBound, float upperBound);
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
-void mouse_callback(GLFWwindow* window, double xpos, double ypos);
-void scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
+void mouse_callback(GLFWwindow* window, double xPos, double yPos);
+void scroll_callback(GLFWwindow* window, double xOffset, double yOffset);
 
 // SETTINGS
 constexpr float screenWidth = 800.0f;
@@ -343,19 +343,19 @@ int main()
 
 			model = glm::rotate(model, (float)glfwGetTime() * glm::radians(60.0f), rotationAxes[i]);
 
-			unsigned int modelLoc = glGetUniformLocation(shaderProgram.getID(), "model");
+			int modelLoc = glGetUniformLocation(shaderProgram.getID(), "model");
 			glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
 
 			glm::mat4 view;
 			view = camera.getViewMatrix();
 
-			unsigned int viewLoc = glGetUniformLocation(shaderProgram.getID(), "view");
+		    int viewLoc = glGetUniformLocation(shaderProgram.getID(), "view");
 			glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(view));
 
 			glm::mat4 projection;
 			projection = glm::perspective(glm::radians(camera.getFOV()), screenWidth / screenHeight, 0.1f, 100.0f);
 			
-			unsigned int projectionLoc = glGetUniformLocation(shaderProgram.getID(), "projection");
+			int projectionLoc = glGetUniformLocation(shaderProgram.getID(), "projection");
 			glUniformMatrix4fv(projectionLoc, 1, GL_FALSE, glm::value_ptr(projection));
 
 			//glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
@@ -389,27 +389,27 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height)
 	glViewport(0, 0, width, height);
 }
 
-void mouse_callback(GLFWwindow* window, double xpos, double ypos)
+void mouse_callback(GLFWwindow* window, double xPos, double yPos)
 {
 	if (firstMouse)
 	{
-		lastMouseX = xpos;
-		lastMouseY = ypos;
+		lastMouseX = xPos;
+		lastMouseY = yPos;
 		firstMouse = false;	
 	}
 
-	float yawOffset = xpos - lastMouseX;
-	float pitchOffset = lastMouseY - ypos;
+	float yawOffset = xPos - lastMouseX;
+	float pitchOffset = lastMouseY - yPos;
 
-	lastMouseX = xpos;
-	lastMouseY = ypos;
+	lastMouseX = xPos;
+	lastMouseY = yPos;
 
 	camera.processMouseCursor(yawOffset, pitchOffset);
 }
 
-void scroll_callback(GLFWwindow* window, double xoffset, double yoffset)
+void scroll_callback(GLFWwindow* window, double xOffset, double yOffset)
 {
-	camera.processMouseScroll(yoffset);
+	camera.processMouseScroll(yOffset);
 }
 
 void processInput(GLFWwindow* window)
