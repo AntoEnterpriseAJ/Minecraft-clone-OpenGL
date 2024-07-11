@@ -5,6 +5,7 @@
 
 class VertexArray
 {
+public:
 	VertexArray();
 	~VertexArray();
 

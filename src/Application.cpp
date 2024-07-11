@@ -15,6 +15,8 @@
 #include "include/Camera.h"
 #include "include/VertexBuffer.h"
 #include "include/ElementBuffer.h"
+#include "include/VertexBufferLayout.h"
+#include "include/VertexArray.h"
 
 
 int initOpenGL();
@@ -162,19 +164,18 @@ int main()
 		-50.0f, -0.5f,  50.0f,  0.0f,  0.0f
 	};
 
-	unsigned int groundVAO;
-	glGenVertexArrays(1, &groundVAO);
-	glBindVertexArray(groundVAO);
+	VertexArray groundVA;
+	groundVA.bind();
 
 	VertexBuffer groundVB(groundVertices, sizeof(groundVertices));
+	groundVB.bind();
 
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
-	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
+	VertexBufferLayout groundLayout;
+	groundLayout.addLayout(GL_FLOAT, 3, GL_FALSE);
+	groundLayout.addLayout(GL_FLOAT, 2, GL_FALSE);
 
-	glEnableVertexAttribArray(0);
-	glEnableVertexAttribArray(1);
-
-	glBindVertexArray(0);
+	groundVA.addBuffer(groundVB, groundLayout);
+	groundVA.unbind();
 
 	// CUBES:
 	float cubesVertices[] = {
@@ -241,23 +242,19 @@ int main()
 		rotationAxes[i] = glm::vec3(randomf(0.0f, 0.8f), randomf(0.0f, 0.8f), randomf(0.0f, 0.8f));
 	}
 
-	// VAO (VERTEX ARRAY OBJECT):
-	unsigned int VAO;
-	glGenVertexArrays(1, &VAO);
-	glBindVertexArray(VAO);	
+	// CUBES:
+	VertexArray cubesVA;
+	cubesVA.bind();
 
-	// VBO (VERTEX BUFFER OBJECT):
-	VertexBuffer cubesVBO(cubesVertices, sizeof(cubesVertices));
-	cubesVBO.bind();
+	VertexBuffer cubesVO(cubesVertices, sizeof(cubesVertices));
+	cubesVO.bind();
 
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0); // positions
-	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float))); // tex coords
-	
-	glEnableVertexAttribArray(0);
-	glEnableVertexAttribArray(1);
+	VertexBufferLayout cubesLayout;
+	cubesLayout.addLayout(GL_FLOAT, 3, GL_FALSE);
+	cubesLayout.addLayout(GL_FLOAT, 2, GL_FALSE);
 
-	// UNBIND THE VAO 
-	glBindVertexArray(0);
+	cubesVA.addBuffer(cubesVO, cubesLayout);
+	cubesVA.unbind();
 
 	// RENDER MODE
 	glEnable(GL_DEPTH_TEST);
@@ -282,7 +279,7 @@ int main()
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		// GROUND
-		glBindVertexArray(groundVAO);
+		groundVA.bind();
 		glm::mat4 model(1.0f);
 		unsigned int modelLocation = glGetUniformLocation(shaderProgram.getID(), "model");
 		glUniformMatrix4fv(modelLocation, 1, GL_FALSE, glm::value_ptr(model));
@@ -297,7 +294,7 @@ int main()
 		glActiveTexture(GL_TEXTURE1);
 		glBindTexture(GL_TEXTURE_2D, texture2);
 
-		glBindVertexArray(VAO);
+		cubesVA.bind();
 			
 		float opacityIncrement = 0.05f;
 		if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS)
@@ -371,14 +368,9 @@ int main()
 	glDeleteTextures(1, &texture2);
 	glDeleteTextures(1, &texture3);
 
-	glDeleteVertexArrays(1, &VAO);
-	glDeleteVertexArrays(1, &groundVAO);
-	//glDeleteBuffers(1, &EBO);
-
 	glfwTerminate();
 	return 0;
 }
-
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height)
 {
