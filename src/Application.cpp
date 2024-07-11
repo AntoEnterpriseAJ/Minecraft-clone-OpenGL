@@ -244,14 +244,15 @@ int main()
 	// VAO (VERTEX ARRAY OBJECT):
 	unsigned int VAO;
 	glGenVertexArrays(1, &VAO);
-	glBindVertexArray(VAO);
+	glBindVertexArray(VAO);	
 
 	// VBO (VERTEX BUFFER OBJECT):
 	VertexBuffer cubesVBO(cubesVertices, sizeof(cubesVertices));
+	cubesVBO.bind();
 
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0); // positions
 	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float))); // tex coords
-
+	
 	glEnableVertexAttribArray(0);
 	glEnableVertexAttribArray(1);
 

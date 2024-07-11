@@ -148,6 +148,7 @@
     <ClInclude Include="src\include\ElementBuffer.h" />
     <ClInclude Include="src\include\Shader.h" />
     <ClInclude Include="src\include\VertexBuffer.h" />
+    <ClInclude Include="src\include\VertexBufferLayout.h" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="C:\Users\Anto\Downloads\img1.jpg" />

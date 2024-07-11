@@ -50,6 +50,9 @@
     <ClInclude Include="src\include\ElementBuffer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\include\VertexBufferLayout.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="C:\Users\Anto\Downloads\img1.jpg">
