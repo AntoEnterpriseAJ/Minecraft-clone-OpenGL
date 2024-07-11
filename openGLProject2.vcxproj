@@ -141,12 +141,14 @@
     <ClCompile Include="src\ElementBuffer.cpp" />
     <ClCompile Include="src\initOpenGL.cpp" />
     <ClCompile Include="src\Shader.cpp" />
+    <ClCompile Include="src\VertexArray.cpp" />
     <ClCompile Include="src\VertexBuffer.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\include\Camera.h" />
     <ClInclude Include="src\include\ElementBuffer.h" />
     <ClInclude Include="src\include\Shader.h" />
+    <ClInclude Include="src\include\VertexArray.h" />
     <ClInclude Include="src\include\VertexBuffer.h" />
     <ClInclude Include="src\include\VertexBufferLayout.h" />
   </ItemGroup>
