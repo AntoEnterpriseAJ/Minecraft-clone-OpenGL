@@ -4,7 +4,7 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
-namespace DEFAULT
+namespace CameraDefaults
 {
 	constexpr float yaw = -90.0f;
 	constexpr float pitch = 0.0f;
@@ -34,7 +34,7 @@ public:
 	void processMouseCursor(double yawOffset, double pitchOffset);
 	float getFOV() const;
 
-	explicit Camera(glm::vec3 pos, glm::vec3 front = { 0.0f, 0.0f, -1.0f }, glm::vec3 up = { 0.0f, 1.0f, 0.0f }, float yaw = DEFAULT::yaw, float pitch = DEFAULT::pitch);
+	explicit Camera(glm::vec3 pos, glm::vec3 front = { 0.0f, 0.0f, -1.0f }, glm::vec3 up = { 0.0f, 1.0f, 0.0f }, float yaw = CameraDefaults::yaw, float pitch = CameraDefaults::pitch);
 
 private:
 	void updateVectors();

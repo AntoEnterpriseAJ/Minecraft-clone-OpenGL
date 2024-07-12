@@ -137,7 +137,9 @@
   <ItemGroup>
     <ClCompile Include="Dependencies\GLAD\src\glad.c" />
     <ClCompile Include="src\Application.cpp" />
+    <ClCompile Include="src\Block.cpp" />
     <ClCompile Include="src\Camera.cpp" />
+    <ClCompile Include="src\Chunk.cpp" />
     <ClCompile Include="src\ElementBuffer.cpp" />
     <ClCompile Include="src\initOpenGL.cpp" />
     <ClCompile Include="src\Shader.cpp" />
@@ -145,7 +147,9 @@
     <ClCompile Include="src\VertexBuffer.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\include\Block.h" />
     <ClInclude Include="src\include\Camera.h" />
+    <ClInclude Include="src\include\Chunk.h" />
     <ClInclude Include="src\include\ElementBuffer.h" />
     <ClInclude Include="src\include\Shader.h" />
     <ClInclude Include="src\include\VertexArray.h" />
@@ -154,6 +158,12 @@
   </ItemGroup>
   <ItemGroup>
     <Image Include="C:\Users\Anto\Downloads\img1.jpg" />
+    <Image Include="res\images\awesomeface.png" />
+    <Image Include="res\images\grass.jpg" />
+    <Image Include="res\images\ground.jpg" />
+    <Image Include="res\images\highResBox.jpg" />
+    <Image Include="res\images\img1.jpg" />
+    <Image Include="res\images\img2.jpg" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

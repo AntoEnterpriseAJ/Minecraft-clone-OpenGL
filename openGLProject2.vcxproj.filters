@@ -39,6 +39,12 @@
     <ClCompile Include="src\VertexArray.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\Chunk.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Block.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\include\Shader.h">
@@ -59,9 +65,33 @@
     <ClInclude Include="src\include\VertexBufferLayout.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\include\Chunk.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\include\Block.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="C:\Users\Anto\Downloads\img1.jpg">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\images\awesomeface.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\images\grass.jpg">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\images\ground.jpg">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\images\highResBox.jpg">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\images\img1.jpg">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\images\img2.jpg">
       <Filter>Resource Files</Filter>
     </Image>
   </ItemGroup>

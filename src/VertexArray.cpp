@@ -35,3 +35,8 @@ void VertexArray::unbind() const
 {
 	glBindVertexArray(0);
 }
+
+unsigned int VertexArray::getID() const
+{
+	return m_ID;
+}

@@ -17,6 +17,7 @@
 #include "include/ElementBuffer.h"
 #include "include/VertexBufferLayout.h"
 #include "include/VertexArray.h"
+#include "include/Chunk.h"
 
 
 int initOpenGL();
@@ -87,7 +88,7 @@ int main()
 
 	// LOAD IMAGE1:
 	int width, height, nrChannels;
-	unsigned char* imgData1 = stbi_load("res/images/highResBox.jpg", &width, &height, &nrChannels, 0);
+	unsigned char* imgData1 = stbi_load("res/images/grass.jpg", &width, &height, &nrChannels, 0);
 	if (!imgData1)
 	{
 		std::cout << "Failed to load texture\n";
@@ -103,7 +104,7 @@ int main()
 
 	// LOAD IMAGE3:
 	int width3, height3, nrChannels3;
-	unsigned char* imgData3 = stbi_load("res/images/ground.jpg", &width3, &height3, &nrChannels3, 0);
+	unsigned char* imgData3 = stbi_load("res/images/grass.jpg", &width3, &height3, &nrChannels3, 0);
 	if (!imgData3)
 	{
 		std::cout << "Failed to load texture\n";
@@ -269,6 +270,9 @@ int main()
 	float currentOpacity = 0.0f;
 	glUniform1f(opacityLocation, currentOpacity);
 
+	Chunk chunk;
+	bool wireframe = false;
+
 	/* Loop until the user closes the window */
 	while (!glfwWindowShouldClose(window))
 	{
@@ -277,6 +281,18 @@ int main()
 		/* Render here */
 		glClearColor(0.2f, 0.5f, 0.5f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+		// SWITCH RENDER MODE
+		if (glfwGetKey(window, GLFW_KEY_F) == GLFW_PRESS && wireframe)
+		{
+			glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+			wireframe = false;
+		}
+		else if (glfwGetKey(window, GLFW_KEY_F) == GLFW_PRESS && !wireframe)
+		{
+			glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+			wireframe = true;
+		}
 
 		// GROUND
 		groundVA.bind();
@@ -287,6 +303,9 @@ int main()
 		glBindTexture(GL_TEXTURE_2D, texture3);
 
 		glDrawArrays(GL_TRIANGLES, 0, 6);
+
+		// CHUNK
+		chunk.render();
 
 		// CUBES
 		glActiveTexture(GL_TEXTURE0);
@@ -334,6 +353,7 @@ int main()
 		for (int i = 0; i < cubePosCount; ++i)
 		{
 			glm::mat4 model = glm::mat4(1.0f);
+			model = glm::scale(model, glm::vec3(0.1f, 0.1f, 0.1f));
 			model = glm::translate(model, cubePositions[i]);
 
 			model = glm::rotate(model, (float)glfwGetTime() * glm::radians(60.0f), rotationAxes[i]);

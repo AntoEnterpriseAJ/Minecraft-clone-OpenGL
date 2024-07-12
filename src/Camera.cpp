@@ -48,10 +48,10 @@ void Camera::processMouseScroll(float yOffset)
 {
 	m_FOV -= yOffset * m_zoomSensitivity;
 
-	if (m_FOV > DEFAULT::FOVUpperBound)
-		m_FOV = DEFAULT::FOVUpperBound;
-	if (m_FOV < DEFAULT::FOVLowerBound)
-		m_FOV = DEFAULT::FOVLowerBound;
+	if (m_FOV > CameraDefaults::FOVUpperBound)
+		m_FOV = CameraDefaults::FOVUpperBound;
+	if (m_FOV < CameraDefaults::FOVLowerBound)
+		m_FOV = CameraDefaults::FOVLowerBound;
 }
 
 void Camera::processMouseCursor(double yawOffset, double pitchOffset)
@@ -59,10 +59,10 @@ void Camera::processMouseCursor(double yawOffset, double pitchOffset)
 	m_yaw += yawOffset * m_mouseSensitivity;
 	m_pitch += pitchOffset * m_mouseSensitivity;
 
-	if (m_pitch >= DEFAULT::pitchUpperBound)
-		m_pitch = DEFAULT::pitchUpperBound;
-	if (m_pitch <= -DEFAULT::pitchUpperBound)
-		m_pitch = -DEFAULT::pitchUpperBound;
+	if (m_pitch >= CameraDefaults::pitchUpperBound)
+		m_pitch = CameraDefaults::pitchUpperBound;
+	if (m_pitch <= -CameraDefaults::pitchUpperBound)
+		m_pitch = -CameraDefaults::pitchUpperBound;
 
 	updateVectors();
 }
@@ -73,8 +73,8 @@ float Camera::getFOV() const
 }
 
 Camera::Camera(glm::vec3 pos, glm::vec3 front, glm::vec3 up, float yaw, float pitch)
-	: m_position{pos}, m_front{front}, m_up{up}, m_worldUp{up}, m_FOV{DEFAULT::FOV}, m_yaw{yaw}, m_pitch{pitch},
-	  m_speed{DEFAULT::speed}, m_mouseSensitivity{DEFAULT::mouseSensitivity}, m_zoomSensitivity{DEFAULT::zoomSensitivity}
+	: m_position{pos}, m_front{front}, m_up{up}, m_worldUp{up}, m_FOV{CameraDefaults::FOV}, m_yaw{yaw}, m_pitch{pitch},
+	  m_speed{CameraDefaults::speed}, m_mouseSensitivity{CameraDefaults::mouseSensitivity}, m_zoomSensitivity{CameraDefaults::zoomSensitivity}
 {
 	updateVectors();
 }
