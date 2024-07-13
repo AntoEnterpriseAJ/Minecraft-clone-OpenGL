@@ -6,9 +6,9 @@
 class World
 {
 public:
-	World(unsigned int size);
-
 	void render(const Shader& shaderProgram) const;
+
+	World(unsigned int size);
 private:
 	std::vector<std::vector<Chunk>> m_chunks;
 	unsigned int m_size;

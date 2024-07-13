@@ -15,11 +15,12 @@ public:
 		width = 16,
 		height = 16,
 	};
-	void render() const;
 
-	Chunk(float worldPositionX = 0, float worldPositionZ = 0);
+	void render() const;
 	float getWorldPositionX() const;
 	float getWorldPositionZ() const;
+
+	Chunk(float worldPositionX = 0, float worldPositionZ = 0);
 private:
 	void generateMesh(float worldPositionX, float worldPositionZ);
 private:

@@ -35,7 +35,6 @@ public:
 	float getFOV() const;
 
 	explicit Camera(glm::vec3 pos, glm::vec3 front = { 0.0f, 0.0f, -1.0f }, glm::vec3 up = { 0.0f, 1.0f, 0.0f }, float yaw = CameraDefaults::yaw, float pitch = CameraDefaults::pitch);
-
 private:
 	void updateVectors();
 private:
@@ -46,10 +45,8 @@ private:
 	glm::vec3 m_worldUp;
 
 	float m_FOV;
-
 	float m_yaw;
 	float m_pitch;
-
 	float m_speed;
 	float m_mouseSensitivity;
 	float m_zoomSensitivity;
