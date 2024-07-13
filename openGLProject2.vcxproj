@@ -145,6 +145,7 @@
     <ClCompile Include="src\Shader.cpp" />
     <ClCompile Include="src\VertexArray.cpp" />
     <ClCompile Include="src\VertexBuffer.cpp" />
+    <ClCompile Include="src\World.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\include\Block.h" />
@@ -155,6 +156,7 @@
     <ClInclude Include="src\include\VertexArray.h" />
     <ClInclude Include="src\include\VertexBuffer.h" />
     <ClInclude Include="src\include\VertexBufferLayout.h" />
+    <ClInclude Include="src\include\World.h" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="C:\Users\Anto\Downloads\img1.jpg" />
@@ -164,6 +166,10 @@
     <Image Include="res\images\highResBox.jpg" />
     <Image Include="res\images\img1.jpg" />
     <Image Include="res\images\img2.jpg" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="res\shaders\fragment.frag" />
+    <None Include="res\shaders\vertex.vert" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

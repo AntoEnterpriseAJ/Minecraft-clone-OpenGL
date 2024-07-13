@@ -9,20 +9,23 @@
 class Chunk
 {
 public:
-	void render() const;
-
-	Chunk();
-private:
-	void generateMesh();
-private:
 	enum Size
 	{
 		length = 16,
 		width = 16,
-		height = 64,
+		height = 16,
 	};
+	void render() const;
+
+	Chunk(float worldPositionX = 0, float worldPositionZ = 0);
+	float getWorldPositionX() const;
+	float getWorldPositionZ() const;
+private:
+	void generateMesh(float worldPositionX, float worldPositionZ);
 private:
 	std::vector<std::vector<std::vector<Block>>> m_blocks;
+	float m_worldPositionX;
+	float m_worldPositionZ;
 	VertexArray m_VAO;
 	VertexBuffer m_VBO;
 };

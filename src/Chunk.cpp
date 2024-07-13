@@ -9,8 +9,8 @@ void Chunk::render() const
     m_VAO.unbind();
 }
 
-Chunk::Chunk()
-	: m_VAO{}, m_VBO{}
+Chunk::Chunk(float worldPositionX, float worldPositionZ)
+    : m_VAO{}, m_VBO{}
 {
     m_blocks.resize(Size::length, std::vector<std::vector<Block>>(Size::height, std::vector<Block>(Size::width)));
     for (int x = 0; x < Size::length; ++x)
@@ -19,15 +19,28 @@ Chunk::Chunk()
         {
             for (int z = 0; z < Size::width; ++z)
             {
-                m_blocks[x][y][z] = Block(Block::Type::GRASS, 1, 1, 1);
+                float blockPosX = worldPositionX + x;
+                float blockPosY = y;
+                float blockPosZ = worldPositionZ + z;
+                m_blocks[x][y][z] = Block(Block::Type::GRASS, blockPosX, blockPosY, blockPosZ);
             }
         }
     }
 
-    generateMesh();
+    generateMesh(worldPositionX, worldPositionZ);
 }
 
-void Chunk::generateMesh()
+float Chunk::getWorldPositionX() const
+{
+    return m_worldPositionX;
+}
+
+float Chunk::getWorldPositionZ() const
+{
+    return m_worldPositionZ;
+}
+
+void Chunk::generateMesh(float worldPositionX, float worldPositionZ)
 {
     std::vector<float> vertices;
 
@@ -38,15 +51,7 @@ void Chunk::generateMesh()
             for (int z = 0; z < Size::width; ++z)
             {
                 std::vector<float> currentVertices = m_blocks[x][y][z].getVertices();
-                for (int i = 0; i < currentVertices.size(); i += 5)
-                {
-                    vertices.push_back(currentVertices[i] + x);
-                    vertices.push_back(currentVertices[i + 1] + y);
-                    vertices.push_back(currentVertices[i + 2] + z);
-
-                    vertices.push_back(currentVertices[i + 3]);
-                    vertices.push_back(currentVertices[i + 4]);
-                }
+                vertices.insert(vertices.end(), currentVertices.begin(), currentVertices.end());
             }
         }
     }
@@ -59,4 +64,6 @@ void Chunk::generateMesh()
     meshLayout.addLayout(GL_FLOAT, 2, GL_FALSE);
 
     m_VAO.addBuffer(m_VBO, meshLayout);
+    m_VAO.unbind();
+    m_VBO.unbind();
 }
