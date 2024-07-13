@@ -12,12 +12,12 @@ public:
 		GRASS	= 1,
 	};
 	
-	Block(Type type = Type::GRASS, float lengthOffset = 1, float widthOffset = 1, float heightOffset = 1);
 	Type getType() const;
 	std::vector<float> getVertices() const;
-	//TYPES ARE FUCKED
+
+	Block(Type type = Type::GRASS, float lengthOffset = 1, float widthOffset = 1, float heightOffset = 1);
 private:
-	float m_length, m_width, m_height;
+	float m_lengthOffset, m_widthOffset, m_heightOffset;
 	std::vector<float> m_vertices;
 	Type m_type;
 };

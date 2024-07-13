@@ -30,21 +30,22 @@ void World::render(const Shader& shaderProgram) const
     {
         for (int x = 0; x < m_chunks[z].size(); ++x)
         {
-            // Calculate the model matrix for each chunk
-            glm::mat4 model = glm::mat4(1.0f);
+            
+            glEnable(GL_CULL_FACE);      // Enable face culling
+            glFrontFace(GL_CW);          // Set front face to clockwise
+            glCullFace(GL_BACK);         // Specify culling of back faces
 
             float xOffset = -(m_size / 2.0f) * Chunk::Size::length;
             float yOffset = -(m_size / 2.0f) * Chunk::Size::width;
+
+            glm::mat4 model = glm::mat4(1.0f);
             glm::vec3 translationVector = glm::vec3(xOffset, 1.0f, yOffset);
             model = glm::translate(model, translationVector);
 
-            int modelLocation = glGetUniformLocation(shaderProgram.getID(), "model");
-            if (modelLocation == -1) {
-                std::cerr << "Warning: Unable to find uniform location for 'model'" << std::endl;
-            }
-            glUniformMatrix4fv(modelLocation, 1, GL_FALSE, glm::value_ptr(model));
+            shaderProgram.setMat4("model", model);
 
             m_chunks[z][x].render();
+            glDisable(GL_CULL_FACE);
         }
     }
 }

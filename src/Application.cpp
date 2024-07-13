@@ -267,9 +267,8 @@ int main()
 	shaderProgram.setInt("ourTexture", 0);
 	shaderProgram.setInt("ourTexture2", 1);
 
-	int opacityLocation = glGetUniformLocation(shaderProgram.getID(), "opacity");
 	float currentOpacity = 0.0f;
-	glUniform1f(opacityLocation, currentOpacity);
+	shaderProgram.setFloat("opacity", currentOpacity);
 
 	bool wireframe = false;
 	World world(10);
@@ -312,25 +311,21 @@ int main()
 			camera.processKeyboard(Camera::LEFT, deltaTime);
 		}
 
-		// SET VIEW AND PROJECTION MATRICES
+		// SET MODEL, VIEW AND PROJECTION MATRICES
+		glm::mat4 model = glm::mat4(1.0f);
 		glm::mat4 view = camera.getViewMatrix();
 		glm::mat4 projection = glm::perspective(glm::radians(camera.getFOV()), screenWidth / screenHeight, 0.1f, 100.0f);
 
 		shaderProgram.use();
-		int viewLoc = glGetUniformLocation(shaderProgram.getID(), "view");
-		glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(view));
-    
-		int projectionLoc = glGetUniformLocation(shaderProgram.getID(), "projection");
-		glUniformMatrix4fv(projectionLoc, 1, GL_FALSE, glm::value_ptr(projection));
+		shaderProgram.setMat4("model", model);
+		shaderProgram.setMat4("view", view);
+		shaderProgram.setMat4("projection", projection);
 
 		// RENDER THE WORLD
 		world.render(shaderProgram);
 
 		// RENDER GROUND
 		groundVA.bind();
-		glm::mat4 model = glm::mat4(1.0f);
-		unsigned int modelLocation = glGetUniformLocation(shaderProgram.getID(), "model");
-		glUniformMatrix4fv(modelLocation, 1, GL_FALSE, glm::value_ptr(model));
 		glActiveTexture(GL_TEXTURE0);
 		glBindTexture(GL_TEXTURE_2D, texture3);
 		glDrawArrays(GL_TRIANGLES, 0, 6);
@@ -347,23 +342,24 @@ int main()
 		if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS)
 		{
 			currentOpacity = ((currentOpacity + opacityIncrement) < (1.0f)) ? (currentOpacity + opacityIncrement) : (1.0f);
-			glUniform1f(opacityLocation, currentOpacity);
+			shaderProgram.setFloat("opacity", currentOpacity);
 		}
 		else if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS)
 		{
 			currentOpacity = ((currentOpacity - opacityIncrement) > (0.0f)) ? (currentOpacity - opacityIncrement) : (0.0f);
-			glUniform1f(opacityLocation, currentOpacity);
+			shaderProgram.setFloat("opacity", currentOpacity);
 		}
 
 		for (int i = 0; i < cubePosCount; ++i)
 		{
+			cubePositions[i].y = 20.0;
+
 			model = glm::mat4(1.0f);
-			model = glm::scale(model, glm::vec3(0.1f, 0.1f, 0.1f));
+			model = glm::scale(model, glm::vec3(1.1f, 1.1f, 1.1f));
 			model = glm::translate(model, cubePositions[i]);
-
-			// model = glm::rotate(model, (float)glfwGetTime() * glm::radians(60.0f), rotationAxes[i]);
-
-			glUniformMatrix4fv(modelLocation, 1, GL_FALSE, glm::value_ptr(model));
+			model = glm::rotate(model, (float)glfwGetTime() * glm::radians(60.0f), rotationAxes[i]);
+			
+			shaderProgram.setMat4("model", model);
 
 			glDrawArrays(GL_TRIANGLES, 0, 36);
 		}

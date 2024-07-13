@@ -15,7 +15,7 @@ const char* Shader::readFromPath(const char* path)
 	fin.close();
 	
 	std::string source = ss.str();
-	char* shaderSource = new char[source.size() + 1]; // +1 for null terminator
+	char* shaderSource = new char[source.size() + 1];
 
 	// STRCPY IS UNSAFE
 	for (int i = 0; i <= source.size(); i++)
@@ -41,7 +41,6 @@ Shader::Shader(const char* vertexPath, const char* fragmentPath)
 	glShaderSource(vertexShader, 1, &vertexSource, nullptr);
 	glCompileShader(vertexShader);
 
-	// ERROR HANDLING:
 	int status;
 	glGetShaderiv(vertexShader, GL_COMPILE_STATUS, &status);
 
@@ -59,7 +58,6 @@ Shader::Shader(const char* vertexPath, const char* fragmentPath)
 	glShaderSource(fragmentShader, 1, &fragmentSource, nullptr);
 	glCompileShader(fragmentShader);
 
-	// ERROR HANDLING:
 	glGetShaderiv(fragmentShader, GL_COMPILE_STATUS, &status);
 
 	if (!status)
@@ -72,6 +70,7 @@ Shader::Shader(const char* vertexPath, const char* fragmentPath)
 		glDeleteProgram(m_ID);
 	}
 
+	// BUILD SHADER:
 	glAttachShader(m_ID, vertexShader);
 	glAttachShader(m_ID, fragmentShader);
 	glLinkProgram(m_ID);
@@ -99,37 +98,86 @@ int Shader::getUniformLocation(const std::string& name) const
 
 void Shader::setBool(const std::string& name, bool value) const
 {	
-	glUniform1i(getUniformLocation(name), value);
+	int location = getUniformLocation(name);
+	if (location == -1)
+	{
+		std::cout << "WARNING: no uniform " << name << " found" << std::endl;
+		return;
+	}
+
+	glUniform1i(location, value);
 }
 
 void Shader::setInt(const std::string& name, int value) const
 {
-	glUniform1i(getUniformLocation(name), value);
+	int location = getUniformLocation(name);
+	if (location == -1)
+	{
+		std::cout << "WARNING: no uniform " << name << " found" << std::endl;
+		return;
+	}
+
+	glUniform1i(location, value);
 }
 
 void Shader::setFloat(const std::string& name, float value) const
 {
-	glUniform1f(getUniformLocation(name), value);
+	int location = getUniformLocation(name);
+	if (location == -1)
+	{
+		std::cout << "WARNING: no uniform " << name << " found" << std::endl;
+		return;
+	}
+
+	glUniform1f(location, value);
 }
 
 void Shader::setVec4(const std::string& name, float x, float y, float z, float w) const
 {
-	glUniform4f(getUniformLocation(name), x, y, z, w);
+	int location = getUniformLocation(name);
+	if (location == -1)
+	{
+		std::cout << "WARNING: no uniform " << name << " found" << std::endl;
+		return;
+	}
+
+	glUniform4f(location, x, y, z, w);
 }
 
 void Shader::setVec3(const std::string& name, float x, float y, float z) const
 {
-	glUniform3f(getUniformLocation(name), x, y, z);
+	int location = getUniformLocation(name);
+	if (location == -1)
+	{
+		std::cout << "WARNING: no uniform " << name << " found" << std::endl;
+		return;
+	}
+
+	glUniform3f(location, x, y, z);
 }
 
 void Shader::setVec4(const std::string& name, float value) const
 {
-	glUniform4f(getUniformLocation(name), value, value, value, value);
+	int location = getUniformLocation(name);
+	if (location == -1)
+	{
+		std::cout << "WARNING: no uniform " << name << " found" << std::endl;
+		return;
+	}
+
+	glUniform4f(location, value, value, value, value);
 }
 
 void Shader::setMat4(const std::string& name, const glm::mat4& mat) const
 {
-	glUniformMatrix4fv(getUniformLocation(name), 1, GL_FALSE, glm::value_ptr(mat));
+	int location = getUniformLocation(name);
+	if (location == -1)
+	{
+		std::cout << "WARNING: no uniform " << name << " found" << std::endl;
+		return;
+	}
+
+	glUniformMatrix4fv(location, 1, GL_FALSE, glm::value_ptr(mat));
 }
 
 unsigned int Shader::getID() const

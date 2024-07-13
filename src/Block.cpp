@@ -1,7 +1,7 @@
 #include "include/Block.h"
 
-Block::Block(Type type, float length, float width, float height)
-    : m_type{type}, m_length{length}, m_width{width}, m_height{height}
+Block::Block(Type type, float lengthOffset, float widthOffset, float heightOffset)
+    : m_type{type}, m_lengthOffset{lengthOffset}, m_widthOffset{widthOffset}, m_heightOffset{heightOffset}
 {
     std::vector<float> cubeVertices = {
         // positions           // tex coords
@@ -51,11 +51,11 @@ Block::Block(Type type, float length, float width, float height)
     for (int i = 0; i < cubeVertices.size(); ++i)
     {
         if (i % 5 == 0)
-            cubeVertices[i] += m_length;
+            cubeVertices[i] += m_lengthOffset;
         if (i % 5 == 1)
-            cubeVertices[i] += m_width;
+            cubeVertices[i] += m_widthOffset;
         if (i % 5 == 2)
-            cubeVertices[i] += m_height;
+            cubeVertices[i] += m_heightOffset;
     }
 
     m_vertices.resize(cubeVertices.size());
