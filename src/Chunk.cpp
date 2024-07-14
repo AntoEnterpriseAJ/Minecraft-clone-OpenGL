@@ -9,33 +9,34 @@ void Chunk::render() const
     m_VAO.unbind();
 }
 
-Chunk::Chunk(float worldPositionX, float worldPositionZ)
+Chunk::Chunk(float localPositionX, float localPositionZ, const std::vector<std::vector<float>>& heightMap)
     : m_VAO{}, m_VBO{}
 {
     m_blocks.resize(Size::length, std::vector<std::vector<Block>>(Size::height, std::vector<Block>(Size::width)));
     for (int x = 0; x < Size::length; ++x)
     {
-        for (int y = 0; y < Size::height; ++y)
+        for (int z = 0; z < Size::width; ++z)
         {
-            for (int z = 0; z < Size::width; ++z)
+            int height = (static_cast<int>(heightMap[x][z])) < (Size::height) ? (static_cast<int>(heightMap[x][z])) : (Size::height);
+            for (int y = 0; y < height; ++y)
             {
-                float blockPosX = worldPositionX + x;
+                float blockPosX = localPositionX + x;
                 float blockPosY = y;
-                float blockPosZ = worldPositionZ + z;
-                m_blocks[x][y][z] = Block(Block::Type::GRASS, blockPosX, blockPosY, blockPosZ);
+                float blockPosZ = localPositionZ + z;
+                m_blocks[x][z][y] = Block(Block::Type::GRASS, blockPosX, blockPosY, blockPosZ);
             }
         }
     }
 
-    generateMesh(worldPositionX, worldPositionZ);
+    generateMesh(localPositionX, localPositionZ);
 }
 
-float Chunk::getWorldPositionX() const
+float Chunk::getLocalPositionX() const
 {
     return m_worldPositionX;
 }
 
-float Chunk::getWorldPositionZ() const
+float Chunk::getLocalPositionZ() const
 {
     return m_worldPositionZ;
 }

@@ -17,10 +17,10 @@ public:
 	};
 
 	void render() const;
-	float getWorldPositionX() const;
-	float getWorldPositionZ() const;
+	float getLocalPositionX() const;
+	float getLocalPositionZ() const;
 
-	Chunk(float worldPositionX = 0, float worldPositionZ = 0);
+	Chunk(float localPositionX, float localPositionZ, const std::vector<std::vector<float>>& heightMap);
 private:
 	void generateMesh(float worldPositionX, float worldPositionZ);
 private:

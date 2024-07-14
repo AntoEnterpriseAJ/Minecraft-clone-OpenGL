@@ -7,6 +7,7 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
+#include <glm/gtc/noise.hpp>
 
 #include <string>
 #include <iostream>
@@ -264,14 +265,14 @@ int main()
 
 	// SHADER:
 	shaderProgram.use();
-	shaderProgram.setInt("ourTexture", 0);
+	shaderProgram.setInt("ourTexture1", 0);
 	shaderProgram.setInt("ourTexture2", 1);
 
-	float currentOpacity = 0.0f;
+	float currentOpacity = 0.4f;
 	shaderProgram.setFloat("opacity", currentOpacity);
 
 	bool wireframe = false;
-	World world(10);
+	World world(8);
 
 	/* Loop until the user closes the window */
 	while (!glfwWindowShouldClose(window))
@@ -346,7 +347,7 @@ int main()
 		}
 		else if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS)
 		{
-			currentOpacity = ((currentOpacity - opacityIncrement) > (0.0f)) ? (currentOpacity - opacityIncrement) : (0.0f);
+			currentOpacity = ((currentOpacity - opacityIncrement) > (0.4f)) ? (currentOpacity - opacityIncrement) : (0.4f);
 			shaderProgram.setFloat("opacity", currentOpacity);
 		}
 

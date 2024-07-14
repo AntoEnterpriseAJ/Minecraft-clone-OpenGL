@@ -16,7 +16,7 @@ public:
 	std::vector<float> getVertices() const;
 
 	//TODO: QUESTIONABLE TYPE NAMING
-	Block(Type type = Type::GRASS, float lengthOffset = 1, float widthOffset = 1, float heightOffset = 1);
+	Block(Type type = Type::GRASS, float lengthOffset = 0, float widthOffset = 0, float heightOffset = 0);
 private:
 	float m_lengthOffset, m_widthOffset, m_heightOffset;
 	std::vector<float> m_vertices;
