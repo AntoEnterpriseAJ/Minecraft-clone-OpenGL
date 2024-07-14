@@ -28,6 +28,7 @@ float randomf(float lowerBound, float upperBound);
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void mouse_callback(GLFWwindow* window, double xPos, double yPos);
 void scroll_callback(GLFWwindow* window, double xOffset, double yOffset);
+void printCameraStatus();
 
 // SETTINGS
 constexpr float screenWidth = 800.0f;
@@ -230,18 +231,22 @@ int main()
 		if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
 		{
 			camera.processKeyboard(Camera::FORWARD, deltaTime);
+			printCameraStatus();
 		}
 		if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
 		{
 			camera.processKeyboard(Camera::BACKWARD, deltaTime);
+			printCameraStatus();
 		}
 		if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
 		{
 			camera.processKeyboard(Camera::RIGHT, deltaTime);
+			printCameraStatus();
 		}
 		if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
 		{
 			camera.processKeyboard(Camera::LEFT, deltaTime);
+			printCameraStatus();
 		}
 
 		// SET MODEL, VIEW AND PROJECTION MATRICES
@@ -328,6 +333,12 @@ void mouse_callback(GLFWwindow* window, double xPos, double yPos)
 	lastMouseY = yPos;
 
 	camera.processMouseCursor(yawOffset, pitchOffset);
+}
+
+void printCameraStatus()
+{
+	std::cout << "Camera at positon: " << "(" << camera.getPositionX() << ", " 
+	<< camera.getPositionY() << ", " << camera.getPositionY() << ")" << std::endl;
 }
 
 void scroll_callback(GLFWwindow* window, double xOffset, double yOffset)

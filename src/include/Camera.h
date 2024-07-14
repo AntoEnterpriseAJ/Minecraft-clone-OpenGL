@@ -34,8 +34,11 @@ public:
 	void processKeyboard(CameraMovement direction, float deltaTime);
 	void processMouseScroll(float yOffset);
 	void processMouseCursor(double yawOffset, double pitchOffset);
-	float getFOV() const;
 
+	float getFOV() const;
+	float getPositionX() const;
+	float getPositionY() const;
+	float getPositionZ() const;
 private:
 	void updateVectors();
 private:
