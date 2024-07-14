@@ -77,50 +77,16 @@ int main()
 	glfwSetCursorPosCallback(window, mouse_callback);
 	glfwSetScrollCallback(window, scroll_callback);
 
-	// CODE:
-	
 	// SHADER:
 	const char* vertexShaderPath = "res/shaders/vertex.vert";
 	const char* fragmentShaderPath = "res/shaders/fragment.frag";
 	
 	Shader shaderProgram(vertexShaderPath, fragmentShaderPath);
 
-	//STB
-	stbi_set_flip_vertically_on_load(true);
-
-	// LOAD IMAGE1:
-	int width, height, nrChannels;
-	unsigned char* imgData1 = stbi_load("res/images/grass.jpg", &width, &height, &nrChannels, 0);
-	if (!imgData1)
-	{
-		std::cout << "Failed to load texture\n";
-	}
-
-	// LOAD IMAGE2:
-	int width2, height2, nrChannels2;
-	unsigned char* imgData2 = stbi_load("res/images/img1.jpg", &width2, &height2, &nrChannels2, 0);
-	if (!imgData2)
-	{
-		std::cout << "Failed to load texture\n";
-	}
-
-	// LOAD IMAGE3:
-	int width3, height3, nrChannels3;
-	unsigned char* imgData3 = stbi_load("res/images/grass.jpg", &width3, &height3, &nrChannels3, 0);
-	if (!imgData3)
-	{
-		std::cout << "Failed to load texture\n";
-	}
-
 	// TEXTURES:
-	Texture texture1(imgData1, width, height);
-	Texture texture2(imgData2, width2, height2);
-	Texture texture3(imgData3, width3, height3);
-
-	// FREE THE IMAGES MEMORY:
-	stbi_image_free(imgData1);
-	stbi_image_free(imgData2);
-	stbi_image_free(imgData3);
+	Texture texture1("res/images/grass.jpg");
+	Texture texture2("res/images/img1.jpg");
+	Texture texture3("res/images/grass.jpg");
 
 	// GROUND
 	float groundVertices[] = {

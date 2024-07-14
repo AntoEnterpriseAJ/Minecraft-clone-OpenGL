@@ -1,9 +1,10 @@
 #pragma once
+#include <string>
 
 class Texture
 {
 public:
-	Texture(unsigned char* image, int width, int height);
+	Texture(const std::string& imagePath);
 
 	void bind() const;
 	void unbind() const;
