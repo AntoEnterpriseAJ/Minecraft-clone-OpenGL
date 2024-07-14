@@ -20,7 +20,7 @@
 #include "include/VertexArray.h"
 #include "include/Chunk.h"
 #include "include/World.h"
-
+#include "include/Texture.h"
 
 int initOpenGL();
 void processInput(GLFWwindow* window);
@@ -112,44 +112,10 @@ int main()
 		std::cout << "Failed to load texture\n";
 	}
 
-	// CREATE TEXTURE1:
-	unsigned int texture;
-	glGenTextures(1, &texture);
-	glBindTexture(GL_TEXTURE_2D, texture);
-
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-	
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, imgData1);
-	glGenerateMipmap(GL_TEXTURE_2D);
-
-	// CREATE TEXTURE2:
-	unsigned int texture2;
-	glGenTextures(1, &texture2);
-	glBindTexture(GL_TEXTURE_2D, texture2);
-
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width2, height2, 0, GL_RGB, GL_UNSIGNED_BYTE, imgData2);
-	glGenerateMipmap(GL_TEXTURE_2D);
-
-	// CREATE TEXTURE3:
-	unsigned int texture3;
-	glGenTextures(1, &texture3);
-	glBindTexture(GL_TEXTURE_2D, texture3);
-
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_MIRRORED_REPEAT);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_MIRRORED_REPEAT);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width3, height3, 0, GL_RGB, GL_UNSIGNED_BYTE, imgData3);
-	glGenerateMipmap(GL_TEXTURE_2D);
+	// TEXTURES:
+	Texture texture1(imgData1, width, height);
+	Texture texture2(imgData2, width2, height2);
+	Texture texture3(imgData3, width3, height3);
 
 	// FREE THE IMAGES MEMORY:
 	stbi_image_free(imgData1);
@@ -328,14 +294,14 @@ int main()
 		// RENDER GROUND
 		groundVA.bind();
 		glActiveTexture(GL_TEXTURE0);
-		glBindTexture(GL_TEXTURE_2D, texture3);
+		texture3.bind();
 		glDrawArrays(GL_TRIANGLES, 0, 6);
 
 		// RENDER CUBES
 		glActiveTexture(GL_TEXTURE0);
-		glBindTexture(GL_TEXTURE_2D, texture);
+		texture1.bind();
 		glActiveTexture(GL_TEXTURE1);
-		glBindTexture(GL_TEXTURE_2D, texture2);
+		texture2.bind();
 
 		cubesVA.bind();
         
@@ -370,11 +336,6 @@ int main()
 		/* Poll for and process events */
 		glfwPollEvents();
 	}
-
-	// Cleanup
-	glDeleteTextures(1, &texture);
-	glDeleteTextures(1, &texture2);
-	glDeleteTextures(1, &texture3);
 
 	glfwTerminate();
 	return 0;

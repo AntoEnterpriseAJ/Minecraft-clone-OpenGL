@@ -6,15 +6,15 @@
 
 namespace CameraDefaults
 {
-	constexpr float yaw = -90.0f;
-	constexpr float pitch = 0.0f;
-	constexpr float pitchUpperBound = 89.9f;
-	constexpr float speed = 2.0f;
-	constexpr float mouseSensitivity = 0.1f;
-	constexpr float zoomSensitivity = 2.0f;
-	constexpr float FOV = 45.0f;
-	constexpr float FOVUpperBound = 120.0f;
-	constexpr float FOVLowerBound = 5.0f;
+	constexpr float yaw	             = -90.0f;
+	constexpr float pitch            =  0.0f;
+	constexpr float pitchUpperBound  =  89.9f;
+	constexpr float speed            =  5.0f;
+	constexpr float mouseSensitivity =  0.1f;
+	constexpr float zoomSensitivity  =  2.0f;
+	constexpr float FOV              =  45.0f;
+	constexpr float FOVUpperBound    =  120.0f;
+	constexpr float FOVLowerBound    =  5.0f;
 }
 
 class Camera
@@ -28,13 +28,14 @@ public:
 		RIGHT,
 	};
 
+	explicit Camera(glm::vec3 pos, glm::vec3 front = { 0.0f, 0.0f, -1.0f }, glm::vec3 up = { 0.0f, 1.0f, 0.0f }, float yaw = CameraDefaults::yaw, float pitch = CameraDefaults::pitch);
+
 	glm::mat4 getViewMatrix() const;
 	void processKeyboard(CameraMovement direction, float deltaTime);
 	void processMouseScroll(float yOffset);
 	void processMouseCursor(double yawOffset, double pitchOffset);
 	float getFOV() const;
 
-	explicit Camera(glm::vec3 pos, glm::vec3 front = { 0.0f, 0.0f, -1.0f }, glm::vec3 up = { 0.0f, 1.0f, 0.0f }, float yaw = CameraDefaults::yaw, float pitch = CameraDefaults::pitch);
 private:
 	void updateVectors();
 private:

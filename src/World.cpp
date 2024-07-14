@@ -33,9 +33,10 @@ void World::render(const Shader& shaderProgram) const
         for (int x = 0; x < m_chunks[z].size(); ++x)
         {
             
-            glEnable(GL_CULL_FACE);      // Enable face culling
-            glFrontFace(GL_CW);          // Set front face to clockwise
-            glCullFace(GL_BACK);         // Specify culling of back faces
+	        glEnable(GL_DEPTH_TEST);
+            //glEnable(GL_CULL_FACE);      // Enable face culling
+            //glFrontFace(GL_CW);          // Set front face to clockwise
+            //glCullFace(GL_BACK);         // Specify culling of back faces
 
             float xOffset = -(m_size / 2.0f) * Chunk::Size::length;
             float yOffset = -(m_size / 2.0f) * Chunk::Size::width;
@@ -47,7 +48,7 @@ void World::render(const Shader& shaderProgram) const
             shaderProgram.setMat4("model", model);
 
             m_chunks[z][x].render();
-            glDisable(GL_CULL_FACE);
+            //glDisable(GL_CULL_FACE);
         }
     }
 }
