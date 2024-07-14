@@ -3,63 +3,85 @@
 Block::Block(Type type, float lengthOffset, float widthOffset, float heightOffset)
     : m_type{type}, m_lengthOffset{lengthOffset}, m_widthOffset{widthOffset}, m_heightOffset{heightOffset}
 {
-    std::vector<float> cubeVertices = {
-        // positions           // tex coords
-        -0.5f, -0.5f, -0.5f,    0.0f, 0.0f,
-         0.5f, -0.5f, -0.5f,    1.0f, 0.0f,
-         0.5f,  0.5f, -0.5f,    1.0f, 1.0f,
-         0.5f,  0.5f, -0.5f,    1.0f, 1.0f,
-        -0.5f,  0.5f, -0.5f,    0.0f, 1.0f,
-        -0.5f, -0.5f, -0.5f,    0.0f, 0.0f,
+    generateVertices();
+}
 
+void Block::addFace(const std::vector<float>& faceVertices)
+{
+    for (int i = 0; i < faceVertices.size(); ++i)
+    {
+        if (i % 5 == 0)
+            m_vertices.push_back(faceVertices[i] + m_lengthOffset);
+        else if (i % 5 == 1)
+            m_vertices.push_back(faceVertices[i] + m_widthOffset);
+        else if (i % 5 == 2)
+            m_vertices.push_back(faceVertices[i] + m_heightOffset);
+        else
+            m_vertices.push_back(faceVertices[i]);
+    }
+}
+
+void Block::generateVertices()
+{
+     std::vector<float> frontFace = {
         -0.5f, -0.5f,  0.5f,    0.0f, 0.0f,
          0.5f, -0.5f,  0.5f,    1.0f, 0.0f,
          0.5f,  0.5f,  0.5f,    1.0f, 1.0f,
          0.5f,  0.5f,  0.5f,    1.0f, 1.0f,
         -0.5f,  0.5f,  0.5f,    0.0f, 1.0f,
         -0.5f, -0.5f,  0.5f,    0.0f, 0.0f,
+    };
+    addFace(frontFace);
 
-        -0.5f,  0.5f,  0.5f,    1.0f, 0.0f,
-        -0.5f,  0.5f, -0.5f,    1.0f, 1.0f,
-        -0.5f, -0.5f, -0.5f,    0.0f, 1.0f,
-        -0.5f, -0.5f, -0.5f,    0.0f, 1.0f,
-        -0.5f, -0.5f,  0.5f,    0.0f, 0.0f,
-        -0.5f,  0.5f,  0.5f,    1.0f, 0.0f,
-
-         0.5f,  0.5f,  0.5f,    1.0f, 0.0f,
-         0.5f,  0.5f, -0.5f,    1.0f, 1.0f,
-         0.5f, -0.5f, -0.5f,    0.0f, 1.0f,
-         0.5f, -0.5f, -0.5f,    0.0f, 1.0f,
-         0.5f, -0.5f,  0.5f,    0.0f, 0.0f,
-         0.5f,  0.5f,  0.5f,    1.0f, 0.0f,
-
-        -0.5f, -0.5f, -0.5f,    0.0f, 1.0f,
-         0.5f, -0.5f, -0.5f,    1.0f, 1.0f,
-         0.5f, -0.5f,  0.5f,    1.0f, 0.0f,
-         0.5f, -0.5f,  0.5f,    1.0f, 0.0f,
-        -0.5f, -0.5f,  0.5f,    0.0f, 0.0f,
-        -0.5f, -0.5f, -0.5f,    0.0f, 1.0f,
-
+    std::vector<float> backFace = {
+        -0.5f, -0.5f, -0.5f,    0.0f, 0.0f,
         -0.5f,  0.5f, -0.5f,    0.0f, 1.0f,
          0.5f,  0.5f, -0.5f,    1.0f, 1.0f,
-         0.5f,  0.5f,  0.5f,    1.0f, 0.0f,
-         0.5f,  0.5f,  0.5f,    1.0f, 0.0f,
-        -0.5f,  0.5f,  0.5f,    0.0f, 0.0f,
-        -0.5f,  0.5f, -0.5f,    0.0f, 1.0f
+         0.5f,  0.5f, -0.5f,    1.0f, 1.0f,
+         0.5f, -0.5f, -0.5f,    1.0f, 0.0f,
+        -0.5f, -0.5f, -0.5f,    0.0f, 0.0f,
     };
+    addFace(backFace);
 
-    for (int i = 0; i < cubeVertices.size(); ++i)
-    {
-        if (i % 5 == 0)
-            cubeVertices[i] += m_lengthOffset;
-        if (i % 5 == 1)
-            cubeVertices[i] += m_widthOffset;
-        if (i % 5 == 2)
-            cubeVertices[i] += m_heightOffset;
-    }
+    std::vector<float> leftFace = {
+        -0.5f, -0.5f, -0.5f,    0.0f, 0.0f,
+        -0.5f, -0.5f,  0.5f,    1.0f, 0.0f,
+        -0.5f,  0.5f,  0.5f,    1.0f, 1.0f,
+        -0.5f,  0.5f,  0.5f,    1.0f, 1.0f,
+        -0.5f,  0.5f, -0.5f,    0.0f, 1.0f,
+        -0.5f, -0.5f, -0.5f,    0.0f, 0.0f,
+    };
+    addFace(leftFace);
 
-    m_vertices.resize(cubeVertices.size());
-    std::ranges::copy(cubeVertices, m_vertices.begin());
+    std::vector<float> rightFace = {
+         0.5f, -0.5f, -0.5f,    0.0f, 0.0f,
+         0.5f,  0.5f, -0.5f,    0.0f, 1.0f,
+         0.5f,  0.5f,  0.5f,    1.0f, 1.0f,
+         0.5f,  0.5f,  0.5f,    1.0f, 1.0f,
+         0.5f, -0.5f,  0.5f,    1.0f, 0.0f,
+         0.5f, -0.5f, -0.5f,    0.0f, 0.0f,
+    };
+    addFace(rightFace);
+
+    std::vector<float> topFace = {
+        -0.5f,  0.5f, -0.5f,    0.0f, 0.0f,
+        -0.5f,  0.5f,  0.5f,    0.0f, 1.0f,
+         0.5f,  0.5f,  0.5f,    1.0f, 1.0f,
+         0.5f,  0.5f,  0.5f,    1.0f, 1.0f,
+         0.5f,  0.5f, -0.5f,    1.0f, 0.0f,
+        -0.5f,  0.5f, -0.5f,    0.0f, 0.0f,
+    };
+    addFace(topFace);
+
+    std::vector<float> bottomFace = {
+        -0.5f, -0.5f, -0.5f,    0.0f, 0.0f,
+         0.5f, -0.5f, -0.5f,    1.0f, 0.0f,
+         0.5f, -0.5f,  0.5f,    1.0f, 1.0f,
+         0.5f, -0.5f,  0.5f,    1.0f, 1.0f,
+        -0.5f, -0.5f,  0.5f,    0.0f, 1.0f,
+        -0.5f, -0.5f, -0.5f,    0.0f, 0.0f,
+    };
+    addFace(bottomFace);
 }
 
 Block::Type Block::getType() const
