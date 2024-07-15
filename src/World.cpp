@@ -1,73 +1,76 @@
 #include "include/World.h"
-#include "include/Chunk.h"
 
-#include <glm/glm.hpp>
-#include <glm/gtc/matrix_transform.hpp>
-#include <glm/gtc/type_ptr.hpp>
-#include <glm/gtc/noise.hpp>
-
-World::World(unsigned int size)
-    : m_size{size}
+World::World(float renderDistance)
+    : m_renderDistance{renderDistance}
 {
-    m_chunks.resize(size);
-    generateHeightMap();
+    auto [playerChunkX, playerChunkZ] = getCurrentChunkCoords();
 
-    float localPositionX = 0, localPositionZ = 0;
-    for (unsigned int z = 0; z < m_chunks.size(); ++z) {
-        m_chunks[z].reserve(size);
-        localPositionX = 0;
-        for (unsigned int x = 0; x < size; ++x) {
-            m_chunks[z].emplace_back(localPositionX, localPositionZ, m_heightMap);
-            localPositionX += Chunk::Size::length;
-        }
-        localPositionZ += Chunk::Size::width;
-    }
-}
-
-void World::render(const Shader& shaderProgram) const
-{
-    shaderProgram.use();
-
-    for (int z = 0; z < m_chunks.size(); ++z)
+    for (int x = playerChunkX - renderDistance; x <= playerChunkX + renderDistance; ++x)
     {
-        for (int x = 0; x < m_chunks[z].size(); ++x)
+        for (int z = playerChunkZ - renderDistance; z <= playerChunkZ + renderDistance; ++z)
         {
-            
-	        glEnable(GL_DEPTH_TEST);
-            //glEnable(GL_CULL_FACE);      // Enable face culling
-            //glFrontFace(GL_CW);          // Set front face to clockwise
-            //glCullFace(GL_BACK);         // Specify culling of back faces
-
-            float xOffset = -(m_size / 2.0f) * Chunk::Size::length;
-            float yOffset = -(m_size / 2.0f) * Chunk::Size::width;
-
-            glm::mat4 model = glm::mat4(1.0f);
-            glm::vec3 translationVector = glm::vec3(xOffset, 1.0f, yOffset);
-            model = glm::translate(model, translationVector);
-
-            shaderProgram.setMat4("model", model);
-
-            m_chunks[z][x].render();
-            //glDisable(GL_CULL_FACE);
+            loadChunk(x, z);
         }
     }
 }
 
-void World::generateHeightMap()
+void World::render(const glm::vec3& playerPosition)
 {
-    int worldLength = m_size * Chunk::Size::length;
-    int worldWidth = m_size * Chunk::Size::width;
-    m_heightMap.resize(worldLength, std::vector<float>(worldWidth));
+    m_playerPosition = playerPosition;
+    update();
 
-    for (int x = 0; x < worldLength; ++x)
+    for (const auto& [coordinates, chunk] : m_chunks)
     {
-        for (int y = 0; y < worldWidth; ++y)
-        {
-            float value = glm::simplex(glm::vec2{x / 16.0f, y / 16.0f});
-            value = (value + 1) / 2 + 1;
-            value *= 5;
+        chunk.render();
+    }
+}
 
-            m_heightMap[x][y] = value;
+std::pair<int, int> World::getCurrentChunkCoords() const
+{
+    int chunkXPos = static_cast<int>(m_playerPosition.x) / Chunk::Size::length;
+    int chunkZPos = static_cast<int>(m_playerPosition.z) / Chunk::Size::width;
+    return {chunkXPos, chunkZPos};
+}
+
+void World::loadChunk(int xPos, int zPos)
+{
+    m_chunks.emplace(std::piecewise_construct,
+                     std::forward_as_tuple(xPos, zPos),
+                     std::forward_as_tuple(xPos * Chunk::Size::length, zPos * Chunk::Size::width));
+}
+
+void World::unloadChunk(int xPos, int zPos)
+{
+    m_chunks.erase({xPos, zPos});
+}
+
+void World::update()
+{
+    auto [playerChunkX, playerChunkZ] = getCurrentChunkCoords();
+
+    for (int x = playerChunkX - m_renderDistance; x <= playerChunkX + m_renderDistance; ++x)
+    {
+        for (int z = playerChunkZ - m_renderDistance; z <= playerChunkZ + m_renderDistance; ++z)
+        {
+            if (!m_chunks.contains({x, z}))
+            {
+                loadChunk(x, z);
+            }
         }
+    }
+
+    std::vector<std::pair<int, int>> chunksToUnload;
+    for (const auto& [coordinates, chunk] : m_chunks)
+    {
+        int chunkX = coordinates.first, chunkZ = coordinates.second;
+        if (std::abs(chunkX - playerChunkX) > m_renderDistance || std::abs(chunkZ - playerChunkZ) > m_renderDistance)
+        {
+            chunksToUnload.push_back(coordinates);
+        }
+    }
+
+    for (const auto& coordinates : chunksToUnload)
+    {
+        unloadChunk(coordinates.first, coordinates.second);
     }
 }

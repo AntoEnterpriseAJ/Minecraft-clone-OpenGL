@@ -1,7 +1,7 @@
 #include "include/Block.h"
 
-Block::Block(Type type, float lengthOffset, float widthOffset, float heightOffset)
-    : m_type{type}, m_lengthOffset{lengthOffset}, m_widthOffset{widthOffset}, m_heightOffset{heightOffset}
+Block::Block(Type type, int posX, int posY, int posZ)
+    : m_type{type}, m_posX{posX}, m_posY{posY}, m_posZ{posZ}
 {
     generateVertices();
 }
@@ -11,11 +11,11 @@ void Block::addFace(const std::vector<float>& faceVertices)
     for (int i = 0; i < faceVertices.size(); ++i)
     {
         if (i % 5 == 0)
-            m_vertices.push_back(faceVertices[i] + m_lengthOffset);
+            m_vertices.push_back(faceVertices[i] + m_posX);
         else if (i % 5 == 1)
-            m_vertices.push_back(faceVertices[i] + m_widthOffset);
+            m_vertices.push_back(faceVertices[i] + m_posY);
         else if (i % 5 == 2)
-            m_vertices.push_back(faceVertices[i] + m_heightOffset);
+            m_vertices.push_back(faceVertices[i] + m_posZ);
         else
             m_vertices.push_back(faceVertices[i]);
     }

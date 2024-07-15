@@ -12,7 +12,7 @@ public:
 		GRASS	= 1,
 	};
 
-	Block(Type type = Type::GRASS, float lengthOffset = 0, float widthOffset = 0, float heightOffset = 0);
+	Block(Type type = Type::GRASS, int posX = 0, int posY = 0, int posZ = 0);
 	
 	void addFace(const std::vector<float>& faceVertices);
 	void generateVertices();
@@ -21,7 +21,7 @@ public:
 	std::vector<float> getVertices() const;
 
 private:
-	float m_lengthOffset, m_widthOffset, m_heightOffset;
+	int m_posX, m_posY, m_posZ;
 	std::vector<float> m_vertices;
 	Type m_type;
 };

@@ -9,15 +9,15 @@ void Chunk::render() const
     m_VAO.unbind();
 }
 
-Chunk::Chunk(float localPositionX, float localPositionZ, const std::vector<std::vector<float>>& heightMap)
+Chunk::Chunk(int localPositionX, int localPositionZ/*, const std::vector<std::vector<float>>& heightMap*/)
     : m_VAO{}, m_VBO{}
 {
-    m_blocks.resize(Size::length, std::vector<std::vector<Block>>(Size::height, std::vector<Block>(Size::width)));
+    m_blocks.resize(Size::length, std::vector<std::vector<Block>>(Size::width, std::vector<Block>(Size::height)));
     for (int x = 0; x < Size::length; ++x)
     {
         for (int z = 0; z < Size::width; ++z)
         {
-            int height = (static_cast<int>(heightMap[x][z])) < (Size::height) ? (static_cast<int>(heightMap[x][z])) : (Size::height);
+            int height = Size::height;/*(static_cast<int>(heightMap[x][z])) < (Size::height) ? (static_cast<int>(heightMap[x][z])) : (Size::height);*/
             for (int y = 0; y < height; ++y)
             {
                 float blockPosX = localPositionX + x;

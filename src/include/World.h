@@ -1,18 +1,36 @@
 #pragma once
+
 #include <vector>
+#include <unordered_map>
 #include "Chunk.h"
-#include "Shader.h"
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
+
 
 class World
 {
 public:
-	World(unsigned int size);
+	World(float renderDistance);
 
-	void render(const Shader& shaderProgram) const;
+	void render(const glm::vec3& playerPosition);
 private:
-	void generateHeightMap();
+	//void generateHeightMap();
+	std::pair<int, int> getCurrentChunkCoords() const;
+	void loadChunk(int xPos, int zPos);
+	void unloadChunk(int xPos, int zPos);
+	void update();
 
-	std::vector<std::vector<Chunk>> m_chunks;
-	std::vector<std::vector<float>> m_heightMap;
-	unsigned int m_size;
+	struct PairHash
+	{
+		std::size_t operator()(const std::pair<int, int>& pair) const
+		{
+			return std::hash<int>{}(pair.first) ^ std::hash<int>{}(pair.second);
+		}
+	};
+
+	std::unordered_map<std::pair<int, int>, Chunk, PairHash> m_chunks;	
+	glm::vec3 m_playerPosition;
+	float m_renderDistance;
 };
+

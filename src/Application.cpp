@@ -205,8 +205,7 @@ int main()
 	shaderProgram.setFloat("opacity", currentOpacity);
 
 	bool wireframe = false;
-	World world(8);
-
+	World world(2);
 	/* Loop until the user closes the window */
 	while (!glfwWindowShouldClose(window))
 	{
@@ -260,7 +259,7 @@ int main()
 		shaderProgram.setMat4("projection", projection);
 
 		// RENDER THE WORLD
-		world.render(shaderProgram);
+		world.render(camera.getPosition());
 
 		// RENDER GROUND
 		groundVA.bind();

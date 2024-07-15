@@ -20,7 +20,7 @@ public:
 	float getLocalPositionX() const;
 	float getLocalPositionZ() const;
 
-	Chunk(float localPositionX, float localPositionZ, const std::vector<std::vector<float>>& heightMap);
+	Chunk(int localPositionX = 0, int localPositionZ = 0/*, const std::vector<std::vector<float>>& heightMap*/);
 private:
 	void generateMesh(float worldPositionX, float worldPositionZ);
 private:

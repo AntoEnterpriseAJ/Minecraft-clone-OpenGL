@@ -39,6 +39,7 @@ public:
 	float getPositionX() const;
 	float getPositionY() const;
 	float getPositionZ() const;
+	glm::vec3 getPosition() const;
 private:
 	void updateVectors();
 private:
