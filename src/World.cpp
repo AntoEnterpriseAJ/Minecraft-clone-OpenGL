@@ -4,7 +4,6 @@
 World::World(float renderDistance)
     : m_renderDistance{renderDistance}
 {
-    generateHeightMap();
     auto [playerChunkX, playerChunkZ] = getCurrentChunkCoords();
 
     for (int x = playerChunkX - renderDistance; x <= playerChunkX + renderDistance; ++x)
@@ -27,18 +26,26 @@ void World::render(const glm::vec3& playerPosition)
     }
 }
 
-void World::generateHeightMap()
+std::vector<std::vector<float>> World::generateHeightMap(int chunkX, int chunkZ)
 {
-    m_heightMap.resize(Chunk::Size::length, std::vector<float>(Chunk::Size::width));
+    std::vector<std::vector<float>> heightMap;
+    heightMap.resize(Chunk::Size::length, std::vector<float>(Chunk::Size::width));
 
     for (int x = 0; x < Chunk::Size::length; ++x)
     {
         for (int z = 0; z < Chunk::Size::width; ++z)
         {
-            float height = ((glm::simplex(glm::vec2(x, z) / 16.0f) + 1) / 2 + 1) * 5;
-            m_heightMap[x][z] = height;
+            float chunkWorldX = x + chunkX * Chunk::Size::length;
+            float chunkWorldZ = z + chunkZ * Chunk::Size::width;
+
+            float height = glm::simplex(glm::vec2(chunkWorldX / 64.0f, chunkWorldZ / 64.0f));
+            height = (height + 1.0f) / 2.0f * 10.0f;
+
+            heightMap[x][z] = std::abs(height) == 0 ? std::abs(height) + 1 : std::abs(height);
         }
     }
+
+    return heightMap;
 }
 
 std::pair<int, int> World::getCurrentChunkCoords() const
@@ -50,9 +57,11 @@ std::pair<int, int> World::getCurrentChunkCoords() const
 
 void World::loadChunk(int xPos, int zPos)
 {
+    const auto& heightMap = generateHeightMap(xPos,zPos);
+
     m_chunks.emplace(std::piecewise_construct,
                      std::forward_as_tuple(xPos, zPos),
-                     std::forward_as_tuple(xPos * Chunk::Size::length, zPos * Chunk::Size::width, m_heightMap));
+                     std::forward_as_tuple(xPos * Chunk::Size::length, zPos * Chunk::Size::width, heightMap));
 }
 
 void World::unloadChunk(int xPos, int zPos)
