@@ -205,7 +205,7 @@ int main()
 	shaderProgram.setFloat("opacity", currentOpacity);
 
 	bool wireframe = false;
-	World world(2);
+	World world(5);
 	/* Loop until the user closes the window */
 	while (!glfwWindowShouldClose(window))
 	{
@@ -262,10 +262,10 @@ int main()
 		world.render(camera.getPosition());
 
 		// RENDER GROUND
-		groundVA.bind();
-		glActiveTexture(GL_TEXTURE0);
-		texture3.bind();
-		glDrawArrays(GL_TRIANGLES, 0, 6);
+		//groundVA.bind();
+		//glActiveTexture(GL_TEXTURE0);
+		//texture3.bind();
+		//glDrawArrays(GL_TRIANGLES, 0, 6);
 
 		// RENDER CUBES
 		glActiveTexture(GL_TEXTURE0);

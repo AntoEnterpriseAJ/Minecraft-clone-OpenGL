@@ -5,6 +5,7 @@
 #include "VertexArray.h"
 #include "VertexBuffer.h"
 #include "VertexBufferLayout.h"
+#include "ElementBuffer.h"
 
 class Chunk
 {
@@ -29,4 +30,5 @@ private:
 	float m_worldPositionZ;
 	VertexArray m_VAO;
 	VertexBuffer m_VBO;
+	ElementBuffer m_EBO;
 };

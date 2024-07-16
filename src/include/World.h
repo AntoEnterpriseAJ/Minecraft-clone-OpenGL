@@ -33,4 +33,3 @@ private:
 	glm::vec3 m_playerPosition;
 	float m_renderDistance;
 };
-

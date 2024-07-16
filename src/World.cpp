@@ -48,17 +48,6 @@ void World::update()
 {
     auto [playerChunkX, playerChunkZ] = getCurrentChunkCoords();
 
-    for (int x = playerChunkX - m_renderDistance; x <= playerChunkX + m_renderDistance; ++x)
-    {
-        for (int z = playerChunkZ - m_renderDistance; z <= playerChunkZ + m_renderDistance; ++z)
-        {
-            if (!m_chunks.contains({x, z}))
-            {
-                loadChunk(x, z);
-            }
-        }
-    }
-
     std::vector<std::pair<int, int>> chunksToUnload;
     for (const auto& [coordinates, chunk] : m_chunks)
     {
@@ -72,5 +61,16 @@ void World::update()
     for (const auto& coordinates : chunksToUnload)
     {
         unloadChunk(coordinates.first, coordinates.second);
+    }
+
+    for (int x = playerChunkX - m_renderDistance; x <= playerChunkX + m_renderDistance; ++x)
+    {
+        for (int z = playerChunkZ - m_renderDistance; z <= playerChunkZ + m_renderDistance; ++z)
+        {
+            if (!m_chunks.contains({x, z}))
+            {
+                loadChunk(x, z);
+            }
+        }
     }
 }

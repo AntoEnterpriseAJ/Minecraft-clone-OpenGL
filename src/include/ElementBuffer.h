@@ -8,6 +8,9 @@ public:
 	void bind() const;
 	void unbind() const;
 
+	void setElements(const void* data, unsigned int count);
+
+	ElementBuffer();
 	ElementBuffer(const void* data, unsigned int count);
 	~ElementBuffer();
 private:
