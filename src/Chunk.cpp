@@ -6,10 +6,8 @@
 void Chunk::render() const
 {
     m_VAO.bind();
-    m_EBO.bind();
     glDrawElements(GL_TRIANGLES, m_EBO.getCount(), GL_UNSIGNED_INT, 0);
     m_VAO.unbind();
-    m_EBO.unbind();
 }
 
 Chunk::Chunk(int localPositionX, int localPositionZ/*, const std::vector<std::vector<float>>& heightMap*/)
