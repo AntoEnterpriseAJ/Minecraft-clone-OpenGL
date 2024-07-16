@@ -21,9 +21,9 @@ public:
 	float getLocalPositionX() const;
 	float getLocalPositionZ() const;
 
-	Chunk(int localPositionX = 0, int localPositionZ = 0/*, const std::vector<std::vector<float>>& heightMap*/);
+	Chunk(int localPositionX, int localPositionZ, const std::vector<std::vector<float>>& heightMap);
 private:
-	void generateMesh(float worldPositionX, float worldPositionZ);
+	void generateMesh(float worldPositionX, float worldPositionZ, const std::vector<std::vector<float>>& heightMap);
 private:
 	std::vector<std::vector<std::vector<Block>>> m_blocks;
 	float m_worldPositionX;

@@ -10,7 +10,7 @@ void Chunk::render() const
     m_VAO.unbind();
 }
 
-Chunk::Chunk(int localPositionX, int localPositionZ/*, const std::vector<std::vector<float>>& heightMap*/)
+Chunk::Chunk(int localPositionX, int localPositionZ, const std::vector<std::vector<float>>& heightMap)
     : m_VAO{}, m_VBO{}, m_EBO{}
 {
     m_blocks.resize(Size::length, std::vector<std::vector<Block>>(Size::width, std::vector<Block>(Size::height)));
@@ -18,18 +18,23 @@ Chunk::Chunk(int localPositionX, int localPositionZ/*, const std::vector<std::ve
     {
         for (int z = 0; z < Size::width; ++z)
         {
-            int height = Size::height;/*(static_cast<int>(heightMap[x][z])) < (Size::height) ? (static_cast<int>(heightMap[x][z])) : (Size::height);*/
-            for (int y = 0; y < height; ++y)
+            int height = (static_cast<int>(heightMap[x][z])) < (Size::height) ? (static_cast<int>(heightMap[x][z])) : (Size::height);
+            for (int y = 0; y < Size::height; ++y)
             {
                 float blockPosX = localPositionX + x;
                 float blockPosY = y;
                 float blockPosZ = localPositionZ + z;
-                m_blocks[x][z][y] = Block(Block::Type::GRASS, blockPosX, blockPosY, blockPosZ);
+
+                if (y < height)
+                {
+                    m_blocks[x][z][y] = Block(Block::Type::GRASS, blockPosX, blockPosY, blockPosZ);
+                }
+                else m_blocks[x][z][y] = Block(Block::Type::AIR, blockPosX, blockPosY, blockPosZ);
             }
         }
     }
 
-    generateMesh(localPositionX, localPositionZ);
+    generateMesh(localPositionX, localPositionZ, heightMap);
 }
 
 float Chunk::getLocalPositionX() const
@@ -42,7 +47,7 @@ float Chunk::getLocalPositionZ() const
     return m_worldPositionZ;
 }
 
-void Chunk::generateMesh(float worldPositionX, float worldPositionZ)
+void Chunk::generateMesh(float worldPositionX, float worldPositionZ, const std::vector<std::vector<float>>& heightMap)
 {
     std::vector<float> vertices;
     std::vector<unsigned int> indices;
@@ -50,9 +55,10 @@ void Chunk::generateMesh(float worldPositionX, float worldPositionZ)
 
     for (int x = 0; x < Size::length; ++x)
     {
-        for (int y = 0; y < Size::height; ++y)
+        for (int z = 0; z < Size::width; ++z)
         {
-            for (int z = 0; z < Size::width; ++z)
+            int height = (static_cast<int>(heightMap[x][z])) < (Size::height) ? (static_cast<int>(heightMap[x][z])) : (Size::height);
+            for (int y = 0; y < height; ++y)
             {
                 const std::vector<float>& currentVertices = m_blocks[x][z][y].getVertices();
                 const std::vector<unsigned int>& currentIndices = m_blocks[x][z][y].getIndices();

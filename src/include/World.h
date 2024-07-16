@@ -15,7 +15,7 @@ public:
 
 	void render(const glm::vec3& playerPosition);
 private:
-	//void generateHeightMap();
+	void generateHeightMap();
 	std::pair<int, int> getCurrentChunkCoords() const;
 	void loadChunk(int xPos, int zPos);
 	void unloadChunk(int xPos, int zPos);
@@ -29,7 +29,8 @@ private:
 		}
 	};
 
-	std::unordered_map<std::pair<int, int>, Chunk, PairHash> m_chunks;	
+	std::unordered_map<std::pair<int, int>, Chunk, PairHash> m_chunks;
+	std::vector<std::vector<float>> m_heightMap;
 	glm::vec3 m_playerPosition;
 	float m_renderDistance;
 };
