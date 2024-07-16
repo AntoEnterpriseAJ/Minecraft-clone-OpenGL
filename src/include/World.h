@@ -20,6 +20,7 @@ private:
 	void loadChunk(int xPos, int zPos);
 	void unloadChunk(int xPos, int zPos);
 	void update();
+	void smoothHeightMap();
 
 	struct PairHash
 	{

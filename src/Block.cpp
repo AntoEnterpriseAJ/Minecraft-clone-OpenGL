@@ -3,81 +3,86 @@
 Block::Block(Type type, int posX, int posY, int posZ)
     : m_type{type}, m_posX{posX}, m_posY{posY}, m_posZ{posZ}
 {
-    generateVertices();
-}
-void Block::addFace(const std::vector<float>& faceVertices, const std::vector<unsigned int>& baseIndices)
-{
-    unsigned int indexOffset = m_vertices.size() / 5;
-
-    for (int i = 0; i < faceVertices.size(); i += 5)
-    {
-        m_vertices.push_back(faceVertices[i] + m_posX);
-        m_vertices.push_back(faceVertices[i + 1] + m_posY);
-        m_vertices.push_back(faceVertices[i + 2] + m_posZ);
-        m_vertices.push_back(faceVertices[i + 3]);
-        m_vertices.push_back(faceVertices[i + 4]);
-    }
-
-    for (auto index : baseIndices)
-    {
-        m_indices.push_back(index + indexOffset);
-    }
-}
-
-void Block::generateVertices()
-{
-    std::vector<unsigned int> baseIndices = {
-        0, 1, 2,
-        2, 3, 0
-    };
-
-    std::vector<float> frontFace = {
+    m_faceVertices[Face::FRONT] = {
         -0.5f, -0.5f,  0.5f,    0.0f, 0.0f, // bottom left
          0.5f, -0.5f,  0.5f,    1.0f, 0.0f, // bottom right
          0.5f,  0.5f,  0.5f,    1.0f, 1.0f, // top right
         -0.5f,  0.5f,  0.5f,    0.0f, 1.0f, // top left
     };
-    addFace(frontFace, baseIndices);
 
-    std::vector<float> backFace = {
+    m_faceVertices[Face::BACK] = {
         -0.5f, -0.5f, -0.5f,    0.0f, 0.0f, // bottom left
         -0.5f,  0.5f, -0.5f,    0.0f, 1.0f, // bottom right
          0.5f,  0.5f, -0.5f,    1.0f, 1.0f, // top right
          0.5f, -0.5f, -0.5f,    1.0f, 0.0f, // top left
     };
-    addFace(backFace, baseIndices);
 
-    std::vector<float> leftFace = {
+    m_faceVertices[Face::LEFT] = {
         -0.5f, -0.5f, -0.5f,    0.0f, 0.0f, // bottom left
         -0.5f, -0.5f,  0.5f,    1.0f, 0.0f, // bottom right
         -0.5f,  0.5f,  0.5f,    1.0f, 1.0f, // top right
         -0.5f,  0.5f, -0.5f,    0.0f, 1.0f, // top left
     };
-    addFace(leftFace, baseIndices);
 
-    std::vector<float> rightFace = {
+    m_faceVertices[Face::RIGHT] = {
          0.5f, -0.5f, -0.5f,    0.0f, 0.0f, // bottom left
          0.5f,  0.5f, -0.5f,    0.0f, 1.0f, // bottom right
          0.5f,  0.5f,  0.5f,    1.0f, 1.0f, // top right
          0.5f, -0.5f,  0.5f,    1.0f, 0.0f, // top left
-    };
-    addFace(rightFace, baseIndices);
+	};
 
-    std::vector<float> topFace = {
+    m_faceVertices[Face::TOP] = {
         -0.5f,  0.5f, -0.5f,    0.0f, 0.0f, // bottom left
-        -0.5f,  0.5f,  0.5f,    0.0f, 1.0f, // bottom right
-         0.5f,  0.5f,  0.5f,    1.0f, 1.0f, // top right
-         0.5f,  0.5f, -0.5f,    1.0f, 0.0f, // top left
-    };
-    addFace(topFace, baseIndices);
+		-0.5f,  0.5f,  0.5f,    0.0f, 1.0f, // bottom right
+		 0.5f,  0.5f,  0.5f,    1.0f, 1.0f, // top right
+		 0.5f,  0.5f, -0.5f,    1.0f, 0.0f, // top left
+	};
 
-    std::vector<float> bottomFace = {
-        -0.5f, -0.5f, -0.5f,    0.0f, 0.0f, // bottom left
-         0.5f, -0.5f, -0.5f,    1.0f, 0.0f, // bottom right
-         0.5f, -0.5f,  0.5f,    1.0f, 1.0f, // top right
-        -0.5f, -0.5f,  0.5f,    0.0f, 1.0f, // top left
-    };
-    addFace(bottomFace, baseIndices);
+    m_faceVertices[Face::BOTTOM] = {
+		-0.5f, -0.5f, -0.5f,    0.0f, 0.0f, // bottom left
+		 0.5f, -0.5f, -0.5f,    1.0f, 0.0f, // bottom right
+		 0.5f, -0.5f,  0.5f,    1.0f, 1.0f, // top right
+		-0.5f, -0.5f,  0.5f,    0.0f, 1.0f, // top left
+	};
+}
+
+bool Block::isFaceVisible(Face face, int x, int y, int z, const std::vector<std::vector<std::vector<Block>>>& blocks) const
+{
+    int chunkSizeX = blocks.size();
+    int chunkSizeZ = blocks[0].size();
+    int chunkSizeY = blocks[0][0].size();
+
+    switch (face)
+    {
+        case Face::FRONT:
+        {
+            return (z == chunkSizeZ - 1) || (blocks[x][z + 1][y].getType() == Type::AIR);
+        }
+        case Face::BACK:
+        {
+            return (z == 0) || (blocks[x][z - 1][y].getType() == Type::AIR);
+        }
+        case Face::LEFT:
+        {
+            return (x == 0) || (blocks[x - 1][z][y].getType() == Type::AIR);
+        }
+        case Face::RIGHT:
+        {
+            return (x == chunkSizeX - 1) || (blocks[x + 1][z][y].getType() == Type::AIR);
+        }
+        case Face::TOP:
+        {
+            return (y == chunkSizeY - 1) || (blocks[x][z][y + 1].getType() == Type::AIR);
+        }
+        case Face::BOTTOM:
+        {
+            return (y == 0) || (blocks[x][z][y - 1].getType() == Type::AIR);
+        }
+        default:
+        {
+            return false;
+        }
+    }
 }
 
 Block::Type Block::getType() const
@@ -85,12 +90,7 @@ Block::Type Block::getType() const
     return m_type;
 }
 
-std::vector<float> Block::getVertices() const
+std::vector<float> Block::getFaceVertices(Face face) const
 {
-    return m_vertices;
-}
-
-std::vector<unsigned int> Block::getIndices() const
-{
-    return m_indices;
+    return m_faceVertices.at(face);
 }

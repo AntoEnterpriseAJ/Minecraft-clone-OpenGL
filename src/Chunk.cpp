@@ -6,6 +6,13 @@
 void Chunk::render() const
 {
     m_VAO.bind();
+
+    glEnable(GL_DEPTH_TEST);
+
+    glFrontFace(GL_CCW);
+    glEnable(GL_CULL_FACE);
+    glCullFace(GL_BACK);
+
     glDrawElements(GL_TRIANGLES, m_EBO.getCount(), GL_UNSIGNED_INT, 0);
     m_VAO.unbind();
 }
@@ -60,17 +67,33 @@ void Chunk::generateMesh(float worldPositionX, float worldPositionZ, const std::
             int height = (static_cast<int>(heightMap[x][z])) < (Size::height) ? (static_cast<int>(heightMap[x][z])) : (Size::height);
             for (int y = 0; y < height; ++y)
             {
-                const std::vector<float>& currentVertices = m_blocks[x][z][y].getVertices();
-                const std::vector<unsigned int>& currentIndices = m_blocks[x][z][y].getIndices();
-
-                vertices.insert(vertices.end(), currentVertices.begin(), currentVertices.end());
-
-                for (auto index : currentIndices)
+                for (Block::Face face = Block::Face::FRONT; face < Block::Face::COUNT; face = (Block::Face)((int)face + 1))
                 {
-                    indices.push_back(index + indexOffset);
-                }
+                    if (m_blocks[x][z][y].isFaceVisible(face, x, y, z, m_blocks))
+                    {
+                        const std::vector<float>& faceVertices = m_blocks[x][z][y].getFaceVertices(face);
+                        std::vector<float> faceIndices = {
+                            0, 1, 2,
+                            2, 3, 0
+						};
 
-                indexOffset += currentVertices.size() / 5; // Update index offset
+                        for (int i = 0; i < faceVertices.size(); i += 5)
+						{
+							vertices.push_back(faceVertices[i] + x + worldPositionX);
+							vertices.push_back(faceVertices[i + 1] + y);
+							vertices.push_back(faceVertices[i + 2] + z + worldPositionZ);
+							vertices.push_back(faceVertices[i + 3]);
+							vertices.push_back(faceVertices[i + 4]);
+						}
+
+						for (int i = 0; i < faceIndices.size(); ++i)
+						{
+							indices.push_back(faceIndices[i] + indexOffset);
+						}
+
+						indexOffset += 4;
+                    }
+                }
             }
         }
     }

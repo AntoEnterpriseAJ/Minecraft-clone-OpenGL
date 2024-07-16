@@ -1,4 +1,5 @@
 #include "include/World.h"
+#include <glm/gtc/noise.hpp>
 
 World::World(float renderDistance)
     : m_renderDistance{renderDistance}
@@ -25,9 +26,6 @@ void World::render(const glm::vec3& playerPosition)
         chunk.render();
     }
 }
-
-#include "include/World.h"
-#include <glm/gtc/noise.hpp>
 
 void World::generateHeightMap()
 {
