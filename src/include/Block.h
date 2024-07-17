@@ -32,8 +32,13 @@ public:
 	Type getType() const;
 	std::vector<float> getFaceVertices(Face face) const;
 
+
 private:
+	void genFaceUV(Face face, float bottomLeftX, float bottomLeftY);
+	void genUVs();
+
 	int m_posX, m_posY, m_posZ;
 	std::unordered_map<Face, std::vector<float>> m_faceVertices;
+	std::unordered_map<Face, std::vector<float>> m_UVs;
 	Type m_type;
 };

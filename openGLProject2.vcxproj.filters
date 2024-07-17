@@ -106,6 +106,9 @@
     <Image Include="res\images\img2.jpg">
       <Filter>Resource Files</Filter>
     </Image>
+    <Image Include="res\atlas\atlas.png">
+      <Filter>Resource Files</Filter>
+    </Image>
   </ItemGroup>
   <ItemGroup>
     <None Include="res\shaders\fragment.frag" />

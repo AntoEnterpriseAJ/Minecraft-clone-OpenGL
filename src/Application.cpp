@@ -85,9 +85,9 @@ int main()
 	Shader shaderProgram(vertexShaderPath, fragmentShaderPath);
 
 	// TEXTURES:
-	Texture texture1("res/images/grass.jpg");
-	Texture texture2("res/images/img1.jpg");
-	Texture texture3("res/images/grass.jpg");
+	//Texture texture1("res/images/grass.jpg");
+	//Texture texture2("res/images/img1.jpg");
+	Texture texture3("res/atlas/atlas.png");
 
 	// GROUND
 	float groundVertices[] = {
@@ -199,13 +199,13 @@ int main()
 	// SHADER:
 	shaderProgram.use();
 	shaderProgram.setInt("ourTexture1", 0);
-	shaderProgram.setInt("ourTexture2", 1);
+	//shaderProgram.setInt("ourTexture2", 1);
 
 	float currentOpacity = 0.4f;
-	shaderProgram.setFloat("opacity", currentOpacity);
+	//shaderProgram.setFloat("opacity", currentOpacity);
 
 	bool wireframe = false;
-	World world(5);
+	World world(3);
 	/* Loop until the user closes the window */
 	while (!glfwWindowShouldClose(window))
 	{
@@ -259,6 +259,7 @@ int main()
 		shaderProgram.setMat4("projection", projection);
 
 		// RENDER THE WORLD
+		texture3.bind();
 		world.render(camera.getPosition());
 
 		// RENDER GROUND
@@ -269,9 +270,9 @@ int main()
 
 		// RENDER CUBES
 		glActiveTexture(GL_TEXTURE0);
-		texture1.bind();
-		glActiveTexture(GL_TEXTURE1);
-		texture2.bind();
+		texture3.bind();
+		//glActiveTexture(GL_TEXTURE1);
+		//texture2.bind();
 
 		cubesVA.bind();
         
