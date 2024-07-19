@@ -1,5 +1,6 @@
 #include "include/World.h"
 #include <glm/gtc/noise.hpp>
+#include <thread>
 
 World::World(float renderDistance)
     : m_renderDistance{renderDistance}
@@ -13,6 +14,8 @@ World::World(float renderDistance)
             loadChunk(x, z);
         }
     }
+
+    updateChunkNeighbors();
 }
 
 void World::render(const glm::vec3& playerPosition)
@@ -97,5 +100,34 @@ void World::update()
                 loadChunk(x, z);
             }
         }
+    }
+
+    updateChunkNeighbors();
+
+    for (auto& [coordinates, chunk] : m_chunks)
+    {
+        chunk.generateMesh(coordinates.first * Chunk::Size::length, coordinates.second * Chunk::Size::width);
+    }
+}
+
+void World::updateChunkNeighbors()
+{
+    for (auto& [coordinates, chunk] : m_chunks)
+    {
+        std::array<Chunk*, 4> neighbors = {
+            m_chunks.contains({coordinates.first - 1, coordinates.second}) ?
+                &m_chunks.at({coordinates.first - 1, coordinates.second}) : nullptr, // LEFT
+
+            m_chunks.contains({coordinates.first + 1, coordinates.second}) ?
+                &m_chunks.at({coordinates.first + 1, coordinates.second}) : nullptr, // RIGHT
+
+            m_chunks.contains({coordinates.first, coordinates.second - 1}) ?
+                &m_chunks.at({coordinates.first, coordinates.second - 1}) : nullptr, // BACK
+
+            m_chunks.contains({coordinates.first, coordinates.second + 1}) ?
+                &m_chunks.at({coordinates.first, coordinates.second + 1}) : nullptr  // FRONT
+        };
+
+        chunk.setNeighbors(neighbors);
     }
 }
