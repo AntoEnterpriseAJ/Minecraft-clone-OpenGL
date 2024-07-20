@@ -205,7 +205,7 @@ int main()
 	//shaderProgram.setFloat("opacity", currentOpacity);
 
 	bool wireframe = false;
-	World world(3);
+	World world(10);
 	/* Loop until the user closes the window */
 	while (!glfwWindowShouldClose(window))
 	{

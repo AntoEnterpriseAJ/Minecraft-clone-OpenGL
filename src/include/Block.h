@@ -7,17 +7,15 @@
 class Block
 {
 public:
-	using uint = unsigned int;
-
-	enum class Face
+	enum Face
 	{
-		FRONT,
-		BACK,
-		LEFT,
-		RIGHT,
-		TOP,
-		BOTTOM,
-		COUNT,
+		FRONT	= 0,
+		BACK	= 1,
+		LEFT	= 2,
+		RIGHT	= 3,
+		TOP		= 4,
+		BOTTOM	= 5,
+		COUNT	= 6,
 	};
 
 	enum class Type
@@ -31,16 +29,20 @@ public:
 	bool isFaceVisible(Face face, int x, int y, int z, const std::vector<std::vector<std::vector<Block>>>& blocks) const;
 	Type getType() const;
 	std::vector<float> getFaceVertices(Face face) const;
+	bool isMeshGenerated() const;
 
 
 private:
 	void genFaceUV(Face face, float bottomLeftX, float bottomLeftY);
 	void genUVs();
-	bool isMeshGenerated() const;
+
+	static constexpr int s_verticesPerFace = 20;
+	static constexpr int s_UVsPerFace = 8;
 
 	int m_posX, m_posY, m_posZ;
-	std::unordered_map<Face, std::vector<float>> m_faceVertices;
-	std::unordered_map<Face, std::vector<float>> m_UVs;
+	std::array<float, Face::COUNT * s_verticesPerFace> m_faceVertices;
+	std::array<float, Face::COUNT * s_UVsPerFace> m_UVs;
+
 	bool m_meshGenerated;
 	Type m_type;
 };

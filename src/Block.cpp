@@ -5,46 +5,36 @@ Block::Block(Type type, int posX, int posY, int posZ)
 {
     genUVs();
 
-    m_faceVertices[Face::FRONT] = {
-        -0.5f, -0.5f,  0.5f,    m_UVs[Face::FRONT][0], m_UVs[Face::FRONT][1], // bottom left
-         0.5f, -0.5f,  0.5f,    m_UVs[Face::FRONT][2], m_UVs[Face::FRONT][3], // bottom right
-         0.5f,  0.5f,  0.5f,    m_UVs[Face::FRONT][4], m_UVs[Face::FRONT][5], // top right
-        -0.5f,  0.5f,  0.5f,    m_UVs[Face::FRONT][6], m_UVs[Face::FRONT][7], // top left
-    };
+    m_faceVertices = {
+        -0.5f, -0.5f,  0.5f,    m_UVs[Face::FRONT * s_UVsPerFace + 0], m_UVs[Face::FRONT * s_UVsPerFace + 1],       // bottom left
+         0.5f, -0.5f,  0.5f,    m_UVs[Face::FRONT * s_UVsPerFace + 2], m_UVs[Face::FRONT * s_UVsPerFace + 3],       // bottom right
+         0.5f,  0.5f,  0.5f,    m_UVs[Face::FRONT * s_UVsPerFace + 4], m_UVs[Face::FRONT * s_UVsPerFace + 5],       // top right
+        -0.5f,  0.5f,  0.5f,    m_UVs[Face::FRONT * s_UVsPerFace + 6], m_UVs[Face::FRONT * s_UVsPerFace + 7],       // top left
 
-    m_faceVertices[Face::BACK] = {
-        -0.5f, -0.5f, -0.5f,    m_UVs[Face::BACK][0], m_UVs[Face::BACK][1], // bottom left
-        -0.5f,  0.5f, -0.5f,    m_UVs[Face::BACK][6], m_UVs[Face::BACK][7], // top left
-         0.5f,  0.5f, -0.5f,    m_UVs[Face::BACK][4], m_UVs[Face::BACK][5], // top right
-         0.5f, -0.5f, -0.5f,    m_UVs[Face::BACK][2], m_UVs[Face::BACK][3], // bottom right
-    };
+        -0.5f, -0.5f, -0.5f,    m_UVs[Face::BACK * s_UVsPerFace + 0], m_UVs[Face::BACK * s_UVsPerFace + 1],         // bottom left
+        -0.5f,  0.5f, -0.5f,    m_UVs[Face::BACK * s_UVsPerFace + 6], m_UVs[Face::BACK * s_UVsPerFace + 7],         // top left
+         0.5f,  0.5f, -0.5f,    m_UVs[Face::BACK * s_UVsPerFace + 4], m_UVs[Face::BACK * s_UVsPerFace + 5],         // top right
+         0.5f, -0.5f, -0.5f,    m_UVs[Face::BACK * s_UVsPerFace + 2], m_UVs[Face::BACK * s_UVsPerFace + 3],         // bottom right
 
-    m_faceVertices[Face::LEFT] = {
-        -0.5f, -0.5f, -0.5f,    m_UVs[Face::LEFT][0], m_UVs[Face::LEFT][1], // bottom left
-        -0.5f, -0.5f,  0.5f,    m_UVs[Face::LEFT][2], m_UVs[Face::LEFT][3], // bottom right
-        -0.5f,  0.5f,  0.5f,    m_UVs[Face::LEFT][4], m_UVs[Face::LEFT][5], // top right
-        -0.5f,  0.5f, -0.5f,    m_UVs[Face::LEFT][6], m_UVs[Face::LEFT][7], // top left
-    };
+        -0.5f, -0.5f, -0.5f,    m_UVs[Face::LEFT * s_UVsPerFace + 0], m_UVs[Face::LEFT * s_UVsPerFace + 1],         // bottom left
+        -0.5f, -0.5f,  0.5f,    m_UVs[Face::LEFT * s_UVsPerFace + 2], m_UVs[Face::LEFT * s_UVsPerFace + 3],         // bottom right
+        -0.5f,  0.5f,  0.5f,    m_UVs[Face::LEFT * s_UVsPerFace + 4], m_UVs[Face::LEFT * s_UVsPerFace + 5],         // top right
+        -0.5f,  0.5f, -0.5f,    m_UVs[Face::LEFT * s_UVsPerFace + 6], m_UVs[Face::LEFT * s_UVsPerFace + 7],         // top left
 
-    m_faceVertices[Face::RIGHT] = {
-         0.5f, -0.5f, -0.5f,    m_UVs[Face::RIGHT][0], m_UVs[Face::RIGHT][1], // bottom left
-         0.5f,  0.5f, -0.5f,    m_UVs[Face::RIGHT][6], m_UVs[Face::RIGHT][7], // top left
-         0.5f,  0.5f,  0.5f,    m_UVs[Face::RIGHT][4], m_UVs[Face::RIGHT][5], // top right
-         0.5f, -0.5f,  0.5f,    m_UVs[Face::RIGHT][2], m_UVs[Face::RIGHT][3], // bottom right
-    };
+         0.5f, -0.5f, -0.5f,    m_UVs[Face::RIGHT * s_UVsPerFace + 0], m_UVs[Face::RIGHT * s_UVsPerFace + 1],       // bottom left
+         0.5f,  0.5f, -0.5f,    m_UVs[Face::RIGHT * s_UVsPerFace + 6], m_UVs[Face::RIGHT * s_UVsPerFace + 7],       // top left
+         0.5f,  0.5f,  0.5f,    m_UVs[Face::RIGHT * s_UVsPerFace + 4], m_UVs[Face::RIGHT * s_UVsPerFace + 5],       // top right
+         0.5f, -0.5f,  0.5f,    m_UVs[Face::RIGHT * s_UVsPerFace + 2], m_UVs[Face::RIGHT * s_UVsPerFace + 3],       // bottom right
 
-    m_faceVertices[Face::TOP] = {
-        -0.5f,  0.5f, -0.5f,    m_UVs[Face::TOP][0], m_UVs[Face::TOP][1], // bottom left
-        -0.5f,  0.5f,  0.5f,    m_UVs[Face::TOP][6], m_UVs[Face::TOP][7], // top left
-         0.5f,  0.5f,  0.5f,    m_UVs[Face::TOP][4], m_UVs[Face::TOP][5], // top right
-         0.5f,  0.5f, -0.5f,    m_UVs[Face::TOP][2], m_UVs[Face::TOP][3], // bottom right
-    };
+        -0.5f,  0.5f, -0.5f,    m_UVs[Face::TOP * s_UVsPerFace + 0], m_UVs[Face::TOP * s_UVsPerFace + 1],           // bottom left
+        -0.5f,  0.5f,  0.5f,    m_UVs[Face::TOP * s_UVsPerFace + 6], m_UVs[Face::TOP * s_UVsPerFace + 7],           // top left
+         0.5f,  0.5f,  0.5f,    m_UVs[Face::TOP * s_UVsPerFace + 4], m_UVs[Face::TOP * s_UVsPerFace + 5],           // top right
+         0.5f,  0.5f, -0.5f,    m_UVs[Face::TOP * s_UVsPerFace + 2], m_UVs[Face::TOP * s_UVsPerFace + 3],           // bottom right
 
-    m_faceVertices[Face::BOTTOM] = {
-        -0.5f, -0.5f, -0.5f,    m_UVs[Face::BOTTOM][0], m_UVs[Face::BOTTOM][1], // bottom left
-         0.5f, -0.5f, -0.5f,    m_UVs[Face::BOTTOM][2], m_UVs[Face::BOTTOM][3], // bottom right
-         0.5f, -0.5f,  0.5f,    m_UVs[Face::BOTTOM][4], m_UVs[Face::BOTTOM][5], // top right
-        -0.5f, -0.5f,  0.5f,    m_UVs[Face::BOTTOM][6], m_UVs[Face::BOTTOM][7], // top left
+        -0.5f, -0.5f, -0.5f,    m_UVs[Face::BOTTOM * s_UVsPerFace + 0], m_UVs[Face::BOTTOM * s_UVsPerFace + 1],      // bottom left
+         0.5f, -0.5f, -0.5f,    m_UVs[Face::BOTTOM * s_UVsPerFace + 2], m_UVs[Face::BOTTOM * s_UVsPerFace + 3],      // bottom right
+         0.5f, -0.5f,  0.5f,    m_UVs[Face::BOTTOM * s_UVsPerFace + 4], m_UVs[Face::BOTTOM * s_UVsPerFace + 5],      // top right
+        -0.5f, -0.5f,  0.5f,    m_UVs[Face::BOTTOM * s_UVsPerFace + 6], m_UVs[Face::BOTTOM * s_UVsPerFace + 7],      // top left
     };
 }
 
@@ -94,18 +84,21 @@ Block::Type Block::getType() const
 
 std::vector<float> Block::getFaceVertices(Face face) const
 {
-    return m_faceVertices.at(face);
+    return std::vector<float>(m_faceVertices.begin() + s_verticesPerFace * face, m_faceVertices.begin() + s_verticesPerFace * (face + 1));
 }
 
 void Block::genFaceUV(Face face, float bottomLeftX, float bottomLeftY)
 {
     constexpr float atlasLength = 16.0f, atlasWidth = 16.0f;
-    m_UVs[face] = {
-        bottomLeftX / atlasLength, bottomLeftY / atlasWidth,                // bottom left
-        (bottomLeftX + 1) / atlasLength, bottomLeftY / atlasWidth,          // bottom right
-        (bottomLeftX + 1) / atlasLength, (bottomLeftY + 1) / atlasWidth,    // top right
-        bottomLeftX / atlasLength, (bottomLeftY + 1) / atlasWidth,          // top left
-    };
+
+    m_UVs[face * s_UVsPerFace + 0] = bottomLeftX / atlasLength;
+    m_UVs[face * s_UVsPerFace + 1] = bottomLeftY / atlasWidth;
+    m_UVs[face * s_UVsPerFace + 2] = (bottomLeftX + 1) / atlasLength;
+    m_UVs[face * s_UVsPerFace + 3] = bottomLeftY / atlasWidth;
+    m_UVs[face * s_UVsPerFace + 4] = (bottomLeftX + 1) / atlasLength;
+    m_UVs[face * s_UVsPerFace + 5] = (bottomLeftY + 1) / atlasWidth;
+    m_UVs[face * s_UVsPerFace + 6] = bottomLeftX / atlasLength;
+    m_UVs[face * s_UVsPerFace + 7] = (bottomLeftY + 1) / atlasWidth;
 }
 
 void Block::genUVs()
