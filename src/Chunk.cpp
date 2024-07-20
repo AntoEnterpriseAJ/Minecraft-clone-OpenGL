@@ -1,7 +1,7 @@
 #include "include/Chunk.h"
 
-Chunk::Chunk(int localPositionX, int localPositionZ, const std::vector<std::vector<float>>& heightMap)
-    : m_VAO{}, m_VBO{}, m_EBO{}, m_heightMap{heightMap}, m_meshGenerated{false}
+Chunk::Chunk(int worldPositionX, int worldPositionZ, const std::vector<std::vector<float>>& heightMap)
+    : m_VAO{}, m_VBO{}, m_EBO{}, m_heightMap{heightMap}, m_meshGenerated{false}, m_worldPositionX{worldPositionX}, m_worldPositionZ{worldPositionZ}
 {
     m_blocks.resize(Size::length * Size::width * Size::height);
 
@@ -12,9 +12,9 @@ Chunk::Chunk(int localPositionX, int localPositionZ, const std::vector<std::vect
             int height = (static_cast<int>(heightMap[x][z])) < (Size::height) ? (static_cast<int>(heightMap[x][z])) : (Size::height);
             for (int y = 0; y < Size::height; ++y)
             {
-                float blockPosX = localPositionX + x;
+                float blockPosX = worldPositionX + x;
                 float blockPosY = y;
-                float blockPosZ = localPositionZ + z;
+                float blockPosZ = worldPositionZ + z;
 
                 int index = x + Size::length * (z + Size::width * y);
 
@@ -127,6 +127,16 @@ void Chunk::generateMesh(float worldPositionX, float worldPositionZ)
 bool Chunk::isMeshGenerated() const
 {
     return m_meshGenerated;
+}
+
+float Chunk::getWorldPositionX() const
+{
+    return m_worldPositionX;
+}
+
+float Chunk::getWorldPositionZ() const
+{
+    return m_worldPositionZ;
 }
 
 void Chunk::setNeighbors(const std::array<Chunk*, 4>& neighbors)

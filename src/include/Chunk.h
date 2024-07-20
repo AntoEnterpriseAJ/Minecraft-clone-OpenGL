@@ -18,18 +18,18 @@ public:
 		height = 32,
 	};
 
+	Chunk(int worldPositionX, int worldPositionZ, const std::vector<std::vector<float>>& heightMap);
+
 	void render() const;
 	Block getBlockAt(int x, int z, int y) const; 
 	bool isMeshGenerated() const;
-	//float getLocalPositionX() const;
-	//float getLocalPositionZ() const;
+	float getWorldPositionX() const;
+	float getWorldPositionZ() const;
 
 	void setNeighbors(const std::array<Chunk*, 4>& neighbors);
-
-	Chunk(int localPositionX, int localPositionZ, const std::vector<std::vector<float>>& heightMap);
 	void generateMesh(float worldPositionX, float worldPositionZ);
-private:
 
+private:
 	std::vector<Block> m_blocks;
 	std::vector<std::vector<float>> m_heightMap;
 	std::array<Chunk*, 4> m_neighbors;

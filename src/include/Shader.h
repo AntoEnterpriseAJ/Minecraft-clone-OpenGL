@@ -17,6 +17,9 @@
 class Shader
 {
 public:
+    Shader(const char* vertexPath, const char* fragmentPath);
+    ~Shader();
+
     int getUniformLocation(const std::string& name) const;
     unsigned int getID() const;
     void use() const;
@@ -29,8 +32,6 @@ public:
     void setVec4(const std::string& name, float value) const;
     void setMat4(const std::string& name, const glm::mat4& mat) const;
 
-    Shader(const char* vertexPath, const char* fragmentPath);
-    ~Shader();
 private:
     unsigned int m_ID;
     std::unordered_map<std::string, int> m_locationCache;
