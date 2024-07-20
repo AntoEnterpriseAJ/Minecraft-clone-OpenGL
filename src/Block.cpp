@@ -1,4 +1,5 @@
 #include "include/Block.h"
+#include "include/Chunk.h"
 
 Block::Block(Type type, int posX, int posY, int posZ)
     : m_type{type}, m_posX{posX}, m_posY{posY}, m_posZ{posZ}
@@ -38,37 +39,39 @@ Block::Block(Type type, int posX, int posY, int posZ)
     };
 }
 
-bool Block::isFaceVisible(Face face, int x, int y, int z, const std::vector<std::vector<std::vector<Block>>>& blocks) const
+bool Block::isFaceVisible(Face face, int x, int y, int z, const std::vector<Block>& blocks) const
 {
-    int chunkSizeX = blocks.size();
-    int chunkSizeZ = blocks[0].size();
-    int chunkSizeY = blocks[0][0].size();
-
     switch (face)
     {
         case Face::FRONT:
-        {
-            return (z == chunkSizeZ - 1) || (blocks[x][z + 1][y].getType() == Type::AIR);
+		{  
+            int index = x + Chunk::length * ( (z + 1) + Chunk::width * y);
+            return (z == Chunk::width - 1) || (blocks[index].getType() == Type::AIR);
         }
         case Face::BACK:
         {
-            return (z == 0) || (blocks[x][z - 1][y].getType() == Type::AIR);
+            int index = x + Chunk::length * ( (z - 1) + Chunk::width * y);
+            return (z == 0) || (blocks[index].getType() == Type::AIR);
         }
         case Face::LEFT:
         {
-            return (x == 0) || (blocks[x - 1][z][y].getType() == Type::AIR);
+            int index = (x - 1) + Chunk::length * (z + Chunk::width * y);
+            return (x == 0) || (blocks[index].getType() == Type::AIR);
         }
         case Face::RIGHT:
         {
-            return (x == chunkSizeX - 1) || (blocks[x + 1][z][y].getType() == Type::AIR);
+            int index = (x + 1) + Chunk::length * (z + Chunk::width * y);
+            return (x == Chunk::length - 1) || (blocks[index].getType() == Type::AIR);
         }
         case Face::TOP:
         {
-            return (y == chunkSizeY - 1) || (blocks[x][z][y + 1].getType() == Type::AIR);
+            int index = x + Chunk::length * (z + Chunk::width * (y + 1));
+            return (y == Chunk::height - 1) || (blocks[index].getType() == Type::AIR);
         }
         case Face::BOTTOM:
         {
-            return (y == 0) || (blocks[x][z][y - 1].getType() == Type::AIR);
+            int index = x + Chunk::length * (z + Chunk::width * (y - 1));
+            return (y == 0) || (blocks[index].getType() == Type::AIR);
         }
         default:
         {

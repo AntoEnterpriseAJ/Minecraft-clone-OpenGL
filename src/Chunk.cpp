@@ -1,10 +1,10 @@
 #include "include/Chunk.h"
 
-// Constructor
 Chunk::Chunk(int localPositionX, int localPositionZ, const std::vector<std::vector<float>>& heightMap)
     : m_VAO{}, m_VBO{}, m_EBO{}, m_heightMap{heightMap}, m_meshGenerated{false}
 {
-    m_blocks.resize(Size::length, std::vector<std::vector<Block>>(Size::width, std::vector<Block>(Size::height)));
+    m_blocks.resize(Size::length * Size::width * Size::height);
+
     for (int x = 0; x < Size::length; ++x)
     {
         for (int z = 0; z < Size::width; ++z)
@@ -16,20 +16,21 @@ Chunk::Chunk(int localPositionX, int localPositionZ, const std::vector<std::vect
                 float blockPosY = y;
                 float blockPosZ = localPositionZ + z;
 
+                int index = x + Size::length * (z + Size::width * y);
+
                 if (y < height)
                 {
-                    m_blocks[x][z][y] = Block(Block::Type::GRASS, blockPosX, blockPosY, blockPosZ);
+                    m_blocks[index] = Block(Block::Type::GRASS, blockPosX, blockPosY, blockPosZ);
                 }
                 else
                 {
-                    m_blocks[x][z][y] = Block(Block::Type::AIR, blockPosX, blockPosY, blockPosZ);
+                    m_blocks[index] = Block(Block::Type::AIR, blockPosX, blockPosY, blockPosZ);
                 }
             }
         }
     }
 }
 
-// Render method
 void Chunk::render() const
 {
     m_VAO.bind();
@@ -44,7 +45,6 @@ void Chunk::render() const
     m_VAO.unbind();
 }
 
-// Generate mesh
 void Chunk::generateMesh(float worldPositionX, float worldPositionZ)
 {
     if (m_meshGenerated) return;
@@ -60,7 +60,9 @@ void Chunk::generateMesh(float worldPositionX, float worldPositionZ)
             int height = (static_cast<int>(m_heightMap[x][z])) < (Size::height) ? (static_cast<int>(m_heightMap[x][z])) : (Size::height);
             for (int y = 0; y < height; ++y)
             {
-                if (m_blocks[x][z][y].getType() == Block::Type::AIR)
+                int index = x + Size::length * (z + Size::width * y);
+
+                if (m_blocks[index].getType() == Block::Type::AIR)
                     continue;
 
                 for (Block::Face face = Block::Face::FRONT; face < Block::Face::COUNT; face = (Block::Face)((int)face + 1))
@@ -74,9 +76,9 @@ void Chunk::generateMesh(float worldPositionX, float worldPositionZ)
                     if (z == Size::width - 1 && face == Block::Face::FRONT && m_neighbors[3] && m_neighbors[3]->getBlockAt(x, 0, y).getType() != Block::Type::AIR)
                         continue;
 
-                    if (m_blocks[x][z][y].isFaceVisible(face, x, y, z, m_blocks))
+                    if (m_blocks[index].isFaceVisible(face, x, y, z, m_blocks))
                     {
-                        const std::vector<float>& faceVertices = m_blocks[x][z][y].getFaceVertices(face);
+                        const std::vector<float>& faceVertices = m_blocks[index].getFaceVertices(face);
                         std::vector<float> faceIndices = {
                             0, 1, 2,
                             2, 3, 0
@@ -122,20 +124,19 @@ void Chunk::generateMesh(float worldPositionX, float worldPositionZ)
     m_meshGenerated = true;
 }
 
-// Check if mesh is generated
 bool Chunk::isMeshGenerated() const
 {
     return m_meshGenerated;
 }
 
-// Set neighbors
 void Chunk::setNeighbors(const std::array<Chunk*, 4>& neighbors)
 {
     m_neighbors = neighbors;
 }
 
-// Get block at specified coordinates
 Block Chunk::getBlockAt(int x, int z, int y) const
 {
-    return m_blocks[x][z][y];
+    int index = x + Size::length * (z + Size::width * y);
+
+    return m_blocks[index];
 }
