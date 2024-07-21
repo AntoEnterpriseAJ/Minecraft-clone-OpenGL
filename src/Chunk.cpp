@@ -1,4 +1,5 @@
 #include "include/Chunk.h"
+#include <random>
 
 Chunk::Chunk(int worldPositionX, int worldPositionZ, const std::vector<std::vector<float>>& heightMap)
     : m_VAO{}, m_VBO{}, m_EBO{}, m_heightMap{heightMap}, m_meshGenerated{false}, m_worldPositionX{worldPositionX}, m_worldPositionZ{worldPositionZ}
@@ -10,6 +11,10 @@ Chunk::Chunk(int worldPositionX, int worldPositionZ, const std::vector<std::vect
         for (int z = 0; z < Size::width; ++z)
         {
             int height = (static_cast<int>(heightMap[x][z])) < (Size::height) ? (static_cast<int>(heightMap[x][z])) : (Size::height);
+
+            if (height > 5 && (rand() % 100) < 10)
+                placeTree(x, z, height);
+
             for (int y = 0; y < Size::height; ++y)
             {
                 float blockPosX = worldPositionX + x;
@@ -123,6 +128,47 @@ void Chunk::generateMesh(float worldPositionX, float worldPositionZ)
     m_EBO.unbind();
 
     m_meshGenerated = true;
+}
+
+void Chunk::placeTree(int x, int z, int y)
+{
+    constexpr int treeHeight = 5;
+    constexpr int treeCrownRadius = 4;
+    constexpr int treeCrownHeight = 5;
+
+    if (y + treeHeight + treeCrownHeight / 2 > Size::height 
+        || x < treeCrownRadius || x > Size::length - treeCrownRadius || z < treeCrownRadius || z > Size::width - treeCrownRadius)
+        return;
+
+    for (int i = 0; i < treeHeight; ++i)
+    {
+        int index = x + Size::length * (z + Size::width * (y + i));
+        if (index < m_blocks.size())
+        {
+            m_blocks[index] = Block{Block::Type::LOG, m_worldPositionX + x, y + i, m_worldPositionZ + z};
+        }
+    }
+
+    for (int i = -treeCrownRadius; i <= treeCrownRadius; ++i)
+    {
+        for (int j = -treeCrownRadius; j <= treeCrownRadius; ++j)
+        {
+            for (int k = 0; k < treeCrownHeight; ++k)
+            {
+                int crownY = y + treeHeight - (treeCrownHeight / 2) + k;
+                if (crownY >= Size::height) break;
+
+                if (std::abs(i) + std::abs(j) + std::abs(k - treeCrownHeight / 2) <= treeCrownRadius)
+                {
+                    int index = (x + i) + Size::length * ((z + j) + Size::width * crownY);
+                    if (index < m_blocks.size() && (x + i) >= 0 && (x + i) < Size::length && (z + j) >= 0 && (z + j) < Size::width)
+                    {
+                        m_blocks[index] = Block{Block::Type::LEAVES, m_worldPositionX + i, crownY, m_worldPositionZ + j};
+                    }
+                }
+            }
+        }
+    }
 }
 
 bool Chunk::isMeshGenerated() const

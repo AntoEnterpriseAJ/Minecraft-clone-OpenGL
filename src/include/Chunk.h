@@ -28,6 +28,7 @@ public:
 
 	void setNeighbors(const std::array<Chunk*, 4>& neighbors);
 	void generateMesh(float worldPositionX, float worldPositionZ);
+	void placeTree(int x, int z, int y);
 
 private:
 	static constexpr int s_waterLevel = 2;

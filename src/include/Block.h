@@ -22,6 +22,8 @@ public:
 		AIR     = 0,
 		GRASS	= 1,
 		WATER   = 2,
+		LOG     = 3,
+		LEAVES  = 4,
 	};
 
 	Block();

@@ -142,5 +142,25 @@ void Block::genUVs()
 			genFaceUV(Face::BOTTOM, 14, 15);
 			break;
         }
+        case Type::LOG:
+        {
+            genFaceUV(Face::FRONT , 4, 14);
+			genFaceUV(Face::BACK  , 4, 14);
+			genFaceUV(Face::LEFT  , 4, 14);
+			genFaceUV(Face::RIGHT , 4, 14);
+			genFaceUV(Face::TOP   , 5, 14);
+			genFaceUV(Face::BOTTOM, 5, 14);
+			break;
+        }
+        case Type::LEAVES:
+        {
+            genFaceUV(Face::FRONT , 4, 7);
+			genFaceUV(Face::BACK  , 4, 7);
+			genFaceUV(Face::LEFT  , 4, 7);
+			genFaceUV(Face::RIGHT , 4, 7);
+			genFaceUV(Face::TOP   , 4, 7);
+			genFaceUV(Face::BOTTOM, 4, 7);
+            break;
+        }
     }
 }
