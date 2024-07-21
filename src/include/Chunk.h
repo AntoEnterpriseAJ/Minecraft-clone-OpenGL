@@ -30,6 +30,8 @@ public:
 	void generateMesh(float worldPositionX, float worldPositionZ);
 
 private:
+	static constexpr int s_waterLevel = 2;
+
 	std::vector<Block> m_blocks;
 	std::vector<std::vector<float>> m_heightMap;
 	std::array<Chunk*, 4> m_neighbors;

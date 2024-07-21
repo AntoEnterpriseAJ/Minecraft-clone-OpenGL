@@ -18,6 +18,11 @@ Chunk::Chunk(int worldPositionX, int worldPositionZ, const std::vector<std::vect
 
                 int index = x + Size::length * (z + Size::width * y);
 
+                if (y < s_waterLevel)
+                {
+                    m_blocks[index] = Block(Block::Type::WATER, blockPosX, blockPosY, blockPosZ);
+                }
+                 
                 if (y < height)
                 {
                     m_blocks[index] = Block(Block::Type::GRASS, blockPosX, blockPosY, blockPosZ);

@@ -132,5 +132,15 @@ void Block::genUVs()
             genFaceUV(Face::BOTTOM, 2, 15);
             break;
         }
+        case Type::WATER:
+        {
+            genFaceUV(Face::FRONT , 14, 15);
+			genFaceUV(Face::BACK  , 14, 15);
+			genFaceUV(Face::LEFT  , 14, 15);
+			genFaceUV(Face::RIGHT , 14, 15);
+			genFaceUV(Face::TOP   , 14, 15);
+			genFaceUV(Face::BOTTOM, 14, 15);
+			break;
+        }
     }
 }
