@@ -9,7 +9,7 @@ namespace CameraDefaults
 	constexpr float yaw	             = -90.0f;
 	constexpr float pitch            =  0.0f;
 	constexpr float pitchUpperBound  =  89.9f;
-	constexpr float speed            =  5.0f;
+	constexpr float speed            =  20.0f;
 	constexpr float mouseSensitivity =  0.1f;
 	constexpr float zoomSensitivity  =  2.0f;
 	constexpr float FOV              =  45.0f;

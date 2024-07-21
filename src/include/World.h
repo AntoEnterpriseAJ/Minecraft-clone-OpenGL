@@ -30,7 +30,7 @@ private:
 		}
 	};
 
-	std::unordered_map<std::pair<int, int>, Chunk, PairHash> m_chunks;
+	std::unordered_map<std::pair<int, int>, Chunk*, PairHash> m_chunks;
 	glm::vec3 m_playerPosition;
 	float m_renderDistance;
 };

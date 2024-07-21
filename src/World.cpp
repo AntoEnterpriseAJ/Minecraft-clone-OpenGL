@@ -25,7 +25,7 @@ void World::render(const glm::vec3& playerPosition)
 
     for (const auto& [coordinates, chunk] : m_chunks)
     {
-        chunk.render();
+        chunk->render();
     }
 }
 
@@ -62,13 +62,12 @@ void World::loadChunk(int xPos, int zPos)
 {
     const auto& heightMap = generateHeightMap(xPos,zPos);
 
-    m_chunks.emplace(std::piecewise_construct,
-                     std::forward_as_tuple(xPos, zPos),
-                     std::forward_as_tuple(xPos * Chunk::Size::length, zPos * Chunk::Size::width, heightMap));
+    m_chunks[{xPos,zPos}] = new Chunk{xPos * Chunk::Size::length, zPos * Chunk::Size::width, heightMap};
 }
 
 void World::unloadChunk(int xPos, int zPos)
 {
+    delete m_chunks[{xPos,zPos}];
     m_chunks.erase({xPos, zPos});
 }
 
@@ -106,7 +105,7 @@ void World::update()
 
     for (auto& [coordinates, chunk] : m_chunks)
     {
-        chunk.generateMesh(coordinates.first * Chunk::Size::length, coordinates.second * Chunk::Size::width);
+        chunk->generateMesh(coordinates.first * Chunk::Size::length, coordinates.second * Chunk::Size::width);
     }
 }
 
@@ -116,18 +115,18 @@ void World::updateChunkNeighbors()
     {
         std::array<Chunk*, 4> neighbors = {
             m_chunks.contains({coordinates.first - 1, coordinates.second}) ?
-                &m_chunks.at({coordinates.first - 1, coordinates.second}) : nullptr, // LEFT
+                m_chunks.at({coordinates.first - 1, coordinates.second}) : nullptr, // LEFT
 
             m_chunks.contains({coordinates.first + 1, coordinates.second}) ?
-                &m_chunks.at({coordinates.first + 1, coordinates.second}) : nullptr, // RIGHT
+                m_chunks.at({coordinates.first + 1, coordinates.second}) : nullptr, // RIGHT
 
             m_chunks.contains({coordinates.first, coordinates.second - 1}) ?
-                &m_chunks.at({coordinates.first, coordinates.second - 1}) : nullptr, // BACK
+                m_chunks.at({coordinates.first, coordinates.second - 1}) : nullptr, // BACK
 
             m_chunks.contains({coordinates.first, coordinates.second + 1}) ?
-                &m_chunks.at({coordinates.first, coordinates.second + 1}) : nullptr  // FRONT
+                m_chunks.at({coordinates.first, coordinates.second + 1}) : nullptr  // FRONT
         };
 
-        chunk.setNeighbors(neighbors);
+        chunk->setNeighbors(neighbors);
     }
 }
