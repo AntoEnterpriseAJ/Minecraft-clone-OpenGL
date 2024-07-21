@@ -1,6 +1,10 @@
 #include "include/Block.h"
 #include "include/Chunk.h"
 
+Block::Block()
+    : m_type{Type::AIR}, m_posX{0}, m_posY{0}, m_posZ{0}, m_faceVertices{}, m_UVs{}
+{}
+
 Block::Block(Type type, int posX, int posY, int posZ)
     : m_type{type}, m_posX{posX}, m_posY{posY}, m_posZ{posZ}
 {

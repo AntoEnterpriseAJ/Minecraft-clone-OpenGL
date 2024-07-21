@@ -35,8 +35,8 @@ private:
 	std::array<Chunk*, 4> m_neighbors;
 
 	bool m_meshGenerated;
-	float m_worldPositionX;
-	float m_worldPositionZ;
+	int m_worldPositionX;
+	int m_worldPositionZ;
 
 	VertexArray m_VAO;
 	VertexBuffer m_VBO;

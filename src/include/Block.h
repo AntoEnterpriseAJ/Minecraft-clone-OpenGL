@@ -23,7 +23,8 @@ public:
 		GRASS	= 1,
 	};
 
-	Block(Type type = Type::GRASS, int posX = 0, int posY = 0, int posZ = 0);
+	Block();
+	Block(Type type, int posX, int posY, int posZ);
 
 	bool isFaceVisible(Face face, int x, int y, int z, const std::vector<Block>& blocks) const;
 	Type getType() const;

@@ -3,7 +3,7 @@
 Chunk::Chunk(int worldPositionX, int worldPositionZ, const std::vector<std::vector<float>>& heightMap)
     : m_VAO{}, m_VBO{}, m_EBO{}, m_heightMap{heightMap}, m_meshGenerated{false}, m_worldPositionX{worldPositionX}, m_worldPositionZ{worldPositionZ}
 {
-    m_blocks.resize(Size::length * Size::width * Size::height);
+    m_blocks.resize(Size::length * Size::width * Size::height, Block{});
 
     for (int x = 0; x < Size::length; ++x)
     {
@@ -21,10 +21,6 @@ Chunk::Chunk(int worldPositionX, int worldPositionZ, const std::vector<std::vect
                 if (y < height)
                 {
                     m_blocks[index] = Block(Block::Type::GRASS, blockPosX, blockPosY, blockPosZ);
-                }
-                else
-                {
-                    m_blocks[index] = Block(Block::Type::AIR, blockPosX, blockPosY, blockPosZ);
                 }
             }
         }
@@ -58,7 +54,7 @@ void Chunk::generateMesh(float worldPositionX, float worldPositionZ)
         for (int z = 0; z < Size::width; ++z)
         {
             int height = (static_cast<int>(m_heightMap[x][z])) < (Size::height) ? (static_cast<int>(m_heightMap[x][z])) : (Size::height);
-            for (int y = 0; y < height; ++y)
+            for (int y = 0; y < Size::height; ++y)
             {
                 int index = x + Size::length * (z + Size::width * y);
 

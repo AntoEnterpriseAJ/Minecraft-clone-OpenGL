@@ -251,7 +251,7 @@ int main()
 		// SET MODEL, VIEW AND PROJECTION MATRICES
 		glm::mat4 model = glm::mat4(1.0f);
 		glm::mat4 view = camera.getViewMatrix();
-		glm::mat4 projection = glm::perspective(glm::radians(camera.getFOV()), screenWidth / screenHeight, 0.1f, 100.0f);
+		glm::mat4 projection = glm::perspective(glm::radians(camera.getFOV()), screenWidth / screenHeight, 0.1f, 1000.0f);
 
 		shaderProgram.use();
 		shaderProgram.setMat4("model", model);
