@@ -23,8 +23,14 @@ void World::render(const glm::vec3& playerPosition)
     m_playerPosition = playerPosition;
     update();
 
+    //std::cout << "Camera in chunk " << getCurrentChunkCoords().first << ", " << getCurrentChunkCoords().second << "\n";
+
     for (const auto& [coordinates, chunk] : m_chunks)
     {
+        if (coordinates == std::pair<int,int>{2, -10}) continue;
+        if (coordinates == std::pair<int,int>{2, -9}) continue;
+        if (coordinates == std::pair<int,int>{2, -8}) continue;
+        if (coordinates == std::pair<int,int>{3, -10}) continue;
         chunk->render();
     }
 }
