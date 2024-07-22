@@ -92,6 +92,11 @@ glm::vec3 Camera::getPosition() const
 	return m_position;
 }
 
+glm::vec3 Camera::getFront() const
+{
+	return m_front;
+}
+
 Camera::Camera(glm::vec3 pos, glm::vec3 front, glm::vec3 up, float yaw, float pitch)
 	: m_position{pos}, m_front{front}, m_up{up}, m_worldUp{up}, m_FOV{CameraDefaults::FOV}, m_yaw{yaw}, m_pitch{pitch},
 	  m_speed{CameraDefaults::speed}, m_mouseSensitivity{CameraDefaults::mouseSensitivity}, m_zoomSensitivity{CameraDefaults::zoomSensitivity}

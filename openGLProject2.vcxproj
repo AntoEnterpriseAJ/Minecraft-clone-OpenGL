@@ -146,6 +146,7 @@
     <ClCompile Include="src\Texture.cpp" />
     <ClCompile Include="src\VertexArray.cpp" />
     <ClCompile Include="src\VertexBuffer.cpp" />
+    <ClCompile Include="src\VoxelHandler.cpp" />
     <ClCompile Include="src\World.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -158,6 +159,7 @@
     <ClInclude Include="src\include\VertexArray.h" />
     <ClInclude Include="src\include\VertexBuffer.h" />
     <ClInclude Include="src\include\VertexBufferLayout.h" />
+    <ClInclude Include="src\include\VoxelHandler.h" />
     <ClInclude Include="src\include\World.h" />
   </ItemGroup>
   <ItemGroup>

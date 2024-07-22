@@ -21,14 +21,17 @@ public:
 	Chunk(int worldPositionX, int worldPositionZ, const std::vector<std::vector<float>>& heightMap);
 
 	void render() const;
-	Block getBlockAt(int x, int z, int y) const; 
+	Block getBlockAt(int x, int z, int y) const;
+	void setBlockTypeAt(int x, int z, int y, Block::Type type);
 	bool isMeshGenerated() const;
 	float getWorldPositionX() const;
 	float getWorldPositionZ() const;
 
 	void setNeighbors(const std::array<Chunk*, 4>& neighbors);
-	void generateMesh(float worldPositionX, float worldPositionZ);
+	void generateMesh();
 	void placeTree(int x, int z, int y);
+
+	bool m_meshGenerated;
 
 private:
 	static constexpr int s_waterLevel = 2;
@@ -37,7 +40,6 @@ private:
 	std::vector<std::vector<float>> m_heightMap;
 	std::array<Chunk*, 4> m_neighbors;
 
-	bool m_meshGenerated;
 	int m_worldPositionX;
 	int m_worldPositionZ;
 
