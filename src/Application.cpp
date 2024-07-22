@@ -21,6 +21,7 @@
 #include "include/Chunk.h"
 #include "include/World.h"
 #include "include/Texture.h"
+#include "include/VoxelHandler.h"
 
 int initOpenGL();
 void processInput(GLFWwindow* window);
@@ -30,12 +31,16 @@ void mouse_callback(GLFWwindow* window, double xPos, double yPos);
 void scroll_callback(GLFWwindow* window, double xOffset, double yOffset);
 void printCameraStatus();
 
+// WORLD
+constexpr float renderDistance = 10.0f;
+constexpr float chunkSize = 16.0f;
+
 // SETTINGS
 constexpr float screenWidth = 800.0f;
 constexpr float screenHeight = 600.0f;
 
 // CAMERA
-Camera camera{ glm::vec3(0.0f, 20.0f, 0.0f) };
+Camera camera{ glm::vec3(renderDistance * chunkSize / 2.0f, 20.0f, renderDistance * chunkSize / 2.0f) };
 float lastMouseX = screenWidth / 2.0f;
 float lastMouseY = screenHeight / 2.0f;
 bool firstMouse = true;
@@ -206,6 +211,7 @@ int main()
 
 	bool wireframe = false;
 	World world(10);
+	VoxelHandler voxelHandler(world, camera.getPosition(), camera.getFront());
 	/* Loop until the user closes the window */
 	while (!glfwWindowShouldClose(window))
 	{
@@ -261,6 +267,8 @@ int main()
 		// RENDER THE WORLD
 		texture3.bind();
 		world.render(camera.getPosition());
+
+		voxelHandler.rayCast(camera.getPosition(), camera.getFront());
 
 		// RENDER GROUND
 		//groundVA.bind();
@@ -338,7 +346,7 @@ void mouse_callback(GLFWwindow* window, double xPos, double yPos)
 void printCameraStatus()
 {
 	std::cout << "Camera at positon: " << "(" << camera.getPositionX() << ", " 
-	<< camera.getPositionY() << ", " << camera.getPositionY() << ")" << std::endl;
+	<< camera.getPositionY() << ", " << camera.getPositionZ() << ")" << std::endl;
 }
 
 void scroll_callback(GLFWwindow* window, double xOffset, double yOffset)

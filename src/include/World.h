@@ -14,6 +14,9 @@ public:
 	World(float renderDistance);
 
 	void render(const glm::vec3& playerPosition);
+	Block getBlockAt(int wx, int wz, int wy) const;
+	void setBlockAt(int wx, int wz, int wy, Block::Type type);
+	Chunk* getChunkAt(int wx, int wz) const;
 private:
 	std::vector<std::vector<float>> generateHeightMap(int chunkX, int chunkZ);
 	std::pair<int, int> getCurrentChunkCoords() const;

@@ -51,7 +51,7 @@ void Chunk::render() const
     m_VAO.unbind();
 }
 
-void Chunk::generateMesh(float worldPositionX, float worldPositionZ)
+void Chunk::generateMesh()
 {
     if (m_meshGenerated) return;
 
@@ -63,7 +63,7 @@ void Chunk::generateMesh(float worldPositionX, float worldPositionZ)
     {
         for (int z = 0; z < Size::width; ++z)
         {
-            int height = (static_cast<int>(m_heightMap[x][z])) < (Size::height) ? (static_cast<int>(m_heightMap[x][z])) : (Size::height);
+            int height = static_cast<int>(m_heightMap[x][z]);
             for (int y = 0; y < Size::height; ++y)
             {
                 int index = x + Size::length * (z + Size::width * y);
@@ -73,8 +73,9 @@ void Chunk::generateMesh(float worldPositionX, float worldPositionZ)
 
                 for (Block::Face face = Block::Face::FRONT; face < Block::Face::COUNT; face = (Block::Face)((int)face + 1))
                 {
+                    // Check neighboring blocks for visibility
                     if (x == 0 && face == Block::Face::LEFT && m_neighbors[0] && m_neighbors[0]->getBlockAt(Size::length - 1, z, y).getType() != Block::Type::AIR)
-						continue;
+                        continue;
                     if (x == Size::length - 1 && face == Block::Face::RIGHT && m_neighbors[1] && m_neighbors[1]->getBlockAt(0, z, y).getType() != Block::Type::AIR)
                         continue;
                     if (z == 0 && face == Block::Face::BACK && m_neighbors[2] && m_neighbors[2]->getBlockAt(x, Size::width - 1, y).getType() != Block::Type::AIR)
@@ -85,16 +86,16 @@ void Chunk::generateMesh(float worldPositionX, float worldPositionZ)
                     if (m_blocks[index].isFaceVisible(face, x, y, z, m_blocks))
                     {
                         const std::vector<float>& faceVertices = m_blocks[index].getFaceVertices(face);
-                        std::vector<float> faceIndices = {
+                        std::vector<unsigned int> faceIndices = {
                             0, 1, 2,
                             2, 3, 0
                         };
 
                         for (int i = 0; i < faceVertices.size(); i += 5)
                         {
-                            vertices.push_back(faceVertices[i] + x + worldPositionX);
+                            vertices.push_back(faceVertices[i] + x + m_worldPositionX);
                             vertices.push_back(faceVertices[i + 1] + y);
-                            vertices.push_back(faceVertices[i + 2] + z + worldPositionZ);
+                            vertices.push_back(faceVertices[i + 2] + z + m_worldPositionZ);
                             vertices.push_back(faceVertices[i + 3]);
                             vertices.push_back(faceVertices[i + 4]);
                         }
@@ -129,6 +130,7 @@ void Chunk::generateMesh(float worldPositionX, float worldPositionZ)
 
     m_meshGenerated = true;
 }
+
 
 void Chunk::placeTree(int x, int z, int y)
 {
@@ -196,4 +198,11 @@ Block Chunk::getBlockAt(int x, int z, int y) const
     int index = x + Size::length * (z + Size::width * y);
 
     return m_blocks[index];
+}
+
+void Chunk::setBlockTypeAt(int x, int z, int y, Block::Type type)
+{
+    int index = x + Size::length * (z + Size::width * y);
+
+	m_blocks[index].setType(type);
 }

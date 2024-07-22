@@ -94,6 +94,11 @@ std::vector<float> Block::getFaceVertices(Face face) const
     return std::vector<float>(m_faceVertices.begin() + s_verticesPerFace * face, m_faceVertices.begin() + s_verticesPerFace * (face + 1));
 }
 
+void Block::setType(Block::Type type)
+{
+    m_type = type;
+}
+
 void Block::genFaceUV(Face face, float bottomLeftX, float bottomLeftY)
 {
     constexpr float atlasLength = 16.0f, atlasWidth = 16.0f;

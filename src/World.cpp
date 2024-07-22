@@ -1,6 +1,6 @@
 #include "include/World.h"
 #include <glm/gtc/noise.hpp>
-#include <thread>
+#include <iostream>
 
 World::World(float renderDistance)
     : m_renderDistance{renderDistance}
@@ -105,7 +105,7 @@ void World::update()
 
     for (auto& [coordinates, chunk] : m_chunks)
     {
-        chunk->generateMesh(coordinates.first * Chunk::Size::length, coordinates.second * Chunk::Size::width);
+        chunk->generateMesh();
     }
 }
 
@@ -129,4 +129,54 @@ void World::updateChunkNeighbors()
 
         chunk->setNeighbors(neighbors);
     }
+}
+
+Block World::getBlockAt(int wx, int wz, int wy) const
+{
+    int chunkX = wx >= 0 ? wx / Chunk::Size::length : (wx - Chunk::Size::length + 1) / Chunk::Size::length;
+    int chunkZ = wz >= 0 ? wz / Chunk::Size::width : (wz - Chunk::Size::width + 1) / Chunk::Size::width;
+
+    int localBlockX = wx % Chunk::Size::length;
+    if (localBlockX < 0) localBlockX += Chunk::Size::length;
+
+    int localBlockZ = wz % Chunk::Size::width;
+    if (localBlockZ < 0) localBlockZ += Chunk::Size::width;
+
+    auto it = m_chunks.find({chunkX, chunkZ});
+    if (it == m_chunks.end()) return Block(); // Return air block if chunk not found
+
+    return it->second->getBlockAt(localBlockX, localBlockZ, wy);
+}
+
+void World::setBlockAt(int wx, int wz, int wy, Block::Type type)
+{
+    int chunkX = wx >= 0 ? wx / Chunk::Size::length : (wx - Chunk::Size::length + 1) / Chunk::Size::length;
+    int chunkZ = wz >= 0 ? wz / Chunk::Size::width : (wz - Chunk::Size::width + 1) / Chunk::Size::width;
+
+    int localBlockX = wx % Chunk::Size::length;
+    if (localBlockX < 0) localBlockX += Chunk::Size::length;
+
+    int localBlockZ = wz % Chunk::Size::width;
+    if (localBlockZ < 0) localBlockZ += Chunk::Size::width;
+
+    auto it = m_chunks.find({chunkX, chunkZ});
+    if (it != m_chunks.end())
+    {
+        it->second->setBlockTypeAt(localBlockX, localBlockZ, wy, type);
+    }
+}
+
+Chunk* World::getChunkAt(int wx, int wz) const
+{
+    // Calculate chunk coordinates from world coordinates.
+    // Use integer division, considering that negative coordinates should map correctly to chunk indices.
+    int chunkX = wx >= 0 ? wx / Chunk::Size::length : (wx - Chunk::Size::length + 1) / Chunk::Size::length;
+    int chunkZ = wz >= 0 ? wz / Chunk::Size::width : (wz - Chunk::Size::width + 1) / Chunk::Size::width;
+
+    // Try to find the chunk in the map.
+    auto it = m_chunks.find({chunkX, chunkZ});
+    if (it == m_chunks.end()) return nullptr;
+
+    // Return the found chunk.
+    return it->second;
 }

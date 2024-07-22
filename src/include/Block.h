@@ -32,6 +32,7 @@ public:
 	bool isFaceVisible(Face face, int x, int y, int z, const std::vector<Block>& blocks) const;
 	Type getType() const;
 	std::vector<float> getFaceVertices(Face face) const;
+	void setType(Block::Type type);
 
 private:
 	void genFaceUV(Face face, float bottomLeftX, float bottomLeftY);
