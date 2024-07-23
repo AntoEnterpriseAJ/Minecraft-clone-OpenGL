@@ -24,6 +24,7 @@ public:
 		WATER   = 2,
 		LOG     = 3,
 		LEAVES  = 4,
+		DIRT    = 5,
 	};
 
 	Block();

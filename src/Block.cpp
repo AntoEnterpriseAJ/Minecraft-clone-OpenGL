@@ -167,5 +167,15 @@ void Block::genUVs()
 			genFaceUV(Face::BOTTOM, 4, 7);
             break;
         }
+        case Type::DIRT:
+        {
+            genFaceUV(Face::FRONT , 2, 15);
+            genFaceUV(Face::BACK  , 2, 15);
+            genFaceUV(Face::LEFT  , 2, 15);
+            genFaceUV(Face::RIGHT , 2, 15);
+            genFaceUV(Face::TOP   , 2, 15);
+            genFaceUV(Face::BOTTOM, 2, 15);
+            break;
+        }
     }
 }

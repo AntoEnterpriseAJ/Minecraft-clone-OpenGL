@@ -12,7 +12,7 @@ public:
 	void renderSelectedBlockOutline(int x, int z, int y);
 	void removeSelectedBlock(int x, int z, int y);
 private:
-	static constexpr float RAYCAST_DISTANCE = 4;
+	static constexpr float RAYCAST_DISTANCE = 6;
 
 	World& m_world;
 	glm::vec3 m_playerPosition;
