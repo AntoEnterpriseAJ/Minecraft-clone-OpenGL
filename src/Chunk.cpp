@@ -5,21 +5,24 @@ Chunk::Chunk(int worldPositionX, int worldPositionZ, const std::vector<std::vect
     : m_VAO{}, m_VBO{}, m_EBO{}, m_heightMap{heightMap}, m_meshGenerated{false}, m_worldPositionX{worldPositionX}, m_worldPositionZ{worldPositionZ}
 {
     m_blocks.resize(Size::length * Size::width * Size::height, Block{});
+}
 
+void Chunk::generateBlocks()
+{
     for (int x = 0; x < Size::length; ++x)
     {
         for (int z = 0; z < Size::width; ++z)
         {
-            int height = (static_cast<int>(heightMap[x][z])) < (Size::height) ? (static_cast<int>(heightMap[x][z])) : (Size::height);
+            int height = (static_cast<int>(m_heightMap[x][z])) < (Size::height) ? (static_cast<int>(m_heightMap[x][z])) : (Size::height);
 
             if (height > 5 && (rand() % 100) < 10)
                 placeTree(x, z, height);
 
             for (int y = 0; y < Size::height; ++y)
             {
-                float blockPosX = worldPositionX + x;
+                float blockPosX = m_worldPositionX + x;
                 float blockPosY = y;
-                float blockPosZ = worldPositionZ + z;
+                float blockPosZ = m_worldPositionZ + z;
 
                 int index = x + Size::length * (z + Size::width * y);
 

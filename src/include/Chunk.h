@@ -27,6 +27,7 @@ public:
 	float getWorldPositionX() const;
 	float getWorldPositionZ() const;
 
+	void generateBlocks();
 	void setNeighbors(const std::array<Chunk*, 4>& neighbors);
 	void generateMesh();
 	void placeTree(int x, int z, int y);

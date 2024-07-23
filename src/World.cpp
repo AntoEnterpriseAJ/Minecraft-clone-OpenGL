@@ -1,6 +1,7 @@
 #include "include/World.h"
 #include <glm/gtc/noise.hpp>
 #include <iostream>
+#include <future>
 
 World::World(float renderDistance)
     : m_renderDistance{renderDistance}
@@ -14,7 +15,6 @@ World::World(float renderDistance)
             loadChunk(x, z);
         }
     }
-
     updateChunkNeighbors();
 }
 
@@ -63,6 +63,12 @@ void World::loadChunk(int xPos, int zPos)
     const auto& heightMap = generateHeightMap(xPos,zPos);
 
     m_chunks[{xPos,zPos}] = new Chunk{xPos * Chunk::Size::length, zPos * Chunk::Size::width, heightMap};
+    m_chunkFutures[{xPos, zPos}] = std::async(std::launch::async, &World::generateChunkBlocks, this, xPos, zPos);
+}
+
+void World::generateChunkBlocks(int xPos, int zPos)
+{
+    m_chunks[{xPos, zPos}]->generateBlocks();
 }
 
 void World::unloadChunk(int xPos, int zPos)
@@ -101,11 +107,29 @@ void World::update()
         }
     }
 
+    std::vector<std::pair<int, int>> readyChunks;
+
+    for (auto& [chunkCoords, chunkFuture] : m_chunkFutures)
+    {
+        const auto status = chunkFuture.wait_for(std::chrono::milliseconds(0));
+        if (status == std::future_status::ready)
+        {
+            chunkFuture.get();
+            readyChunks.emplace_back(chunkCoords);
+        }
+    }
+
+    for (const auto& coords : readyChunks)
+    {
+        m_chunkFutures.erase(coords);
+    }
+
     updateChunkNeighbors();
 
-    for (auto& [coordinates, chunk] : m_chunks)
+    for (const auto& coordinates : readyChunks)
     {
-        chunk->generateMesh();
+        if (m_chunks.contains(coordinates))
+            m_chunks[coordinates]->generateMesh(); 
     }
 }
 

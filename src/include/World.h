@@ -6,7 +6,7 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
-
+#include <future>
 
 class World
 {
@@ -17,10 +17,12 @@ public:
 	Block getBlockAt(int wx, int wz, int wy) const;
 	void setBlockAt(int wx, int wz, int wy, Block::Type type);
 	Chunk* getChunkAt(int wx, int wz) const;
+
 private:
 	std::vector<std::vector<float>> generateHeightMap(int chunkX, int chunkZ);
 	std::pair<int, int> getCurrentChunkCoords() const;
 	void loadChunk(int xPos, int zPos);
+	void generateChunkBlocks(int xPos, int zPos);
 	void unloadChunk(int xPos, int zPos);
 	void update();
 	void updateChunkNeighbors();
@@ -34,6 +36,7 @@ private:
 	};
 
 	std::unordered_map<std::pair<int, int>, Chunk*, PairHash> m_chunks;
+	std::unordered_map<std::pair<int, int>, std::future<void>, PairHash> m_chunkFutures;
 	glm::vec3 m_playerPosition;
 	float m_renderDistance;
 };
