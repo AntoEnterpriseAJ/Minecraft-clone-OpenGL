@@ -15,7 +15,7 @@ public:
 	{
 		length = 16,
 		width = 16,
-		height = 32,
+		height = 64,
 	};
 
 	Chunk(int worldPositionX, int worldPositionZ, const std::vector<std::vector<float>>& heightMap);

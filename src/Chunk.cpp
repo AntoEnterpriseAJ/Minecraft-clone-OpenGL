@@ -30,8 +30,11 @@ void Chunk::generateBlocks()
                 {
                     m_blocks[index] = Block(Block::Type::WATER, blockPosX, blockPosY, blockPosZ);
                 }
-                 
-                if (y < height)
+                else if (y < height - 1)
+                {
+                    m_blocks[index] = Block(Block::Type::DIRT, blockPosX, blockPosY, blockPosZ);
+                }
+                else if (y < height)
                 {
                     m_blocks[index] = Block(Block::Type::GRASS, blockPosX, blockPosY, blockPosZ);
                 }
