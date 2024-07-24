@@ -25,6 +25,8 @@ public:
 		LOG     = 3,
 		LEAVES  = 4,
 		DIRT    = 5,
+		STONE	= 6,
+		COAL    = 7,
 	};
 
 	Block();

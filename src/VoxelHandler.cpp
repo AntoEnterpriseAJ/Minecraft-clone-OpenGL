@@ -44,7 +44,7 @@ void VoxelHandler::rayCast(glm::vec3 playerPosition, glm::vec3 playerFront)
         currentPosition += step;
     }
 
-    std::cout << "Raycast ended" << std::endl;
+    std::cout << "Raycast ended without finding non-air block" << std::endl;
 }
 
 void VoxelHandler::removeSelectedBlock(int x, int z, int y)

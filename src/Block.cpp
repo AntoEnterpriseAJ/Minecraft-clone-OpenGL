@@ -177,5 +177,25 @@ void Block::genUVs()
             genFaceUV(Face::BOTTOM, 2, 15);
             break;
         }
+        case Type::STONE:
+        {
+            genFaceUV(Face::FRONT , 1, 15);
+            genFaceUV(Face::BACK  , 1, 15);
+            genFaceUV(Face::LEFT  , 1, 15);
+            genFaceUV(Face::RIGHT , 1, 15);
+            genFaceUV(Face::TOP   , 1, 15);
+            genFaceUV(Face::BOTTOM, 1, 15);
+            break;
+        }
+        case Type::COAL:
+        {
+            genFaceUV(Face::FRONT , 2, 13);
+			genFaceUV(Face::BACK  , 2, 13);
+			genFaceUV(Face::LEFT  , 2, 13);
+			genFaceUV(Face::RIGHT , 2, 13);
+			genFaceUV(Face::TOP   , 2, 13);
+			genFaceUV(Face::BOTTOM, 2, 13);
+			break;
+        }
     }
 }

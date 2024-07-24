@@ -4,7 +4,7 @@
 Chunk::Chunk(int worldPositionX, int worldPositionZ, const std::vector<std::vector<float>>& heightMap)
     : m_VAO{}, m_VBO{}, m_EBO{}, m_heightMap{heightMap}, m_meshGenerated{false}, m_worldPositionX{worldPositionX}, m_worldPositionZ{worldPositionZ}
 {
-    m_blocks.resize(Size::length * Size::width * Size::height, Block{});
+    m_blocks.resize(Size::length * Size::width * Size::height, Block{}); //TODO: FIX HOT LINE
 }
 
 void Chunk::generateBlocks()
@@ -29,6 +29,13 @@ void Chunk::generateBlocks()
                 if (y < s_waterLevel)
                 {
                     m_blocks[index] = Block(Block::Type::WATER, blockPosX, blockPosY, blockPosZ);
+                }
+                else if (y < height - 4)
+                {
+                    if (rand() % 100 < 10)
+						m_blocks[index] = Block(Block::Type::COAL, blockPosX, blockPosY, blockPosZ);
+					else
+						m_blocks[index] = Block(Block::Type::STONE, blockPosX, blockPosY, blockPosZ);
                 }
                 else if (y < height - 1)
                 {
