@@ -42,7 +42,7 @@ std::vector<std::vector<float>> World::generateHeightMap(int chunkX, int chunkZ)
             float chunkWorldZ = z + chunkZ * Chunk::Size::width;
 
             float height = glm::simplex(glm::vec2(chunkWorldX / 64.0f, chunkWorldZ / 64.0f));
-            height = (height + 1.0f) / 2.0f * 10.0f;
+            height = (height + 1.0f) / 2.0f * 20.0f;
 
             heightMap[x][z] = std::abs(height) == 0 ? std::abs(height) + 1 : std::abs(height);
         }

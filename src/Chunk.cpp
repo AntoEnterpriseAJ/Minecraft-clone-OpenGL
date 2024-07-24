@@ -30,6 +30,13 @@ void Chunk::generateBlocks()
                 {
                     m_blocks[index] = Block(Block::Type::WATER, blockPosX, blockPosY, blockPosZ);
                 }
+                else if (y < height - 4)
+                {
+                    if (rand() % 100 < 10)
+						m_blocks[index] = Block(Block::Type::COAL, blockPosX, blockPosY, blockPosZ);
+					else
+						m_blocks[index] = Block(Block::Type::STONE, blockPosX, blockPosY, blockPosZ);
+                }
                 else if (y < height - 1)
                 {
                     m_blocks[index] = Block(Block::Type::DIRT, blockPosX, blockPosY, blockPosZ);
