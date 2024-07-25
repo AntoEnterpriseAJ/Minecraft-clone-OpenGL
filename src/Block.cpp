@@ -2,118 +2,11 @@
 #include "include/Chunk.h"
 
 Block::Block()
-    : m_type{Type::AIR}, m_posX{0}, m_posY{0}, m_posZ{0}, m_faceVertices{}, m_UVs{}
+    : m_type{Type::AIR}
 {}
 
-Block::Block(Type type, int posX, int posY, int posZ)
-    : m_type{type}, m_posX{posX}, m_posY{posY}, m_posZ{posZ}
-{
-    genUVs();
-
-    m_faceVertices = {
-        -0.5f, -0.5f,  0.5f,    m_UVs[Face::FRONT * s_UVsPerFace + 0], m_UVs[Face::FRONT * s_UVsPerFace + 1],       // bottom left
-         0.5f, -0.5f,  0.5f,    m_UVs[Face::FRONT * s_UVsPerFace + 2], m_UVs[Face::FRONT * s_UVsPerFace + 3],       // bottom right
-         0.5f,  0.5f,  0.5f,    m_UVs[Face::FRONT * s_UVsPerFace + 4], m_UVs[Face::FRONT * s_UVsPerFace + 5],       // top right
-        -0.5f,  0.5f,  0.5f,    m_UVs[Face::FRONT * s_UVsPerFace + 6], m_UVs[Face::FRONT * s_UVsPerFace + 7],       // top left
-
-        -0.5f, -0.5f, -0.5f,    m_UVs[Face::BACK * s_UVsPerFace + 0], m_UVs[Face::BACK * s_UVsPerFace + 1],         // bottom left
-        -0.5f,  0.5f, -0.5f,    m_UVs[Face::BACK * s_UVsPerFace + 6], m_UVs[Face::BACK * s_UVsPerFace + 7],         // top left
-         0.5f,  0.5f, -0.5f,    m_UVs[Face::BACK * s_UVsPerFace + 4], m_UVs[Face::BACK * s_UVsPerFace + 5],         // top right
-         0.5f, -0.5f, -0.5f,    m_UVs[Face::BACK * s_UVsPerFace + 2], m_UVs[Face::BACK * s_UVsPerFace + 3],         // bottom right
-
-        -0.5f, -0.5f, -0.5f,    m_UVs[Face::LEFT * s_UVsPerFace + 0], m_UVs[Face::LEFT * s_UVsPerFace + 1],         // bottom left
-        -0.5f, -0.5f,  0.5f,    m_UVs[Face::LEFT * s_UVsPerFace + 2], m_UVs[Face::LEFT * s_UVsPerFace + 3],         // bottom right
-        -0.5f,  0.5f,  0.5f,    m_UVs[Face::LEFT * s_UVsPerFace + 4], m_UVs[Face::LEFT * s_UVsPerFace + 5],         // top right
-        -0.5f,  0.5f, -0.5f,    m_UVs[Face::LEFT * s_UVsPerFace + 6], m_UVs[Face::LEFT * s_UVsPerFace + 7],         // top left
-
-         0.5f, -0.5f, -0.5f,    m_UVs[Face::RIGHT * s_UVsPerFace + 0], m_UVs[Face::RIGHT * s_UVsPerFace + 1],       // bottom left
-         0.5f,  0.5f, -0.5f,    m_UVs[Face::RIGHT * s_UVsPerFace + 6], m_UVs[Face::RIGHT * s_UVsPerFace + 7],       // top left
-         0.5f,  0.5f,  0.5f,    m_UVs[Face::RIGHT * s_UVsPerFace + 4], m_UVs[Face::RIGHT * s_UVsPerFace + 5],       // top right
-         0.5f, -0.5f,  0.5f,    m_UVs[Face::RIGHT * s_UVsPerFace + 2], m_UVs[Face::RIGHT * s_UVsPerFace + 3],       // bottom right
-
-        -0.5f,  0.5f, -0.5f,    m_UVs[Face::TOP * s_UVsPerFace + 0], m_UVs[Face::TOP * s_UVsPerFace + 1],           // bottom left
-        -0.5f,  0.5f,  0.5f,    m_UVs[Face::TOP * s_UVsPerFace + 6], m_UVs[Face::TOP * s_UVsPerFace + 7],           // top left
-         0.5f,  0.5f,  0.5f,    m_UVs[Face::TOP * s_UVsPerFace + 4], m_UVs[Face::TOP * s_UVsPerFace + 5],           // top right
-         0.5f,  0.5f, -0.5f,    m_UVs[Face::TOP * s_UVsPerFace + 2], m_UVs[Face::TOP * s_UVsPerFace + 3],           // bottom right
-
-        -0.5f, -0.5f, -0.5f,    m_UVs[Face::BOTTOM * s_UVsPerFace + 0], m_UVs[Face::BOTTOM * s_UVsPerFace + 1],      // bottom left
-         0.5f, -0.5f, -0.5f,    m_UVs[Face::BOTTOM * s_UVsPerFace + 2], m_UVs[Face::BOTTOM * s_UVsPerFace + 3],      // bottom right
-         0.5f, -0.5f,  0.5f,    m_UVs[Face::BOTTOM * s_UVsPerFace + 4], m_UVs[Face::BOTTOM * s_UVsPerFace + 5],      // top right
-        -0.5f, -0.5f,  0.5f,    m_UVs[Face::BOTTOM * s_UVsPerFace + 6], m_UVs[Face::BOTTOM * s_UVsPerFace + 7],      // top left
-    };
-}
-
-bool Block::isFaceVisible(Face face, int x, int y, int z, const std::vector<Block>& blocks) const
-{
-    switch (face)
-    {
-        case Face::FRONT:
-		{  
-            int index = x + Chunk::length * ( (z + 1) + Chunk::width * y);
-            return (z == Chunk::width - 1) || (blocks[index].getType() == Type::AIR);
-        }
-        case Face::BACK:
-        {
-            int index = x + Chunk::length * ( (z - 1) + Chunk::width * y);
-            return (z == 0) || (blocks[index].getType() == Type::AIR);
-        }
-        case Face::LEFT:
-        {
-            int index = (x - 1) + Chunk::length * (z + Chunk::width * y);
-            return (x == 0) || (blocks[index].getType() == Type::AIR);
-        }
-        case Face::RIGHT:
-        {
-            int index = (x + 1) + Chunk::length * (z + Chunk::width * y);
-            return (x == Chunk::length - 1) || (blocks[index].getType() == Type::AIR);
-        }
-        case Face::TOP:
-        {
-            int index = x + Chunk::length * (z + Chunk::width * (y + 1));
-            return (y == Chunk::height - 1) || (blocks[index].getType() == Type::AIR);
-        }
-        case Face::BOTTOM:
-        {
-            int index = x + Chunk::length * (z + Chunk::width * (y - 1));
-            return (y == 0) || (blocks[index].getType() == Type::AIR);
-        }
-        default:
-        {
-            return false;
-        }
-    }
-}
-
-Block::Type Block::getType() const
-{
-    return m_type;
-}
-
-std::vector<float> Block::getFaceVertices(Face face) const
-{
-    return std::vector<float>(m_faceVertices.begin() + s_verticesPerFace * face, m_faceVertices.begin() + s_verticesPerFace * (face + 1));
-}
-
-void Block::setType(Block::Type type)
-{
-    m_type = type;
-}
-
-void Block::genFaceUV(Face face, float bottomLeftX, float bottomLeftY)
-{
-    constexpr float atlasLength = 16.0f, atlasWidth = 16.0f;
-
-    m_UVs[face * s_UVsPerFace + 0] = bottomLeftX / atlasLength;
-    m_UVs[face * s_UVsPerFace + 1] = bottomLeftY / atlasWidth;
-    m_UVs[face * s_UVsPerFace + 2] = (bottomLeftX + 1) / atlasLength;
-    m_UVs[face * s_UVsPerFace + 3] = bottomLeftY / atlasWidth;
-    m_UVs[face * s_UVsPerFace + 4] = (bottomLeftX + 1) / atlasLength;
-    m_UVs[face * s_UVsPerFace + 5] = (bottomLeftY + 1) / atlasWidth;
-    m_UVs[face * s_UVsPerFace + 6] = bottomLeftX / atlasLength;
-    m_UVs[face * s_UVsPerFace + 7] = (bottomLeftY + 1) / atlasWidth;
-}
-
-void Block::genUVs()
+Block::Block(Type type)
+    : m_type{type}
 {
     switch (m_type)
     {
@@ -198,4 +91,75 @@ void Block::genUVs()
 			break;
         }
     }
+}
+
+bool Block::isFaceVisible(Face face, int x, int y, int z, const std::vector<Block>& blocks) const
+{
+    switch (face)
+    {
+        case Face::FRONT:
+		{  
+            int index = x + Chunk::length * ( (z + 1) + Chunk::width * y);
+            return (z == Chunk::width - 1) || (blocks[index].getType() == Type::AIR);
+        }
+        case Face::BACK:
+        {
+            int index = x + Chunk::length * ( (z - 1) + Chunk::width * y);
+            return (z == 0) || (blocks[index].getType() == Type::AIR);
+        }
+        case Face::LEFT:
+        {
+            int index = (x - 1) + Chunk::length * (z + Chunk::width * y);
+            return (x == 0) || (blocks[index].getType() == Type::AIR);
+        }
+        case Face::RIGHT:
+        {
+            int index = (x + 1) + Chunk::length * (z + Chunk::width * y);
+            return (x == Chunk::length - 1) || (blocks[index].getType() == Type::AIR);
+        }
+        case Face::TOP:
+        {
+            int index = x + Chunk::length * (z + Chunk::width * (y + 1));
+            return (y == Chunk::height - 1) || (blocks[index].getType() == Type::AIR);
+        }
+        case Face::BOTTOM:
+        {
+            int index = x + Chunk::length * (z + Chunk::width * (y - 1));
+            return (y == 0) || (blocks[index].getType() == Type::AIR);
+        }
+        default:
+        {
+            return false;
+        }
+    }
+}
+
+Block::Type Block::getType() const
+{
+    return m_type;
+}
+
+
+void Block::setType(Block::Type type)
+{
+    m_type = type;
+}
+
+float Block::getUV(Face face, int index) const
+{
+    return m_UVs[face * s_UVsPerFace + index];
+}
+
+void Block::genFaceUV(Face face, float bottomLeftX, float bottomLeftY)
+{
+    constexpr float atlasLength = 16.0f, atlasWidth = 16.0f;
+
+    m_UVs[face * s_UVsPerFace + 0] = bottomLeftX / atlasLength;
+    m_UVs[face * s_UVsPerFace + 1] = bottomLeftY / atlasWidth;
+    m_UVs[face * s_UVsPerFace + 2] = (bottomLeftX + 1) / atlasLength;
+    m_UVs[face * s_UVsPerFace + 3] = bottomLeftY / atlasWidth;
+    m_UVs[face * s_UVsPerFace + 4] = (bottomLeftX + 1) / atlasLength;
+    m_UVs[face * s_UVsPerFace + 5] = (bottomLeftY + 1) / atlasWidth;
+    m_UVs[face * s_UVsPerFace + 6] = bottomLeftX / atlasLength;
+    m_UVs[face * s_UVsPerFace + 7] = (bottomLeftY + 1) / atlasWidth;
 }

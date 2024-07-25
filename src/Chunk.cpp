@@ -1,10 +1,11 @@
 #include "include/Chunk.h"
 #include <random>
+#include <glm/gtc/noise.hpp>
 
-Chunk::Chunk(int worldPositionX, int worldPositionZ, const std::vector<std::vector<float>>& heightMap)
-    : m_VAO{}, m_VBO{}, m_EBO{}, m_heightMap{heightMap}, m_meshGenerated{false}, m_worldPositionX{worldPositionX}, m_worldPositionZ{worldPositionZ}
+Chunk::Chunk(int worldPositionX, int worldPositionZ)
+    : m_VAO{}, m_VBO{}, m_EBO{}, m_meshGenerated{false}, m_worldPositionX{worldPositionX}, m_worldPositionZ{worldPositionZ}
 {
-    m_blocks.resize(Size::length * Size::width * Size::height, Block{}); //TODO: FIX HOT LINE
+    m_blocks.resize(Size::length * Size::width * Size::height, Block{});
 }
 
 void Chunk::generateBlocks()
@@ -13,7 +14,7 @@ void Chunk::generateBlocks()
     {
         for (int z = 0; z < Size::width; ++z)
         {
-            int height = (static_cast<int>(m_heightMap[x][z])) < (Size::height) ? (static_cast<int>(m_heightMap[x][z])) : (Size::height);
+            int height = (getHeightAt(x, z)) < (Size::height) ? (getHeightAt(x, z)) : (Size::height);
 
             if (height > 5 && (rand() % 100) < 10)
                 placeTree(x, z, height);
@@ -28,22 +29,22 @@ void Chunk::generateBlocks()
 
                 if (y < s_waterLevel)
                 {
-                    m_blocks[index] = Block(Block::Type::WATER, blockPosX, blockPosY, blockPosZ);
+                    m_blocks[index] = Block(Block::Type::WATER);
                 }
                 else if (y < height - 4)
                 {
                     if (rand() % 100 < 10)
-						m_blocks[index] = Block(Block::Type::COAL, blockPosX, blockPosY, blockPosZ);
+						m_blocks[index] = Block(Block::Type::COAL);
 					else
-						m_blocks[index] = Block(Block::Type::STONE, blockPosX, blockPosY, blockPosZ);
+						m_blocks[index] = Block(Block::Type::STONE);
                 }
                 else if (y < height - 1)
                 {
-                    m_blocks[index] = Block(Block::Type::DIRT, blockPosX, blockPosY, blockPosZ);
+                    m_blocks[index] = Block(Block::Type::DIRT);
                 }
                 else if (y < height)
                 {
-                    m_blocks[index] = Block(Block::Type::GRASS, blockPosX, blockPosY, blockPosZ);
+                    m_blocks[index] = Block(Block::Type::GRASS);
                 }
             }
         }
@@ -76,17 +77,18 @@ void Chunk::generateMesh()
     {
         for (int z = 0; z < Size::width; ++z)
         {
-            int height = static_cast<int>(m_heightMap[x][z]);
+            int height = getHeightAt(x, z);
             for (int y = 0; y < Size::height; ++y)
             {
                 int index = x + Size::length * (z + Size::width * y);
 
-                if (m_blocks[index].getType() == Block::Type::AIR)
+                const Block& block = m_blocks[index];
+
+                if (block.getType() == Block::Type::AIR)
                     continue;
 
                 for (Block::Face face = Block::Face::FRONT; face < Block::Face::COUNT; face = (Block::Face)((int)face + 1))
                 {
-                    // Check neighboring blocks for visibility
                     if (x == 0 && face == Block::Face::LEFT && m_neighbors[0] && m_neighbors[0]->getBlockAt(Size::length - 1, z, y).getType() != Block::Type::AIR)
                         continue;
                     if (x == Size::length - 1 && face == Block::Face::RIGHT && m_neighbors[1] && m_neighbors[1]->getBlockAt(0, z, y).getType() != Block::Type::AIR)
@@ -96,10 +98,45 @@ void Chunk::generateMesh()
                     if (z == Size::width - 1 && face == Block::Face::FRONT && m_neighbors[3] && m_neighbors[3]->getBlockAt(x, 0, y).getType() != Block::Type::AIR)
                         continue;
 
-                    if (m_blocks[index].isFaceVisible(face, x, y, z, m_blocks))
+                    if (block.isFaceVisible(face, x, y, z, m_blocks))
                     {
-                        const std::vector<float>& faceVertices = m_blocks[index].getFaceVertices(face);
-                        std::vector<unsigned int> faceIndices = {
+                        constexpr int verticesPerFace = 20;
+
+                        const std::array<float, verticesPerFace * Block::Face::COUNT> blockVertices = {
+                            -0.5f, -0.5f,  0.5f, block.getUV(Block::Face::FRONT, 0), block.getUV(Block::Face::FRONT, 1),      // bottom left
+                             0.5f, -0.5f,  0.5f, block.getUV(Block::Face::FRONT, 2), block.getUV(Block::Face::FRONT, 3),      // bottom right
+                             0.5f,  0.5f,  0.5f, block.getUV(Block::Face::FRONT, 4), block.getUV(Block::Face::FRONT, 5),      // top right
+                            -0.5f,  0.5f,  0.5f, block.getUV(Block::Face::FRONT, 6), block.getUV(Block::Face::FRONT, 7),      // top left
+                                                                                                                              
+                            -0.5f, -0.5f, -0.5f, block.getUV(Block::Face::BACK, 0), block.getUV(Block::Face::BACK, 1),        // bottom left
+                            -0.5f,  0.5f, -0.5f, block.getUV(Block::Face::BACK, 6), block.getUV(Block::Face::BACK, 7),        // top left
+                             0.5f,  0.5f, -0.5f, block.getUV(Block::Face::BACK, 4), block.getUV(Block::Face::BACK, 5),        // top right
+                             0.5f, -0.5f, -0.5f, block.getUV(Block::Face::BACK, 2), block.getUV(Block::Face::BACK, 3),        // bottom right
+                                                                                                                              
+                            -0.5f, -0.5f, -0.5f, block.getUV(Block::Face::LEFT, 0), block.getUV(Block::Face::LEFT, 1),        // bottom left
+                            -0.5f, -0.5f,  0.5f, block.getUV(Block::Face::LEFT, 2), block.getUV(Block::Face::LEFT, 3),        // bottom right
+                            -0.5f,  0.5f,  0.5f, block.getUV(Block::Face::LEFT, 4), block.getUV(Block::Face::LEFT, 5),        // top right
+                            -0.5f,  0.5f, -0.5f, block.getUV(Block::Face::LEFT, 6), block.getUV(Block::Face::LEFT, 7),        // top left
+                                                                                                                              
+                             0.5f, -0.5f, -0.5f, block.getUV(Block::Face::RIGHT, 0), block.getUV(Block::Face::RIGHT, 1),      // bottom left
+                             0.5f,  0.5f, -0.5f, block.getUV(Block::Face::RIGHT, 6), block.getUV(Block::Face::RIGHT, 7),      // top left
+                             0.5f,  0.5f,  0.5f, block.getUV(Block::Face::RIGHT, 4), block.getUV(Block::Face::RIGHT, 5),      // top right
+                             0.5f, -0.5f,  0.5f, block.getUV(Block::Face::RIGHT, 2), block.getUV(Block::Face::RIGHT, 3),      // bottom right
+                                                                                                                              
+                            -0.5f,  0.5f, -0.5f, block.getUV(Block::Face::TOP, 0), block.getUV(Block::Face::TOP, 1),          // bottom left
+                            -0.5f,  0.5f,  0.5f, block.getUV(Block::Face::TOP, 6), block.getUV(Block::Face::TOP, 7),          // top left
+                             0.5f,  0.5f,  0.5f, block.getUV(Block::Face::TOP, 4), block.getUV(Block::Face::TOP, 5),          // top right
+                             0.5f,  0.5f, -0.5f, block.getUV(Block::Face::TOP, 2), block.getUV(Block::Face::TOP, 3),          // bottom right
+                                                                                                                              
+                            -0.5f, -0.5f, -0.5f, block.getUV(Block::Face::BOTTOM, 0), block.getUV(Block::Face::BOTTOM, 1),    // bottom left
+                             0.5f, -0.5f, -0.5f, block.getUV(Block::Face::BOTTOM, 2), block.getUV(Block::Face::BOTTOM, 3),    // bottom right
+                             0.5f, -0.5f,  0.5f, block.getUV(Block::Face::BOTTOM, 4), block.getUV(Block::Face::BOTTOM, 5),    // top right
+                            -0.5f, -0.5f,  0.5f, block.getUV(Block::Face::BOTTOM, 6), block.getUV(Block::Face::BOTTOM, 7),    // top left
+                        };
+
+                        const std::vector<float> faceVertices(blockVertices.begin() + verticesPerFace * face, blockVertices.begin() + verticesPerFace * (face + 1));
+
+                        std::array<unsigned int, 6> faceIndices = {
                             0, 1, 2,
                             2, 3, 0
                         };
@@ -160,7 +197,7 @@ void Chunk::placeTree(int x, int z, int y)
         int index = x + Size::length * (z + Size::width * (y + i));
         if (index < m_blocks.size())
         {
-            m_blocks[index] = Block{Block::Type::LOG, m_worldPositionX + x, y + i, m_worldPositionZ + z};
+            m_blocks[index] = Block{Block::Type::LOG};
         }
     }
 
@@ -178,12 +215,23 @@ void Chunk::placeTree(int x, int z, int y)
                     int index = (x + i) + Size::length * ((z + j) + Size::width * crownY);
                     if (index < m_blocks.size() && (x + i) >= 0 && (x + i) < Size::length && (z + j) >= 0 && (z + j) < Size::width)
                     {
-                        m_blocks[index] = Block{Block::Type::LEAVES, m_worldPositionX + i, crownY, m_worldPositionZ + j};
+                        m_blocks[index] = Block{Block::Type::LEAVES};
                     }
                 }
             }
         }
     }
+}
+
+int Chunk::getHeightAt(int x, int z) const
+{
+    float chunkWorldX = m_worldPositionX + x;
+    float chunkWorldZ = m_worldPositionZ + z;
+
+    float height = glm::simplex(glm::vec2(chunkWorldX / 64.0f, chunkWorldZ / 64.0f));
+    height = (height + 1.0f) / 2.0f * 20.0f;
+
+    return height;
 }
 
 bool Chunk::isMeshGenerated() const

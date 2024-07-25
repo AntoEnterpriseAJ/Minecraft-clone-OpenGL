@@ -15,10 +15,10 @@ public:
 	{
 		length = 16,
 		width = 16,
-		height = 32,
+		height = 64,
 	};
 
-	Chunk(int worldPositionX, int worldPositionZ, const std::vector<std::vector<float>>& heightMap);
+	Chunk(int worldPositionX, int worldPositionZ);
 
 	void render() const;
 	Block getBlockAt(int x, int z, int y) const;
@@ -35,10 +35,10 @@ public:
 	bool m_meshGenerated;
 
 private:
+	int getHeightAt(int x, int z) const;
 	static constexpr int s_waterLevel = 2;
 
 	std::vector<Block> m_blocks;
-	std::vector<std::vector<float>> m_heightMap;
 	std::array<Chunk*, 4> m_neighbors;
 
 	int m_worldPositionX;

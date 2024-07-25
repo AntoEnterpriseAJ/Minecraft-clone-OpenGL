@@ -29,28 +29,6 @@ void World::render(const glm::vec3& playerPosition)
     }
 }
 
-std::vector<std::vector<float>> World::generateHeightMap(int chunkX, int chunkZ)
-{
-    std::vector<std::vector<float>> heightMap;
-    heightMap.resize(Chunk::Size::length, std::vector<float>(Chunk::Size::width));
-
-    for (int x = 0; x < Chunk::Size::length; ++x)
-    {
-        for (int z = 0; z < Chunk::Size::width; ++z)
-        {
-            float chunkWorldX = x + chunkX * Chunk::Size::length;
-            float chunkWorldZ = z + chunkZ * Chunk::Size::width;
-
-            float height = glm::simplex(glm::vec2(chunkWorldX / 64.0f, chunkWorldZ / 64.0f));
-            height = (height + 1.0f) / 2.0f * 20.0f;
-
-            heightMap[x][z] = std::abs(height) == 0 ? std::abs(height) + 1 : std::abs(height);
-        }
-    }
-
-    return heightMap;
-}
-
 std::pair<int, int> World::getCurrentChunkCoords() const
 {
     int chunkXPos = static_cast<int>(m_playerPosition.x) / Chunk::Size::length;
@@ -60,9 +38,7 @@ std::pair<int, int> World::getCurrentChunkCoords() const
 
 void World::loadChunk(int xPos, int zPos)
 {
-    const auto& heightMap = generateHeightMap(xPos,zPos);
-
-    m_chunks[{xPos,zPos}] = new Chunk{xPos * Chunk::Size::length, zPos * Chunk::Size::width, heightMap};
+    m_chunks[{xPos,zPos}] = new Chunk{xPos * Chunk::Size::length, zPos * Chunk::Size::width};
     m_chunkFutures[{xPos, zPos}] = std::async(std::launch::async, &World::generateChunkBlocks, this, xPos, zPos);
 }
 

@@ -19,7 +19,6 @@ public:
 	Chunk* getChunkAt(int wx, int wz) const;
 
 private:
-	std::vector<std::vector<float>> generateHeightMap(int chunkX, int chunkZ);
 	std::pair<int, int> getCurrentChunkCoords() const;
 	void loadChunk(int xPos, int zPos);
 	void generateChunkBlocks(int xPos, int zPos);
