@@ -143,6 +143,7 @@
     <ClCompile Include="src\ElementBuffer.cpp" />
     <ClCompile Include="src\initOpenGL.cpp" />
     <ClCompile Include="src\Shader.cpp" />
+    <ClCompile Include="src\Skybox.cpp" />
     <ClCompile Include="src\Texture.cpp" />
     <ClCompile Include="src\VertexArray.cpp" />
     <ClCompile Include="src\VertexBuffer.cpp" />
@@ -155,6 +156,7 @@
     <ClInclude Include="src\include\Chunk.h" />
     <ClInclude Include="src\include\ElementBuffer.h" />
     <ClInclude Include="src\include\Shader.h" />
+    <ClInclude Include="src\include\Skybox.h" />
     <ClInclude Include="src\include\Texture.h" />
     <ClInclude Include="src\include\VertexArray.h" />
     <ClInclude Include="src\include\VertexBuffer.h" />
@@ -171,9 +173,17 @@
     <Image Include="res\images\highResBox.jpg" />
     <Image Include="res\images\img1.jpg" />
     <Image Include="res\images\img2.jpg" />
+    <Image Include="res\skybox\back.jpg" />
+    <Image Include="res\skybox\bottom.jpg" />
+    <Image Include="res\skybox\front.jpg" />
+    <Image Include="res\skybox\left.jpg" />
+    <Image Include="res\skybox\right.jpg" />
+    <Image Include="res\skybox\top.jpg" />
   </ItemGroup>
   <ItemGroup>
     <None Include="res\shaders\fragment.frag" />
+    <None Include="res\shaders\skybox.frag" />
+    <None Include="res\shaders\skybox.vert" />
     <None Include="res\shaders\vertex.vert" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

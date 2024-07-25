@@ -22,6 +22,7 @@
 #include "include/World.h"
 #include "include/Texture.h"
 #include "include/VoxelHandler.h"
+#include "include/Skybox.h"
 
 int initOpenGL();
 void processInput(GLFWwindow* window);
@@ -87,6 +88,8 @@ int main()
 	const char* fragmentShaderPath = "res/shaders/fragment.frag";
 	Shader shaderProgram(vertexShaderPath, fragmentShaderPath);
 
+	Shader skyboxShader("res/shaders/skybox.vert", "res/shaders/skybox.frag");
+
 	Texture atlasTexture("res/atlas/atlas.png");
 	glActiveTexture(GL_TEXTURE0);
 	atlasTexture.bind();
@@ -101,6 +104,7 @@ int main()
 	World world(10);
 	VoxelHandler voxelHandler(world, camera.getPosition(), camera.getFront());
 
+	Skybox skybox;
 	while (!glfwWindowShouldClose(window))
 	{
 		processInput(window);
@@ -129,8 +133,15 @@ int main()
 		shaderProgram.setMat4("view", view);
 		shaderProgram.setMat4("projection", projection);
 
+		atlasTexture.bind();
 		world.render(camera.getPosition());
 		voxelHandler.rayCast(camera.getPosition(), camera.getFront());
+
+		skyboxShader.use();
+		skyboxShader.setMat4("view", glm::mat4(glm::mat3(camera.getViewMatrix())));
+		skyboxShader.setMat4("projection", projection);
+
+		skybox.render();
 
 		glfwSwapBuffers(window);
 		glfwPollEvents();
