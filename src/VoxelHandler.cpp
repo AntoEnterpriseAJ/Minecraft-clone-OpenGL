@@ -1,7 +1,7 @@
 #include <iostream>
 #include "include/VoxelHandler.h"
 #include "GLFW/glfw3.h"
-
+#include <glm/glm.hpp>
 
 VoxelHandler::VoxelHandler(World& world, glm::vec3 playerPosition, glm::vec3 playerFront)
 	: m_world(world), m_playerPosition(playerPosition), m_playerFront(playerFront)
@@ -9,42 +9,76 @@ VoxelHandler::VoxelHandler(World& world, glm::vec3 playerPosition, glm::vec3 pla
 
 void VoxelHandler::rayCast(glm::vec3 playerPosition, glm::vec3 playerFront)
 {
-    m_playerPosition = playerPosition;
-    m_playerFront = playerFront;
+	auto sign	= [](float x){return (x > 0) - (x < 0);};
+	auto frac0	= [](float x){return x - std::floor(x);};
+	auto frac1	= [](float x){return 1 - (x - std::floor(x));};
 
-    glm::vec3 startingPosition = m_playerPosition;
-    glm::vec3 endPosition = m_playerPosition + m_playerFront * RAYCAST_DISTANCE;
-    glm::vec3 currentPosition = startingPosition;
+	float tMaxX, tMaxY, tMaxZ, tDeltaX, tDeltaY, tDeltaZ;
+	glm::ivec3 voxel;
+	glm::vec3 start = playerPosition;
+	glm::vec3 end = playerPosition + playerFront * RAYCAST_DISTANCE;
 
-    glm::vec3 step = glm::normalize(endPosition - startingPosition) * 0.1f;
+    int dx = sign(end.x - start.x);
+    if (dx != 0) tDeltaX = std::min(dx / (end.x - start.x), 10000000.0f);
+		else tDeltaX = 10000000.0f;
+    tMaxX = (dx > 0) ? tDeltaX * frac1(start.x) : tDeltaX * frac0(start.x);
+    voxel.x = static_cast<int>(start.x);
 
-    std::cout << "Raycast started at : " << startingPosition.x << ", " << startingPosition.y << ", " << startingPosition.z << std::endl;
+    int dy = sign(end.y - start.y);
+    if (dy != 0) tDeltaY = std::min(dy / (end.y - start.y), 10000000.0f);
+		else tDeltaY = 10000000.0f;
+    tMaxY = (dy > 0) ? tDeltaY * frac1(start.y) : tDeltaY * frac0(start.y);
+    voxel.y = static_cast<int>(start.y);
 
-    while (glm::distance(currentPosition, startingPosition) < RAYCAST_DISTANCE)
-    {
-        int x = static_cast<int>(currentPosition.x);
-        int y = static_cast<int>(currentPosition.y);
-        int z = static_cast<int>(currentPosition.z);
+    int dz = sign(end.z - start.z);
+    if (dz != 0) tDeltaZ = std::min(dz / (end.z - start.z), 10000000.0f);
+		else tDeltaZ = 10000000.0f;
+    tMaxZ = (dz > 0) ? tDeltaZ * frac1(start.z) : tDeltaZ * frac0(start.z);
+    voxel.z = static_cast<int>(start.z);
 
-        Block block = m_world.getBlockAt(x, z, y);
-        if (block.getType() != Block::Type::AIR)
-        {
-            std::cout << "Found block at: " << x << ", " << y << ", " << z << std::endl;
-            
-			renderSelectedBlockOutline(x, z, y);
+    while (true) {
+		int x = static_cast<int>(voxel.x);
+		int y = static_cast<int>(voxel.y);
+		int z = static_cast<int>(voxel.z);
 
-			if (glfwGetMouseButton(glfwGetCurrentContext(), GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS)
-			{
-				removeSelectedBlock(x, z, y);
-			}
+		if (m_world.getBlockAt(x, z, y).getType() != Block::Type::AIR)
+		{
+			renderSelectedBlockOutline(voxel.x, voxel.z, voxel.y);
+			std::cout << "found non-air block at: " << x << ", " << y << ", " << z << "\n";
 
-            return;
+			processVoxel(voxel);
+
+			break;
+		}
+
+        if (tMaxX < tMaxY) {
+            if (tMaxX < tMaxZ) {
+                voxel.x += dx;
+                tMaxX += tDeltaX;
+            } else {
+                voxel.z += dz;
+                tMaxZ += tDeltaZ;
+            }
+        } else {
+            if (tMaxY < tMaxZ) {
+                voxel.y += dy;
+                tMaxY += tDeltaY;
+            } else {
+                voxel.z += dz;
+                tMaxZ += tDeltaZ;
+            }
         }
 
-        currentPosition += step;
+        if (tMaxX > 1.0f && tMaxY > 1.0f && tMaxZ > 1.0f) break;
     }
+}
 
-    std::cout << "Raycast ended without finding non-air block" << std::endl;
+void VoxelHandler::processVoxel(glm::ivec3 voxel)
+{
+	if (glfwGetMouseButton(glfwGetCurrentContext(), GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS)
+	{
+		removeSelectedBlock(voxel.x, voxel.z, voxel.y);
+	}
 }
 
 void VoxelHandler::removeSelectedBlock(int x, int z, int y)
