@@ -15,8 +15,10 @@ void VoxelHandler::rayCast(glm::vec3 playerPosition, glm::vec3 playerFront)
 
 	float tMaxX, tMaxY, tMaxZ, tDeltaX, tDeltaY, tDeltaZ;
 	glm::ivec3 voxel;
+	glm::ivec3 voxelNormal = glm::ivec3(0, 0, 0);
 	glm::vec3 start = playerPosition;
 	glm::vec3 end = playerPosition + playerFront * RAYCAST_DISTANCE;
+	int stepDirection = -1;
 
     int dx = sign(end.x - start.x);
     if (dx != 0) tDeltaX = std::min(dx / (end.x - start.x), 10000000.0f);
@@ -36,7 +38,8 @@ void VoxelHandler::rayCast(glm::vec3 playerPosition, glm::vec3 playerFront)
     tMaxZ = (dz > 0) ? tDeltaZ * frac1(start.z) : tDeltaZ * frac0(start.z);
     voxel.z = static_cast<int>(start.z);
 
-    while (true) {
+    while (true) 
+	{
 		int x = static_cast<int>(voxel.x);
 		int y = static_cast<int>(voxel.y);
 		int z = static_cast<int>(voxel.z);
@@ -46,7 +49,11 @@ void VoxelHandler::rayCast(glm::vec3 playerPosition, glm::vec3 playerFront)
 			renderSelectedBlockOutline(voxel.x, voxel.z, voxel.y);
 			std::cout << "found non-air block at: " << x << ", " << y << ", " << z << "\n";
 
-			processVoxel(voxel);
+			if (stepDirection == 0) voxelNormal.x = -dx;
+			else if (stepDirection == 1) voxelNormal.y = -dy;
+			else if (stepDirection == 2) voxelNormal.z = -dz;
+
+			processVoxel(voxel, voxelNormal);
 
 			break;
 		}
@@ -55,17 +62,21 @@ void VoxelHandler::rayCast(glm::vec3 playerPosition, glm::vec3 playerFront)
             if (tMaxX < tMaxZ) {
                 voxel.x += dx;
                 tMaxX += tDeltaX;
+				stepDirection = 0;
             } else {
                 voxel.z += dz;
                 tMaxZ += tDeltaZ;
+				stepDirection = 2;
             }
         } else {
             if (tMaxY < tMaxZ) {
                 voxel.y += dy;
                 tMaxY += tDeltaY;
+				stepDirection = 1;
             } else {
                 voxel.z += dz;
                 tMaxZ += tDeltaZ;
+				stepDirection = 2;
             }
         }
 
@@ -73,20 +84,34 @@ void VoxelHandler::rayCast(glm::vec3 playerPosition, glm::vec3 playerFront)
     }
 }
 
-void VoxelHandler::processVoxel(glm::ivec3 voxel)
+void VoxelHandler::processVoxel(glm::ivec3 voxel, glm::ivec3 voxelNormal)
 {
 	if (glfwGetMouseButton(glfwGetCurrentContext(), GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS)
 	{
 		removeSelectedBlock(voxel.x, voxel.z, voxel.y);
+	}
+	else if (glfwGetMouseButton(glfwGetCurrentContext(), GLFW_MOUSE_BUTTON_RIGHT) == GLFW_PRESS)
+	{
+		addBlock(voxel, voxelNormal);
+	}
+}
+
+void VoxelHandler::addBlock(glm::ivec3 voxel, glm::ivec3 voxelNormal)
+{
+	glm::vec3 addPosition = voxel + voxelNormal;
+
+	if (m_world.getBlockAt(addPosition.x, addPosition.z, addPosition.y).getType() == Block::Type::AIR)
+	{
+		m_world.setBlockAt(addPosition.x, addPosition.z, addPosition.y, Block::Type::LOG);
+
+		m_world.getChunkAt(voxel.x, voxel.z)->m_meshGenerated = false;
+		m_world.getChunkAt(voxel.x, voxel.z)->generateMesh();
 	}
 }
 
 void VoxelHandler::removeSelectedBlock(int x, int z, int y)
 {
 	m_world.setBlockAt(x, z, y, Block::Type::AIR);
-
-	int chunkX = x / Chunk::Size::length;
-	int chunkZ = z / Chunk::Size::width;
 
 	m_world.getChunkAt(x, z)->m_meshGenerated = false;
 	m_world.getChunkAt(x, z)->generateMesh();

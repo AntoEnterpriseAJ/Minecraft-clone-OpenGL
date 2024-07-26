@@ -9,10 +9,11 @@ public:
 	VoxelHandler(World& world, glm::vec3 playerPosition, glm::vec3 playerFront);
 
 	void rayCast(glm::vec3 playerPosition, glm::vec3 playerFront);
-	void processVoxel(glm::ivec3 voxel);
+	void processVoxel(glm::ivec3 voxel, glm::ivec3 voxelNormal);
 private:
 	void renderSelectedBlockOutline(int x, int z, int y);
 	void removeSelectedBlock(int x, int z, int y);
+	void addBlock(glm::ivec3 voxel, glm::ivec3 voxelNormal);
 
 	static constexpr float RAYCAST_DISTANCE = 6;
 
