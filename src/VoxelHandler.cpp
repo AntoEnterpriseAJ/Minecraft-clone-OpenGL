@@ -177,6 +177,7 @@ void VoxelHandler::renderSelectedBlockOutline(int x, int z, int y)
 	glDeleteVertexArrays(1, &VAO);
 
 	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+	glLineWidth(1.0f);
 }
 
 

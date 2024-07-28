@@ -76,6 +76,7 @@ int main()
 	glfwMakeContextCurrent(window);
 
 	initOpenGL();
+	/*glfwSwapInterval( 0 );*/
 
 	glViewport(0, 0, screenWidth, screenHeight);
 	glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
@@ -87,8 +88,8 @@ int main()
 	const char* vertexShaderPath = "res/shaders/vertex.vert";
 	const char* fragmentShaderPath = "res/shaders/fragment.frag";
 	Shader shaderProgram(vertexShaderPath, fragmentShaderPath);
-
 	Shader skyboxShader("res/shaders/skybox.vert", "res/shaders/skybox.frag");
+	Shader crosshairShader("res/shaders/crosshair.vert", "res/shaders/crosshair.frag");
 
 	Texture atlasTexture("res/atlas/atlas.png");
 	glActiveTexture(GL_TEXTURE0);
@@ -99,6 +100,29 @@ int main()
 
 	shaderProgram.use();
 	shaderProgram.setInt("ourTexture1", 0);
+	
+	//CROSSHAIR:
+	float crosshairVertices[] = {
+	   -0.01f,   0.0f ,  0.0f,
+		0.01f,   0.0f ,  0.0f,
+
+		0.0f ,  -0.014f,  0.0f,
+		0.0f ,   0.014f,  0.0f,
+	};
+
+	unsigned int VAOCrosshair, VBOCrosshair;
+	glGenVertexArrays(1, &VAOCrosshair);
+	glBindVertexArray(VAOCrosshair);
+
+	glGenBuffers(1, &VBOCrosshair);
+	glBindBuffer(GL_ARRAY_BUFFER, VBOCrosshair);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(crosshairVertices), crosshairVertices, GL_STATIC_DRAW);
+
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+	glEnableVertexAttribArray(0);
+	
+	glBindVertexArray(0);
+
 
 	bool wireframe = false;
 	World world(10);
@@ -111,6 +135,12 @@ int main()
 
 		glClearColor(0.2f, 0.5f, 0.5f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+		crosshairShader.use();
+
+		glBindVertexArray(VAOCrosshair);
+		glDrawArrays(GL_LINES, 0, 4);
+
 
 		if (glfwGetKey(window, GLFW_KEY_F) == GLFW_PRESS)
 		{

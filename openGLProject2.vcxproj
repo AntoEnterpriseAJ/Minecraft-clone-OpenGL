@@ -181,6 +181,8 @@
     <Image Include="res\skybox\top.jpg" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="res\shaders\crosshair.frag" />
+    <None Include="res\shaders\crosshair.vert" />
     <None Include="res\shaders\fragment.frag" />
     <None Include="res\shaders\skybox.frag" />
     <None Include="res\shaders\skybox.vert" />
