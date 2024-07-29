@@ -4,6 +4,13 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
+Camera::Camera(glm::vec3 pos, glm::vec3 front, glm::vec3 up, float yaw, float pitch)
+	: m_position{pos}, m_front{front}, m_up{up}, m_worldUp{up}, m_FOV{CameraDefaults::FOV}, m_yaw{yaw}, m_pitch{pitch}, m_mode{mode::creative},
+	  m_speed{CameraDefaults::speed}, m_mouseSensitivity{CameraDefaults::mouseSensitivity}, m_zoomSensitivity{CameraDefaults::zoomSensitivity}
+{
+	updateVectors();
+}
+
 glm::mat4 Camera::getViewMatrix() const{
 	// view = translation * rotation
 	glm::mat4 viewMatrix{
@@ -19,27 +26,41 @@ glm::mat4 Camera::getViewMatrix() const{
 void Camera::processKeyboard(CameraMovement direction, float deltaTime)
 {
 	float velocity = m_speed * deltaTime;
-	switch (direction)
+
+	if (m_mode == mode::creative)
 	{
-		case FORWARD:
+		switch (direction)
 		{
-			m_position += m_front * velocity;
-			break;
-		}
-		case LEFT:
-		{
-			m_position -= m_right * velocity;
-			break;
-		}
-		case BACKWARD:
-		{
-			m_position -= m_front * velocity;
-			break;
-		}
-		case RIGHT:
-		{
-			m_position += m_right * velocity;
-			break;
+			case FORWARD:
+			{
+				m_position += glm::vec3(m_front.x, 0.0f, m_front.z) * velocity;
+				break;
+			}
+			case LEFT:
+			{
+				m_position -= glm::vec3(m_right.x, 0.0f, m_right.z) * velocity;
+				break;
+			}
+			case BACKWARD:
+			{
+				m_position -= glm::vec3(m_front.x, 0.0f, m_front.z) * velocity;
+				break;
+			}
+			case RIGHT:
+			{
+				m_position += glm::vec3(m_right.x, 0.0f, m_right.z) * velocity;
+				break;
+			}
+			case SPACE:
+			{
+				m_position += m_up * velocity;
+				break;
+			}
+			case SHIFT:
+			{
+				m_position -= m_up * velocity;
+				break;
+			}
 		}
 	}
 }
@@ -95,13 +116,6 @@ glm::vec3 Camera::getPosition() const
 glm::vec3 Camera::getFront() const
 {
 	return m_front;
-}
-
-Camera::Camera(glm::vec3 pos, glm::vec3 front, glm::vec3 up, float yaw, float pitch)
-	: m_position{pos}, m_front{front}, m_up{up}, m_worldUp{up}, m_FOV{CameraDefaults::FOV}, m_yaw{yaw}, m_pitch{pitch},
-	  m_speed{CameraDefaults::speed}, m_mouseSensitivity{CameraDefaults::mouseSensitivity}, m_zoomSensitivity{CameraDefaults::zoomSensitivity}
-{
-	updateVectors();
 }
 
 void Camera::updateVectors()

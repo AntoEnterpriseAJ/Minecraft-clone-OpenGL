@@ -26,6 +26,15 @@ public:
 		LEFT,
 		BACKWARD,
 		RIGHT,
+		SHIFT,
+		SPACE,
+	};
+
+	enum mode
+	{
+		survival = 0,
+		creative = 1,
+		spectator = 2,
 	};
 
 	explicit Camera(glm::vec3 pos, glm::vec3 front = { 0.0f, 0.0f, -1.0f }, glm::vec3 up = { 0.0f, 1.0f, 0.0f }, float yaw = CameraDefaults::yaw, float pitch = CameraDefaults::pitch);
@@ -50,6 +59,8 @@ private:
 	glm::vec3 m_right;
 	glm::vec3 m_up;
 	glm::vec3 m_worldUp;
+
+	mode m_mode;
 
 	float m_FOV;
 	float m_yaw;
