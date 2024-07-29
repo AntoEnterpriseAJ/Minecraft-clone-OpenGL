@@ -4,6 +4,16 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
+#include <iostream>
+
+Camera::Camera(glm::vec3 pos, glm::vec3 front, glm::vec3 up, float yaw, float pitch)
+	: m_position{pos}, m_front{front}, m_up{up}, m_worldUp{up}, m_FOV{CameraDefaults::FOV}, m_yaw{yaw}, m_pitch{pitch},
+      m_mode{mode::creative}, m_speed{CameraDefaults::speed}, m_mouseSensitivity{CameraDefaults::mouseSensitivity},
+	  m_zoomSensitivity{CameraDefaults::zoomSensitivity}, m_isSprinting{false}
+{
+	updateVectors();
+}
+
 glm::mat4 Camera::getViewMatrix() const{
 	// view = translation * rotation
 	glm::mat4 viewMatrix{
@@ -19,27 +29,45 @@ glm::mat4 Camera::getViewMatrix() const{
 void Camera::processKeyboard(CameraMovement direction, float deltaTime)
 {
 	float velocity = m_speed * deltaTime;
-	switch (direction)
+
+	if (m_isSprinting)
+		velocity *= CameraDefaults::sprintMultiplier;
+
+	if (m_mode == mode::creative)
 	{
-		case FORWARD:
+		switch (direction)
 		{
-			m_position += m_front * velocity;
-			break;
-		}
-		case LEFT:
-		{
-			m_position -= m_right * velocity;
-			break;
-		}
-		case BACKWARD:
-		{
-			m_position -= m_front * velocity;
-			break;
-		}
-		case RIGHT:
-		{
-			m_position += m_right * velocity;
-			break;
+
+			case FORWARD:
+			{
+				m_position += glm::vec3(m_front.x, 0.0f, m_front.z) * velocity;
+				break;
+			}
+			case LEFT:
+			{
+				m_position -= glm::vec3(m_right.x, 0.0f, m_right.z) * velocity;
+				break;
+			}
+			case BACKWARD:
+			{
+				m_position -= glm::vec3(m_front.x, 0.0f, m_front.z) * velocity;
+				break;
+			}
+			case RIGHT:
+			{
+				m_position += glm::vec3(m_right.x, 0.0f, m_right.z) * velocity;
+				break;
+			}
+			case UP:
+			{
+				m_position += glm::vec3(0.0f, 1.0f, 0.0f) * velocity;
+				break;
+			}
+			case DOWN:
+			{
+				m_position -= glm::vec3(0.0f, 1.0f, 0.0f) * velocity;
+				break;
+			}
 		}
 	}
 }
@@ -97,11 +125,14 @@ glm::vec3 Camera::getFront() const
 	return m_front;
 }
 
-Camera::Camera(glm::vec3 pos, glm::vec3 front, glm::vec3 up, float yaw, float pitch)
-	: m_position{pos}, m_front{front}, m_up{up}, m_worldUp{up}, m_FOV{CameraDefaults::FOV}, m_yaw{yaw}, m_pitch{pitch},
-	  m_speed{CameraDefaults::speed}, m_mouseSensitivity{CameraDefaults::mouseSensitivity}, m_zoomSensitivity{CameraDefaults::zoomSensitivity}
+void Camera::startSprinting()
 {
-	updateVectors();
+	m_isSprinting = true;
+}
+
+void Camera::stopSprinting()
+{
+	m_isSprinting = false;
 }
 
 void Camera::updateVectors()

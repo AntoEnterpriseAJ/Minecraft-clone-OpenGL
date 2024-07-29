@@ -15,6 +15,7 @@ namespace CameraDefaults
 	constexpr float FOV              =  45.0f;
 	constexpr float FOVUpperBound    =  120.0f;
 	constexpr float FOVLowerBound    =  5.0f;
+	constexpr float sprintMultiplier =  1.5f;
 }
 
 class Camera
@@ -26,6 +27,16 @@ public:
 		LEFT,
 		BACKWARD,
 		RIGHT,
+		DOWN,
+		UP,
+		SPRINT,
+	};
+
+	enum mode
+	{
+		survival = 0,
+		creative = 1,
+		spectator = 2,
 	};
 
 	explicit Camera(glm::vec3 pos, glm::vec3 front = { 0.0f, 0.0f, -1.0f }, glm::vec3 up = { 0.0f, 1.0f, 0.0f }, float yaw = CameraDefaults::yaw, float pitch = CameraDefaults::pitch);
@@ -42,6 +53,9 @@ public:
 	glm::vec3 getPosition() const;
 	glm::vec3 getFront() const;
 
+	void startSprinting();
+	void stopSprinting();
+
 private:
 	void updateVectors();
 private:
@@ -51,6 +65,9 @@ private:
 	glm::vec3 m_up;
 	glm::vec3 m_worldUp;
 
+	mode m_mode;
+
+	bool m_isSprinting;
 	float m_FOV;
 	float m_yaw;
 	float m_pitch;
