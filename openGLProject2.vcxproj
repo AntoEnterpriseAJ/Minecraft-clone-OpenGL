@@ -143,6 +143,7 @@
     <ClCompile Include="src\Crosshair.cpp" />
     <ClCompile Include="src\ElementBuffer.cpp" />
     <ClCompile Include="src\Game.cpp" />
+    <ClCompile Include="src\ShaderManager.cpp" />
     <ClCompile Include="src\Utilities.cpp" />
     <ClCompile Include="src\Shader.cpp" />
     <ClCompile Include="src\Skybox.cpp" />
