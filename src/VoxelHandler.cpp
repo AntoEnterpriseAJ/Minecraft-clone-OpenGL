@@ -47,7 +47,7 @@ void VoxelHandler::rayCast(glm::vec3 playerPosition, glm::vec3 playerFront)
 		if (m_world.getBlockAt(x, z, y).getType() != Block::Type::AIR)
 		{
 			renderSelectedBlockOutline(voxel.x, voxel.z, voxel.y);
-			std::cout << "found non-air block at: " << x << ", " << y << ", " << z << "\n";
+			//std::cout << "found non-air block at: " << x << ", " << y << ", " << z << "\n";
 
 			if (stepDirection == 0) voxelNormal.x = -dx;
 			else if (stepDirection == 1) voxelNormal.y = -dy;
@@ -112,6 +112,36 @@ void VoxelHandler::addBlock(glm::ivec3 voxel, glm::ivec3 voxelNormal)
 void VoxelHandler::removeSelectedBlock(int x, int z, int y)
 {
 	m_world.setBlockAt(x, z, y, Block::Type::AIR);
+
+    int localBlockX = x % Chunk::Size::length;
+    if (localBlockX < 0) localBlockX += Chunk::Size::length;
+
+    int localBlockZ = z % Chunk::Size::width;
+    if (localBlockZ < 0) localBlockZ += Chunk::Size::width;
+
+	Chunk* chunk = nullptr; 
+	if (localBlockX == 0)
+	{
+		chunk = m_world.getChunkAt(x - 1, z);
+	}
+	else if (localBlockX == Chunk::Size::length - 1)
+	{
+		chunk = m_world.getChunkAt(x + 1, z);
+	}
+	else if (localBlockZ == 0)
+	{
+		chunk = m_world.getChunkAt(x, z - 1);
+	}
+	else if (localBlockZ == Chunk::Size::width - 1)
+	{
+		chunk = m_world.getChunkAt(x, z + 1);
+	}
+
+	if (chunk)
+	{
+		chunk->m_meshGenerated = false;
+		chunk->generateMesh();
+	}
 
 	m_world.getChunkAt(x, z)->m_meshGenerated = false;
 	m_world.getChunkAt(x, z)->generateMesh();
