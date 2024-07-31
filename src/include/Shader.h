@@ -1,5 +1,4 @@
-#ifndef SHADER_H
-#define SHADER_H
+#pragma once
 
 #include <glad/glad.h>
 
@@ -33,10 +32,8 @@ public:
     void setMat4(const std::string& name, const glm::mat4& mat) const;
 
 private:
+    const char* readFromPath(const char* path);
+private:
     unsigned int m_ID;
     std::unordered_map<std::string, int> m_locationCache;
-private:
-    const char* readFromPath(const char* path);
 };
-
-#endif
