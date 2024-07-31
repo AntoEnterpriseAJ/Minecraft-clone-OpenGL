@@ -156,18 +156,6 @@ void Shader::setVec3(const std::string& name, float x, float y, float z) const
 	glUniform3f(location, x, y, z);
 }
 
-void Shader::setVec2(const std::string& name, float x, float y) const
-{
-	int location = getUniformLocation(name);
-	if (location == -1)
-	{
-		std::cout << "WARNING: no uniform " << name << " found" << std::endl;
-		return;
-	}
-
-	glUniform2f(location, x, y);
-}
-
 void Shader::setVec4(const std::string& name, float value) const
 {
 	int location = getUniformLocation(name);

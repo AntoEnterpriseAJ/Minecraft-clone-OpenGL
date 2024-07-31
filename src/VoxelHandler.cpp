@@ -47,7 +47,7 @@ void VoxelHandler::rayCast(glm::vec3 playerPosition, glm::vec3 playerFront)
 		if (m_world.getBlockAt(x, z, y).getType() != Block::Type::AIR)
 		{
 			renderSelectedBlockOutline(voxel.x, voxel.z, voxel.y);
-			//std::cout << "found non-air block at: " << x << ", " << y << ", " << z << "\n";
+			std::cout << "found non-air block at: " << x << ", " << y << ", " << z << "\n";
 
 			if (stepDirection == 0) voxelNormal.x = -dx;
 			else if (stepDirection == 1) voxelNormal.y = -dy;
