@@ -6,6 +6,8 @@
 #include "Shader.h"
 #include "Skybox.h"
 #include "Texture.h"
+#include "Crosshair.h"
+#include "ShaderManager.h"
 #include "GLFW/glfw3.h"
 
 namespace GameDefaults
@@ -22,13 +24,19 @@ class Game
 {
 public:
 	Game(GLFWwindow* window);
+	~Game();
 
 	void render();
 private:
-	void initSkyboxShader();
-	void initBlockShader();
+	void loadShaders();
+	void updateShaders();
 	void processInput();
 	void configureWindow();
+private:
+	static void updateDeltaTime(); 
+	static void framebuffer_size_callback(GLFWwindow* window, int width, int height);
+	static void mouse_callback(GLFWwindow* window, double xPos, double yPos);
+	static void scroll_callback(GLFWwindow* window, double xOffset, double yOffset);
 private:
 	static inline Camera s_camera		= Camera{GameDefaults::spawnPoint};
 	static inline bool s_firstMouse		= true;
@@ -37,22 +45,14 @@ private:
 	static inline float s_deltaTime		= 0.0f;
 	static inline float s_lastFrameTime = 0.0f;
 private:
-	static void framebuffer_size_callback(GLFWwindow* window, int width, int height);
-	static void mouse_callback(GLFWwindow* window, double xPos, double yPos);
-	static void scroll_callback(GLFWwindow* window, double xOffset, double yOffset);
-	static void updateDeltaTime();
-	static void APIENTRY glDebugOutput(GLenum source, GLenum type, unsigned int id, GLenum severity,
-									   GLsizei length, const char* message, const void* userParam);
-private:
 	World m_world;
 	Skybox m_skybox;
-	VoxelHandler m_voxelHandler;
 
-	Shader m_crosshairShader;
-	Shader m_skyboxShader;
-	Shader m_blockShader;
+	VoxelHandler m_voxelHandler;
+	ShaderManager m_shaderManager;
 
 	GLFWwindow* m_window;
 
+	Crosshair m_crosshair;
 	Texture m_atlas;
 };
