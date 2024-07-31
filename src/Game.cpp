@@ -2,12 +2,16 @@
 
 Game::Game(GLFWwindow* window)
 	: m_window{window}, m_world{GameDefaults::renderDistance}, m_skybox{},
-	  m_voxelHandler{m_world, s_camera.getPosition(), s_camera.getFront()}, m_atlas{"res/atlas/atlas.png"},
-      m_blockShader{"res/shaders/vertex.vert", "res/shaders/fragment.frag"},
-	  m_skyboxShader{"res/shaders/skybox.vert", "res/shaders/skybox.frag"},
-	  m_crosshairShader{"res/shaders/crosshair.vert", "res/shaders/crosshair.frag"}
+	  m_voxelHandler{m_world, s_camera.getPosition(), s_camera.getFront()}, m_atlas{"res/atlas/atlas.png"}
 {
 	configureWindow();
+	loadShaders();
+}
+
+Game::~Game()
+{
+	glfwDestroyWindow(m_window);
+    glfwTerminate();
 }
 
 void Game::render()
@@ -19,49 +23,59 @@ void Game::render()
 		glEnable(GL_DEPTH_TEST);
 		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 
+		updateShaders();
 		updateDeltaTime();
 		processInput();
 
-		initBlockShader();
+		m_shaderManager.getShader("crosshairShader")->use();
+		m_crosshair.render();
+
+		m_shaderManager.getShader("blockShader")->use();
 		m_atlas.bind();
 		m_world.render(s_camera.getPosition());
 
 		m_voxelHandler.rayCast(s_camera.getPosition(), s_camera.getFront());
 
-		initSkyboxShader();
+		m_shaderManager.getShader("skyboxShader")->use();
 		m_skybox.render();
 
 		glfwSwapBuffers(m_window);
         glfwPollEvents();
 	}
-
-	glfwDestroyWindow(m_window);
-    glfwTerminate();
 }
 
-void Game::initSkyboxShader()
+void Game::loadShaders()
 {
-	m_skyboxShader.use();
+	m_shaderManager.loadShader("blockShader", "res/shaders/vertex.vert", "res/shaders/fragment.frag");
+	m_shaderManager.loadShader("skyboxShader", "res/shaders/skybox.vert", "res/shaders/skybox.frag");
+	m_shaderManager.loadShader("crosshairShader", "res/shaders/crosshair.vert", "res/shaders/crosshair.frag");
+}
 
+void Game::updateShaders()
+{
+	Shader* blockShader = m_shaderManager.getShader("blockShader");
+	Shader* skyboxShader = m_shaderManager.getShader("skyboxShader");
+	Shader* crosshairShader = m_shaderManager.getShader("crosshairShader");
+
+	glm::mat4 model{1.0f};
 	glm::mat4 view = s_camera.getViewMatrix();
     glm::mat4 projection = glm::perspective(glm::radians(s_camera.getFOV()), GameDefaults::getAspectRatio(), 0.1f, 1000.0f);
 
-	m_skyboxShader.setMat4("view", glm::mat4(glm::mat3(s_camera.getViewMatrix())));
-	m_skyboxShader.setMat4("projection", projection);
-}
+	blockShader->use();
+	blockShader->setInt("ourTexture1", 0);
+	blockShader->setMat4("model", model);
+	blockShader->setMat4("view", view);
+	blockShader->setMat4("projection", projection);
 
-void Game::initBlockShader()
-{
-	m_blockShader.use();
+	skyboxShader->use();
+	skyboxShader->setMat4("view", glm::mat4(glm::mat3(s_camera.getViewMatrix())));
+	skyboxShader->setMat4("projection", projection);
 
-    glm::mat4 model = glm::mat4(1.0f);
-	glm::mat4 view = s_camera.getViewMatrix();
-	glm::mat4 projection = glm::perspective(glm::radians(s_camera.getFOV()), GameDefaults::getAspectRatio(), 0.1f, 1000.0f);
+	int width, height;
+	glfwGetWindowSize(m_window, &width, &height);
 
-	m_blockShader.setInt("ourTexture1", 0);
-	m_blockShader.setMat4("model", model);
-	m_blockShader.setMat4("view", view);
-	m_blockShader.setMat4("projection", projection);
+	crosshairShader->use();
+	crosshairShader->setVec2("uWindowSize", width, height);
 }
 
 void Game::processInput()
@@ -120,53 +134,6 @@ void Game::updateDeltaTime()
 	float currentFrameTime = glfwGetTime();
 	s_deltaTime = currentFrameTime - s_lastFrameTime;
 	s_lastFrameTime = currentFrameTime;
-}
-
-void APIENTRY Game::glDebugOutput(GLenum source,
-	GLenum type,
-	unsigned int id,
-	GLenum severity,
-	GLsizei length,
-	const char* message,
-	const void* userParam)
-{
-	// ignore non-significant error/warning codes
-	if (id == 131169 || id == 131185 || id == 131218 || id == 131204) return;
-
-	std::cout << "---------------" << std::endl;
-	std::cout << "Debug message (" << id << "): " << message << std::endl;
-
-	switch (source)
-	{
-	case GL_DEBUG_SOURCE_API:             std::cout << "Source: API"; break;
-	case GL_DEBUG_SOURCE_WINDOW_SYSTEM:   std::cout << "Source: Window System"; break;
-	case GL_DEBUG_SOURCE_SHADER_COMPILER: std::cout << "Source: Shader Compiler"; break;
-	case GL_DEBUG_SOURCE_THIRD_PARTY:     std::cout << "Source: Third Party"; break;
-	case GL_DEBUG_SOURCE_APPLICATION:     std::cout << "Source: Application"; break;
-	case GL_DEBUG_SOURCE_OTHER:           std::cout << "Source: Other"; break;
-	} std::cout << std::endl;
-
-	switch (type)
-	{
-	case GL_DEBUG_TYPE_ERROR:               std::cout << "Type: Error"; break;
-	case GL_DEBUG_TYPE_DEPRECATED_BEHAVIOR: std::cout << "Type: Deprecated Behaviour"; break;
-	case GL_DEBUG_TYPE_UNDEFINED_BEHAVIOR:  std::cout << "Type: Undefined Behaviour"; break;
-	case GL_DEBUG_TYPE_PORTABILITY:         std::cout << "Type: Portability"; break;
-	case GL_DEBUG_TYPE_PERFORMANCE:         std::cout << "Type: Performance"; break;
-	case GL_DEBUG_TYPE_MARKER:              std::cout << "Type: Marker"; break;
-	case GL_DEBUG_TYPE_PUSH_GROUP:          std::cout << "Type: Push Group"; break;
-	case GL_DEBUG_TYPE_POP_GROUP:           std::cout << "Type: Pop Group"; break;
-	case GL_DEBUG_TYPE_OTHER:               std::cout << "Type: Other"; break;
-	} std::cout << std::endl;
-
-	switch (severity)
-	{
-	case GL_DEBUG_SEVERITY_HIGH:         std::cout << "Severity: high"; break;
-	case GL_DEBUG_SEVERITY_MEDIUM:       std::cout << "Severity: medium"; break;
-	case GL_DEBUG_SEVERITY_LOW:          std::cout << "Severity: low"; break;
-	case GL_DEBUG_SEVERITY_NOTIFICATION: std::cout << "Severity: notification"; break;
-	} std::cout << std::endl;
-	std::cout << std::endl;
 }
 
 void Game::framebuffer_size_callback(GLFWwindow* window, int width, int height)
