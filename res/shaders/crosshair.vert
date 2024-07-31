@@ -1,8 +1,10 @@
 #version 330 core
 
-layout (location = 0) in vec3 aPos;
+layout (location = 0) in vec2 aPos;
+uniform vec2 uWindowSize;
 
 void main()
 {
-	gl_Position = vec4(aPos, 1.0f);
+    vec2 pos = aPos / uWindowSize;
+    gl_Position = vec4(pos, 0.0f, 1.0f);
 }
