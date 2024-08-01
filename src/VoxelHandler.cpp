@@ -128,7 +128,14 @@ void VoxelHandler::removeSelectedBlock(int x, int z, int y)
 	{
 		chunk = m_world.getChunkAt(x + 1, z);
 	}
-	else if (localBlockZ == 0)
+
+	if (chunk)
+	{
+		chunk->m_meshGenerated = false;
+		chunk->generateMesh();
+	}
+	
+	if (localBlockZ == 0)
 	{
 		chunk = m_world.getChunkAt(x, z - 1);
 	}
