@@ -16,8 +16,6 @@ Texture::Texture(const std::string& imagePath)
 		std::cout << "WARNING: couldn't load image data at path: " << imagePath << std::endl;
 	}
 
-	//TODO: HANDLE DIFFERENT IMAGE FORMATS
-
 	glGenTextures(1, &m_ID);
 	glBindTexture(GL_TEXTURE_2D, m_ID);
 

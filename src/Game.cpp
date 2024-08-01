@@ -85,8 +85,6 @@ void Game::processInput()
 		glfwSetWindowShouldClose(m_window, true);
 	}
 
-	//printCameraStatus();
-
 	if (glfwGetKey(m_window, GLFW_KEY_LEFT_CONTROL) == GLFW_PRESS)
     {
         s_camera.startSprinting();
