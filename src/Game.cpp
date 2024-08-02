@@ -27,6 +27,8 @@ void Game::render()
 		updateDeltaTime();
 		processInput();
 
+		drawDebugAxis();
+
 		m_shaderManager.getShader("crosshairShader")->use();
 		m_crosshair.render();
 
@@ -125,6 +127,74 @@ void Game::configureWindow()
 	glfwSetInputMode(m_window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 	glfwSetCursorPosCallback(m_window, mouse_callback);
 	glfwSetScrollCallback(m_window, scroll_callback);
+}
+
+void Game::drawDebugAxis()
+{
+	float axisVertices[] = {
+		//x+ axis
+		0.0f, 0.0f, 0.0f,
+		1.0f, 0.0f, 0.0f,
+
+		//x- axis
+		0.0f, 0.0f, 0.0f,
+		-1.0f, 0.0f, 0.0f,
+
+		//y+ axis
+		0.0f, 0.0f, 0.0f,
+		0.0f, 1.0f, 0.0f,
+
+		//y- axis
+		0.0f, 0.0f, 0.0f,
+		0.0f, -1.0f, 0.0f,
+
+		//z+ axis
+		0.0f, 0.0f, 0.0f,
+		0.0f, 0.0f, 1.0f,
+
+		//z- axis
+		0.0f, 0.0f, 0.0f,
+		0.0f, 0.0f, -1.0f,
+	};
+
+	Shader axisShader{"res/shaders/axis.vert", "res/shaders/axis.frag"};
+	axisShader.use();
+
+	unsigned int axisVAO, axisVBO;
+	glGenVertexArrays(1, &axisVAO);
+	glBindVertexArray(axisVAO);
+
+	glGenBuffers(1, &axisVBO);
+	glBindBuffer(GL_ARRAY_BUFFER, axisVBO);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(axisVertices), axisVertices, GL_STATIC_DRAW);
+
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+
+	glEnableVertexAttribArray(0);
+
+	glm::mat4 model{1.0f};
+	model = glm::translate(model, glm::vec3(0.0f, 20.0f, 0.0f));
+	model = glm::scale(model, glm::vec3(200.0f, 200.0f, 200.0f));
+	glm::mat4 view = s_camera.getViewMatrix();
+	glm::mat4 projection = glm::perspective(glm::radians(s_camera.getFOV()), GameDefaults::getAspectRatio(), 0.1f, 1000.0f);
+
+	axisShader.setMat4("model", model);
+	axisShader.setMat4("view", view);
+	axisShader.setMat4("projection", projection);
+
+	glBindVertexArray(axisVAO);
+	axisShader.setVec3("color", 1.0f, 0.0f, 0.0f);
+	glDrawArrays(GL_LINES, 0, 2);
+	axisShader.setVec3("color", 0.2f, 0.0f, 0.0f);
+	glDrawArrays(GL_LINES, 2, 2);
+	axisShader.setVec3("color", 0.0f, 1.0f, 0.0f);
+	glDrawArrays(GL_LINES, 4, 2);
+	axisShader.setVec3("color", 0.0f, 0.2f, 0.0f);
+	glDrawArrays(GL_LINES, 6, 2);
+	axisShader.setVec3("color", 0.0f, 0.0f, 1.0f);
+	glDrawArrays(GL_LINES, 8, 2);
+	axisShader.setVec3("color", 0.0f, 0.0f, 0.2f);
+	glDrawArrays(GL_LINES, 10, 2);
 }
 
 void Game::updateDeltaTime()
