@@ -619,11 +619,15 @@
     <None Include="Dependencies\glm\gtx\vector_angle.inl" />
     <None Include="Dependencies\glm\gtx\vector_query.inl" />
     <None Include="Dependencies\glm\gtx\wrap.inl" />
+    <None Include="res\shaders\axis.frag" />
+    <None Include="res\shaders\axis.vert" />
     <None Include="res\shaders\crosshair.frag" />
     <None Include="res\shaders\crosshair.vert" />
     <None Include="res\shaders\fragment.frag" />
     <None Include="res\shaders\skybox.frag" />
     <None Include="res\shaders\skybox.vert" />
+    <None Include="res\shaders\sun.frag" />
+    <None Include="res\shaders\sun.vert" />
     <None Include="res\shaders\vertex.vert" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
