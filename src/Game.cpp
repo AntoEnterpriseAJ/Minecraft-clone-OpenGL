@@ -35,14 +35,14 @@ void Game::render()
 		m_shaderManager.getShader("blockShader")->use();
 		m_atlas.bind();
 		m_world.render(s_camera.getPosition());
+		m_voxelHandler.rayCast(s_camera.getPosition(), s_camera.getFront());
 
 		m_sun.updatePosition(s_camera.getPosition(), s_deltaTime);
 		m_sun.render(m_shaderManager.getShader("sunShader"));
 
-		m_voxelHandler.rayCast(s_camera.getPosition(), s_camera.getFront());
-
 		m_shaderManager.getShader("skyboxShader")->use();
 		m_skybox.render();
+
 
 		glfwSwapBuffers(m_window);
         glfwPollEvents();
@@ -199,6 +199,7 @@ void Game::drawDebugAxis()
 	axisShader.setMat4("view", view);
 	axisShader.setMat4("projection", projection);
 
+	glLineWidth(3.0f);
 	glBindVertexArray(axisVAO);
 	axisShader.setVec3("color", 1.0f, 0.0f, 0.0f);
 	glDrawArrays(GL_LINES, 0, 2);

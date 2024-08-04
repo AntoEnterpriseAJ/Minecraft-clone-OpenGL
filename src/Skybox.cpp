@@ -71,6 +71,7 @@ void Skybox::render() const
 	bindTexture();
 
     glDepthFunc(GL_LEQUAL);
+    glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
     glDrawArrays(GL_TRIANGLES, 0, 36);
 	glDepthFunc(GL_LESS);
 }

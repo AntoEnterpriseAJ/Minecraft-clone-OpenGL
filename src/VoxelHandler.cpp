@@ -156,66 +156,55 @@ void VoxelHandler::removeSelectedBlock(int x, int z, int y)
 
 void VoxelHandler::renderSelectedBlockOutline(int x, int z, int y)
 {
-	glm::vec3 worldPosition = glm::vec3(x, y, z);
+    glm::vec3 worldPosition = glm::vec3(x, y, z);
 
-	std::vector<glm::vec3> vertices = {
-		// Front face
-		worldPosition + glm::vec3(-0.51f, -0.51f, -0.51f),
-		worldPosition + glm::vec3(0.51f, -0.51f, -0.51f),
-		worldPosition + glm::vec3(0.51f, 0.51f, -0.51f),
-		worldPosition + glm::vec3(-0.51f, 0.51f, -0.51f),
+    std::vector<glm::vec3> vertices = {
+        // Front face
+        worldPosition + glm::vec3(-0.51f, -0.51f, -0.51f),
+        worldPosition + glm::vec3(0.51f, -0.51f, -0.51f),
+        worldPosition + glm::vec3(0.51f, 0.51f, -0.51f),
+        worldPosition + glm::vec3(-0.51f, 0.51f, -0.51f),
 
-		// Back face
-		worldPosition + glm::vec3(-0.51f, -0.51f, 0.51f),
-		worldPosition + glm::vec3(0.51f, -0.51f, 0.51f),
-		worldPosition + glm::vec3(0.51f, 0.51f, 0.51f),
-		worldPosition + glm::vec3(-0.51f, 0.51f, 0.51f)
-	};
+        // Back face
+        worldPosition + glm::vec3(-0.51f, -0.51f, 0.51f),
+        worldPosition + glm::vec3(0.51f, -0.51f, 0.51f),
+        worldPosition + glm::vec3(0.51f, 0.51f, 0.51f),
+        worldPosition + glm::vec3(-0.51f, 0.51f, 0.51f)
+    };
 
-	std::vector<unsigned int> indices = {
-		0, 1,
-		1, 2,
-		2, 3,
-		3, 0,
-		4, 5,
-		5, 6,
-		6, 7,
-		7, 4,
-		0, 4,
-		1, 5,
-		2, 6,
-		3, 7
-	};
+    std::vector<unsigned int> indices = {
+        0, 1, 1, 2, 2, 3, 3, 0,
+        4, 5, 5, 6, 6, 7, 7, 4, 
+        0, 4, 1, 5, 2, 6, 3, 7,
+    };
 
-	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-	glLineWidth(5.0f);
+    glLineWidth(5.0f);
 
-	unsigned int VAO;
-	glGenVertexArrays(1, &VAO);
-	glBindVertexArray(VAO);
+    unsigned int VAO, VBO, EBO;
+    glGenVertexArrays(1, &VAO);
+    glGenBuffers(1, &VBO);
+    glGenBuffers(1, &EBO);
 
-	unsigned int VBO;
-	glGenBuffers(1, &VBO);
-	glBindBuffer(GL_ARRAY_BUFFER, VBO);
-	glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(glm::vec3), vertices.data(), GL_STATIC_DRAW);
+    glBindVertexArray(VAO);
 
-	unsigned int EBO;
-	glGenBuffers(1, &EBO);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(unsigned int), indices.data(), GL_STATIC_DRAW);
+    glBindBuffer(GL_ARRAY_BUFFER, VBO);
+    glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(glm::vec3), vertices.data(), GL_STATIC_DRAW);
 
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(glm::vec3), (void*)0);
-	glEnableVertexAttribArray(0);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(unsigned int), indices.data(), GL_STATIC_DRAW);
 
-	glDrawElements(GL_LINES, indices.size(), GL_UNSIGNED_INT, 0);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(glm::vec3), (void*)0);
+    glEnableVertexAttribArray(0);
 
-	glDeleteBuffers(1, &VBO);
-	glDeleteBuffers(1, &EBO);
-	glDeleteVertexArrays(1, &VAO);
+    glEnable(GL_DEPTH_TEST);
+    glEnable(GL_LINE_SMOOTH);
 
-	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-	glLineWidth(1.0f);
+    glDrawElements(GL_LINES, indices.size(), GL_UNSIGNED_INT, 0);
+
+    glBindVertexArray(0); // Unbind VAO
+
+    glDeleteBuffers(1, &VBO);
+    glDeleteBuffers(1, &EBO);
+    glDeleteVertexArrays(1, &VAO);
 }
-
-
 

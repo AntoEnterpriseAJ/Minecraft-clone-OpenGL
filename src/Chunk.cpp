@@ -56,6 +56,7 @@ void Chunk::render() const
     m_VAO.bind();
 
     glEnable(GL_DEPTH_TEST);
+	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 
     glFrontFace(GL_CCW);
     glEnable(GL_CULL_FACE);
