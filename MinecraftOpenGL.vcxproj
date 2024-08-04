@@ -147,6 +147,7 @@
     <ClCompile Include="src\ElementBuffer.cpp" />
     <ClCompile Include="src\Game.cpp" />
     <ClCompile Include="src\ShaderManager.cpp" />
+    <ClCompile Include="src\Sun.cpp" />
     <ClCompile Include="src\Utilities.cpp" />
     <ClCompile Include="src\Shader.cpp" />
     <ClCompile Include="src\Skybox.cpp" />
@@ -454,6 +455,7 @@
     <ClInclude Include="src\include\Shader.h" />
     <ClInclude Include="src\include\ShaderManager.h" />
     <ClInclude Include="src\include\Skybox.h" />
+    <ClInclude Include="src\include\Sun.h" />
     <ClInclude Include="src\include\Texture.h" />
     <ClInclude Include="src\include\UIComponent.h" />
     <ClInclude Include="src\include\VertexArray.h" />

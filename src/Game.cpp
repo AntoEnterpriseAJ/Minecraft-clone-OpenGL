@@ -1,7 +1,7 @@
 #include "include/Game.h"
 
 Game::Game(GLFWwindow* window)
-	: m_window{window}, m_world{GameDefaults::renderDistance}, m_skybox{},
+	: m_window{window}, m_world{GameDefaults::renderDistance}, m_skybox{}, m_sun{}, 
 	  m_voxelHandler{m_world, s_camera.getPosition(), s_camera.getFront()}, m_atlas{"res/atlas/atlas.png"}
 {
 	configureWindow();
@@ -36,6 +36,9 @@ void Game::render()
 		m_atlas.bind();
 		m_world.render(s_camera.getPosition());
 
+		m_sun.updatePosition(s_camera.getPosition(), s_deltaTime);
+		m_sun.render(m_shaderManager.getShader("sunShader"));
+
 		m_voxelHandler.rayCast(s_camera.getPosition(), s_camera.getFront());
 
 		m_shaderManager.getShader("skyboxShader")->use();
@@ -51,6 +54,7 @@ void Game::loadShaders()
 	m_shaderManager.loadShader("blockShader", "res/shaders/vertex.vert", "res/shaders/fragment.frag");
 	m_shaderManager.loadShader("skyboxShader", "res/shaders/skybox.vert", "res/shaders/skybox.frag");
 	m_shaderManager.loadShader("crosshairShader", "res/shaders/crosshair.vert", "res/shaders/crosshair.frag");
+	m_shaderManager.loadShader("sunShader", "res/shaders/sun.vert", "res/shaders/sun.frag");
 }
 
 void Game::updateShaders()
@@ -58,16 +62,29 @@ void Game::updateShaders()
 	Shader* blockShader = m_shaderManager.getShader("blockShader");
 	Shader* skyboxShader = m_shaderManager.getShader("skyboxShader");
 	Shader* crosshairShader = m_shaderManager.getShader("crosshairShader");
+	Shader* sunShader = m_shaderManager.getShader("sunShader");
 
-	glm::mat4 model{1.0f};
 	glm::mat4 view = s_camera.getViewMatrix();
     glm::mat4 projection = glm::perspective(glm::radians(s_camera.getFOV()), GameDefaults::getAspectRatio(), 0.1f, 1000.0f);
 
+	glm::mat4 model{1.0f};
+	model = glm::translate(model, m_sun.getPosition());
+	model = glm::scale(model, glm::vec3(50.0f, 50.0f, 50.0f));
+	sunShader->use();
+	sunShader->setMat4("model", model);
+	sunShader->setMat4("view", view);
+	sunShader->setMat4("projection", projection);
+
+	model = glm::mat4(1.0f);
+	glm::vec3 sunPosition = m_sun.getPosition();
+	glm::vec3 cameraPos = s_camera.getPosition();
 	blockShader->use();
 	blockShader->setInt("ourTexture1", 0);
 	blockShader->setMat4("model", model);
 	blockShader->setMat4("view", view);
 	blockShader->setMat4("projection", projection);
+	blockShader->setVec3("lightPos", sunPosition.x, sunPosition.y, sunPosition.z);
+	blockShader->setVec3("viewPos", cameraPos.x, cameraPos.y, cameraPos.z);
 
 	skyboxShader->use();
 	skyboxShader->setMat4("view", glm::mat4(glm::mat3(s_camera.getViewMatrix())));
@@ -173,7 +190,7 @@ void Game::drawDebugAxis()
 	glEnableVertexAttribArray(0);
 
 	glm::mat4 model{1.0f};
-	model = glm::translate(model, glm::vec3(0.0f, 20.0f, 0.0f));
+	//model = glm::translate(model, glm::vec3(0.0f, 20.0f, 0.0f));
 	model = glm::scale(model, glm::vec3(200.0f, 200.0f, 200.0f));
 	glm::mat4 view = s_camera.getViewMatrix();
 	glm::mat4 projection = glm::perspective(glm::radians(s_camera.getFOV()), GameDefaults::getAspectRatio(), 0.1f, 1000.0f);
