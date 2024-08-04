@@ -9,6 +9,7 @@
 #include "Crosshair.h"
 #include "ShaderManager.h"
 #include "GLFW/glfw3.h"
+#include "Sun.h"
 
 namespace GameDefaults
 {
@@ -48,6 +49,7 @@ private:
 private:
 	World m_world;
 	Skybox m_skybox;
+	Sun m_sun;
 
 	VoxelHandler m_voxelHandler;
 	ShaderManager m_shaderManager;
