@@ -41,6 +41,15 @@ public:
 
     void setType(Block::Type type);
 
+    static constexpr std::array<float, 18> s_faceNormals = {
+        0.0f,  0.0f,  1.0f, // FRONT
+		0.0f,  0.0f, -1.0f, // BACK
+	   -1.0f,  0.0f,  0.0f, // LEFT
+		1.0f,  0.0f,  0.0f, // RIGHT
+		0.0f,  1.0f,  0.0f, // TOP
+		0.0f, -1.0f,  0.0f, // BOTTOM
+	};
+
 private:
     void genUVs();
     void genFaceUV(Face face, float bottomLeftX, float bottomLeftY);
