@@ -148,6 +148,9 @@ void Chunk::generateMesh()
                             vertices.push_back(faceVertices[i + 2] + z + m_worldPositionZ);
                             vertices.push_back(faceVertices[i + 3]);
                             vertices.push_back(faceVertices[i + 4]);
+                            vertices.push_back(Block::s_faceNormals[face * 3 + 0]);
+                            vertices.push_back(Block::s_faceNormals[face * 3 + 1]);
+                            vertices.push_back(Block::s_faceNormals[face * 3 + 2]);
                         }
 
                         for (int i = 0; i < faceIndices.size(); ++i)
@@ -168,6 +171,7 @@ void Chunk::generateMesh()
     VertexBufferLayout meshLayout;
     meshLayout.addLayout(GL_FLOAT, 3, GL_FALSE);
     meshLayout.addLayout(GL_FLOAT, 2, GL_FALSE);
+    meshLayout.addLayout(GL_FLOAT, 3, GL_FALSE);
 
     m_VAO.addBuffer(m_VBO, meshLayout);
 
