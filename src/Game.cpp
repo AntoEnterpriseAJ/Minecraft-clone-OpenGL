@@ -89,6 +89,7 @@ void Game::updateShaders()
 	skyboxShader->use();
 	skyboxShader->setMat4("view", glm::mat4(glm::mat3(s_camera.getViewMatrix())));
 	skyboxShader->setMat4("projection", projection);
+	skyboxShader->setVec3("lightPos", sunPosition.x, sunPosition.y, sunPosition.z);
 
 	int width, height;
 	glfwGetWindowSize(m_window, &width, &height);
