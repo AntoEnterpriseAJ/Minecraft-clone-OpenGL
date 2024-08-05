@@ -17,7 +17,7 @@ public:
 		{
 			switch (type)
 			{
-				case GL_FLOAT			: return sizeof(GL_FLOAT);
+				case GL_FLOAT		: return sizeof(GL_FLOAT);
 				case GL_UNSIGNED_INT	: return sizeof(GL_UNSIGNED_INT);
 				case GL_UNSIGNED_BYTE	: return sizeof(GL_UNSIGNED_BYTE);
 			}
