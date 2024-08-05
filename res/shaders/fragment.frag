@@ -15,7 +15,7 @@ void main()
     const vec3 lightColor = vec3(0.8, 0.8, 0.8);
     vec3 normal = normalize(Normal);
 
-    float ambientFactor = 0.2;
+    float ambientFactor = 0.5 * (normalize(lightPos.y) < 0.5f ? 0.5f : normalize(lightPos.y));
     vec3 ambientLight = lightColor * ambientFactor;
 
     vec3 lightDirection = normalize(lightPos - FacePos);
@@ -24,12 +24,11 @@ void main()
 
     vec3 viewDirection = normalize(viewPos - FacePos);
     vec3 reflection = reflect(-lightDirection, normal);
-    float specularFactor = pow(max(dot(viewDirection, reflection), 0.0), 1);
+    float specularFactor = pow(max(dot(viewDirection, reflection), 0.0), 16);
     vec3 specularLight = specularFactor * lightColor;
-     
-    if (lightPos.y > 0.0)
+    
+    if (lightPos.y > 0.0f)
     {
         FragColor = texture(ourTexture1, TexCoord) * vec4(ambientLight + diffuseLight + specularLight, 1.0);
-    }
-    else FragColor = texture(ourTexture1, TexCoord) * vec4(ambientLight, 1.0);
+    } else FragColor = texture(ourTexture1, TexCoord) * vec4(ambientLight, 1.0);
 }
