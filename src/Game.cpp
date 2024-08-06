@@ -49,6 +49,60 @@ void Game::render()
 	}
 }
 
+void Game::gravity()
+{
+	glm::vec3 cameraPos = s_camera.getPosition();
+
+	constexpr float fallSpeed = 0.03f;
+	const Block& blockBelow = m_world.getBlockAt(cameraPos.x, cameraPos.z, cameraPos.y - fallSpeed);
+
+	if (blockBelow.getType() == Block::Type::AIR)
+	{
+		s_camera.getPositionRef().y -= fallSpeed;
+	}
+}
+
+std::array<bool, Camera::Movement::COUNT> Game::getMovementValidDirections()
+{
+    glm::vec3 cameraPos = s_camera.getPosition();
+    constexpr float precision = 0.2f;
+
+    glm::vec3 front = glm::vec3(glm::sign(s_camera.getFront().x), 0.0f, glm::sign(s_camera.getFront().z));
+    glm::vec3 right = glm::vec3(glm::sign(s_camera.getRight().x), 0.0f, glm::sign(s_camera.getRight().z));
+    glm::vec3 back = -front;
+    glm::vec3 left = -right;
+    glm::vec3 up = s_camera.getUp();
+    glm::vec3 down = -up;
+
+    auto adjustPosition = [](const glm::vec3& pos) -> glm::vec3 {
+        return glm::vec3(glm::round(pos.x), glm::round(pos.y), glm::round(pos.z));
+    };
+
+    glm::vec3 frontPos = adjustPosition(cameraPos + front * precision);
+    glm::vec3 backPos = adjustPosition(cameraPos + back * precision);
+    glm::vec3 rightPos = adjustPosition(cameraPos + right * precision);
+    glm::vec3 leftPos = adjustPosition(cameraPos + left * precision);
+    glm::vec3 upPos = adjustPosition(cameraPos + up * precision);
+    glm::vec3 downPos = adjustPosition(cameraPos + down * precision);
+
+    const Block& blockFront = m_world.getBlockAt(frontPos.x, frontPos.z, frontPos.y);
+    const Block& blockBack = m_world.getBlockAt(backPos.x, backPos.z, backPos.y);
+    const Block& blockRight = m_world.getBlockAt(rightPos.x, rightPos.z, rightPos.y);
+    const Block& blockLeft = m_world.getBlockAt(leftPos.x, leftPos.z, leftPos.y);
+    const Block& blockUp = m_world.getBlockAt(upPos.x, upPos.z, upPos.y);
+    const Block& blockDown = m_world.getBlockAt(downPos.x, downPos.z, downPos.y);
+
+    std::array<bool, Camera::Movement::COUNT> validDirections;
+    validDirections[Camera::FORWARD] = blockFront.getType() == Block::Type::AIR;
+    validDirections[Camera::BACKWARD] = blockBack.getType() == Block::Type::AIR;
+    validDirections[Camera::RIGHT] = blockRight.getType() == Block::Type::AIR;
+    validDirections[Camera::LEFT] = blockLeft.getType() == Block::Type::AIR;
+    validDirections[Camera::UP] = blockUp.getType() == Block::Type::AIR;
+    validDirections[Camera::DOWN] = blockDown.getType() == Block::Type::AIR;
+
+    return validDirections;
+}
+
 void Game::loadShaders()
 {
 	m_shaderManager.loadShader("blockShader", "res/shaders/vertex.vert", "res/shaders/fragment.frag");
@@ -100,38 +154,42 @@ void Game::updateShaders()
 
 void Game::processInput()
 {
+	std::array<bool, Camera::Movement::COUNT> validDirections = getMovementValidDirections();
+
 	if (glfwGetKey(m_window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
 	{
 		glfwSetWindowShouldClose(m_window, true);
 	}
 
+	gravity();
+
 	if (glfwGetKey(m_window, GLFW_KEY_LEFT_CONTROL) == GLFW_PRESS)
-    {
-        s_camera.startSprinting();
-    }
+	{
+		s_camera.startSprinting();
+	}
 	else s_camera.stopSprinting();
 
-	if (glfwGetKey(m_window, GLFW_KEY_W) == GLFW_PRESS)
+	if (glfwGetKey(m_window, GLFW_KEY_W) == GLFW_PRESS && validDirections[Camera::FORWARD])
 	{
 		s_camera.processKeyboard(Camera::FORWARD, s_deltaTime);
 	}
-	if (glfwGetKey(m_window, GLFW_KEY_S) == GLFW_PRESS)
+	if (glfwGetKey(m_window, GLFW_KEY_S) == GLFW_PRESS && validDirections[Camera::BACKWARD])
 	{
 		s_camera.processKeyboard(Camera::BACKWARD, s_deltaTime);
 	} 
-	if (glfwGetKey(m_window, GLFW_KEY_D) == GLFW_PRESS)
+	if (glfwGetKey(m_window, GLFW_KEY_D) == GLFW_PRESS && validDirections[Camera::RIGHT])
 	{
 		s_camera.processKeyboard(Camera::RIGHT, s_deltaTime);
 	}
-	if (glfwGetKey(m_window, GLFW_KEY_A) == GLFW_PRESS)
+	if (glfwGetKey(m_window, GLFW_KEY_A) == GLFW_PRESS && validDirections[Camera::LEFT])
 	{
 		s_camera.processKeyboard(Camera::LEFT, s_deltaTime);
 	}
-	if (glfwGetKey(m_window, GLFW_KEY_SPACE) == GLFW_PRESS)
+	if (glfwGetKey(m_window, GLFW_KEY_SPACE) == GLFW_PRESS && validDirections[Camera::UP])
 	{
 		s_camera.processKeyboard(Camera::UP, s_deltaTime);
 	}
-	if (glfwGetKey(m_window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS)
+	if (glfwGetKey(m_window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS && validDirections[Camera::DOWN])
 	{
 		s_camera.processKeyboard(Camera::DOWN, s_deltaTime);
 	}

@@ -21,7 +21,7 @@ namespace CameraDefaults
 class Camera
 {
 public:
-	enum CameraMovement
+	enum Movement
 	{
 		FORWARD,
 		LEFT,
@@ -29,7 +29,7 @@ public:
 		RIGHT,
 		DOWN,
 		UP,
-		SPRINT,
+		COUNT,
 	};
 
 	enum mode
@@ -42,7 +42,7 @@ public:
 	explicit Camera(glm::vec3 pos, glm::vec3 front = { 0.0f, 0.0f, -1.0f }, glm::vec3 up = { 0.0f, 1.0f, 0.0f }, float yaw = CameraDefaults::yaw, float pitch = CameraDefaults::pitch);
 
 	glm::mat4 getViewMatrix() const;
-	void processKeyboard(CameraMovement direction, float deltaTime);
+	void processKeyboard(Movement direction, float deltaTime);
 	void processMouseScroll(float yOffset);
 	void processMouseCursor(double yawOffset, double pitchOffset);
 
@@ -52,6 +52,9 @@ public:
 	float getPositionZ() const;
 	glm::vec3 getPosition() const;
 	glm::vec3 getFront() const;
+	glm::vec3 getUp() const;
+	glm::vec3 getRight() const;
+	glm::vec3& getPositionRef();
 
 	void startSprinting();
 	void stopSprinting();
@@ -66,8 +69,8 @@ private:
 	glm::vec3 m_worldUp;
 
 	mode m_mode;
-
 	bool m_isSprinting;
+
 	float m_FOV;
 	float m_yaw;
 	float m_pitch;

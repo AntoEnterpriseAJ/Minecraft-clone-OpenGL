@@ -26,51 +26,42 @@ glm::mat4 Camera::getViewMatrix() const{
 	return viewMatrix;
 }
 
-void Camera::processKeyboard(CameraMovement direction, float deltaTime)
+void Camera::processKeyboard(Movement direction, float deltaTime)
 {
-	float velocity = m_speed * deltaTime;
+    float velocity = m_speed * deltaTime;
 
-	if (m_isSprinting)
-		velocity *= CameraDefaults::sprintMultiplier;
+    if (m_isSprinting)
+        velocity *= CameraDefaults::sprintMultiplier;
 
-	if (m_mode == mode::creative)
-	{
-		switch (direction)
-		{
+    if (m_mode == mode::creative)
+    {
+        glm::vec3 adjustedFront = glm::normalize(glm::vec3(m_front.x, 0.0f, m_front.z));
+        glm::vec3 adjustedRight = glm::normalize(glm::vec3(m_right.x, 0.0f, m_right.z));
 
-			case FORWARD:
-			{
-				m_position += glm::vec3(m_front.x, 0.0f, m_front.z) * velocity;
-				break;
-			}
-			case LEFT:
-			{
-				m_position -= glm::vec3(m_right.x, 0.0f, m_right.z) * velocity;
-				break;
-			}
-			case BACKWARD:
-			{
-				m_position -= glm::vec3(m_front.x, 0.0f, m_front.z) * velocity;
-				break;
-			}
-			case RIGHT:
-			{
-				m_position += glm::vec3(m_right.x, 0.0f, m_right.z) * velocity;
-				break;
-			}
-			case UP:
-			{
-				m_position += glm::vec3(0.0f, 1.0f, 0.0f) * velocity;
-				break;
-			}
-			case DOWN:
-			{
-				m_position -= glm::vec3(0.0f, 1.0f, 0.0f) * velocity;
-				break;
-			}
-		}
-	}
+        switch (direction)
+        {
+            case FORWARD:
+                m_position += adjustedFront * velocity;
+                break;
+            case LEFT:
+                m_position -= adjustedRight * velocity;
+                break;
+            case BACKWARD:
+                m_position -= adjustedFront * velocity;
+                break;
+            case RIGHT:
+                m_position += adjustedRight * velocity;
+                break;
+            case UP:
+                m_position += glm::vec3(0.0f, 1.0f, 0.0f) * velocity;
+                break;
+            case DOWN:
+                m_position -= glm::vec3(0.0f, 1.0f, 0.0f) * velocity;
+                break;
+        }
+    }
 }
+
 
 void Camera::processMouseScroll(float yOffset)
 {
@@ -123,6 +114,21 @@ glm::vec3 Camera::getPosition() const
 glm::vec3 Camera::getFront() const
 {
 	return m_front;
+}
+
+glm::vec3 Camera::getUp() const
+{
+	return m_up;
+}
+
+glm::vec3 Camera::getRight() const
+{
+	return m_right;
+}
+
+glm::vec3& Camera::getPositionRef()
+{
+	return m_position;
 }
 
 void Camera::startSprinting()
