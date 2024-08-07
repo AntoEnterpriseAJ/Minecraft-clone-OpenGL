@@ -43,7 +43,7 @@ public:
 	explicit Camera(glm::vec3 pos, glm::vec3 front = { 0.0f, 0.0f, -1.0f }, glm::vec3 up = { 0.0f, 1.0f, 0.0f }, float yaw = CameraDefaults::yaw, float pitch = CameraDefaults::pitch);
 
 	glm::mat4 getViewMatrix() const;
-	void processKeyboard(Movement direction, float deltaTime, const World& world);
+	void processMovement(Movement direction, float deltaTime, const World& world);
 	void processMouseScroll(float yOffset);
 	void processMouseCursor(double yawOffset, double pitchOffset);
 

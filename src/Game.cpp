@@ -113,27 +113,27 @@ void Game::processInput()
 
 	if (glfwGetKey(m_window, GLFW_KEY_W) == GLFW_PRESS)
 	{
-		s_camera.processKeyboard(Camera::FORWARD, s_deltaTime, m_world);
+		s_camera.processMovement(Camera::FORWARD, s_deltaTime, m_world);
 	}
 	if (glfwGetKey(m_window, GLFW_KEY_S) == GLFW_PRESS)
 	{
-		s_camera.processKeyboard(Camera::BACKWARD, s_deltaTime, m_world);
+		s_camera.processMovement(Camera::BACKWARD, s_deltaTime, m_world);
 	} 
 	if (glfwGetKey(m_window, GLFW_KEY_D) == GLFW_PRESS)
 	{
-		s_camera.processKeyboard(Camera::RIGHT, s_deltaTime, m_world);
+		s_camera.processMovement(Camera::RIGHT, s_deltaTime, m_world);
 	}
 	if (glfwGetKey(m_window, GLFW_KEY_A) == GLFW_PRESS)
 	{
-		s_camera.processKeyboard(Camera::LEFT, s_deltaTime, m_world);
+		s_camera.processMovement(Camera::LEFT, s_deltaTime, m_world);
 	}
 	if (glfwGetKey(m_window, GLFW_KEY_SPACE) == GLFW_PRESS)
 	{
-		s_camera.processKeyboard(Camera::UP, s_deltaTime, m_world);
+		s_camera.processMovement(Camera::UP, s_deltaTime, m_world);
 	}
 	if (glfwGetKey(m_window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS)
 	{
-		s_camera.processKeyboard(Camera::DOWN, s_deltaTime, m_world);
+		s_camera.processMovement(Camera::DOWN, s_deltaTime, m_world);
 	}
 }
 

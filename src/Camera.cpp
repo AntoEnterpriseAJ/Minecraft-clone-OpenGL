@@ -28,7 +28,7 @@ glm::mat4 Camera::getViewMatrix() const{
 
 bool Camera::validPosition(const glm::vec3& newPosition, const World& world) const
 {
-    constexpr float playerHeight = 1.0f;
+    constexpr float playerHeight = 2.0f;
     constexpr float playerWidth = 0.05f;
 
     glm::vec3 offsets[] = {
@@ -45,11 +45,11 @@ bool Camera::validPosition(const glm::vec3& newPosition, const World& world) con
     for (const auto& offset : offsets)
     {
         glm::vec3 point = newPosition + offset;
-        int x = static_cast<int>(floor(point.x));
-        int y = static_cast<int>(floor(point.y));
-        int z = static_cast<int>(floor(point.z));
+        int x = static_cast<int>(glm::round(point.x));
+        int y = static_cast<int>(glm::round(point.y));
+        int z = static_cast<int>(glm::round(point.z));
 
-        if (world.getBlockAt(x, z, y).getType() != Block::Type::AIR)
+        if (world.getBlockAt(x, z, y - playerHeight).getType() != Block::Type::AIR)
         {
             std::cout << m_position.x << " " << m_position.y << " " << m_position.z << "\n";
             std::cout << "colission at:" << newPosition.x << " " << newPosition.y << " " << newPosition.z << "\n";
@@ -60,7 +60,7 @@ bool Camera::validPosition(const glm::vec3& newPosition, const World& world) con
     return true;
 }
 
-void Camera::processKeyboard(Movement direction, float deltaTime, const World& world)
+void Camera::processMovement(Movement direction, float deltaTime, const World& world)
 {
     float velocity = m_speed * deltaTime;
 
