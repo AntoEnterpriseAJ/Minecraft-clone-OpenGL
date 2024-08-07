@@ -29,8 +29,6 @@ public:
 
 	void render();
 private:
-	void gravity();
-	std::array<bool, Camera::Movement::COUNT> getMovementValidDirections();
 	void loadShaders();
 	void updateShaders();
 	void processInput();

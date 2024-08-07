@@ -3,6 +3,7 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
+#include "World.h"
 
 namespace CameraDefaults
 {
@@ -42,7 +43,7 @@ public:
 	explicit Camera(glm::vec3 pos, glm::vec3 front = { 0.0f, 0.0f, -1.0f }, glm::vec3 up = { 0.0f, 1.0f, 0.0f }, float yaw = CameraDefaults::yaw, float pitch = CameraDefaults::pitch);
 
 	glm::mat4 getViewMatrix() const;
-	void processKeyboard(Movement direction, float deltaTime);
+	void processKeyboard(Movement direction, float deltaTime, const World& world);
 	void processMouseScroll(float yOffset);
 	void processMouseCursor(double yawOffset, double pitchOffset);
 
@@ -60,6 +61,7 @@ public:
 	void stopSprinting();
 
 private:
+	bool validPosition(const glm::vec3& newPosition, const World& world) const;
 	void updateVectors();
 private:
 	glm::vec3 m_position;

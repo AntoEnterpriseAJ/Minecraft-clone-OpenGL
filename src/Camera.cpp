@@ -26,7 +26,41 @@ glm::mat4 Camera::getViewMatrix() const{
 	return viewMatrix;
 }
 
-void Camera::processKeyboard(Movement direction, float deltaTime)
+bool Camera::validPosition(const glm::vec3& newPosition, const World& world) const
+{
+    constexpr float playerHeight = 1.0f;
+    constexpr float playerWidth = 0.05f;
+
+    glm::vec3 offsets[] = {
+        glm::vec3(playerWidth / 2, 0, playerWidth / 2),
+        glm::vec3(playerWidth / 2, 0, -playerWidth / 2),
+        glm::vec3(-playerWidth / 2, 0, playerWidth / 2),
+        glm::vec3(-playerWidth / 2, 0, -playerWidth / 2),
+        glm::vec3(playerWidth / 2, playerHeight, playerWidth / 2),
+        glm::vec3(playerWidth / 2, playerHeight, -playerWidth / 2),
+        glm::vec3(-playerWidth / 2, playerHeight, playerWidth / 2),
+        glm::vec3(-playerWidth / 2, playerHeight, -playerWidth / 2)
+    };
+
+    for (const auto& offset : offsets)
+    {
+        glm::vec3 point = newPosition + offset;
+        int x = static_cast<int>(floor(point.x));
+        int y = static_cast<int>(floor(point.y));
+        int z = static_cast<int>(floor(point.z));
+
+        if (world.getBlockAt(x, z, y).getType() != Block::Type::AIR)
+        {
+            std::cout << m_position.x << " " << m_position.y << " " << m_position.z << "\n";
+            std::cout << "colission at:" << newPosition.x << " " << newPosition.y << " " << newPosition.z << "\n";
+            return false;
+        }
+    }
+
+    return true;
+}
+
+void Camera::processKeyboard(Movement direction, float deltaTime, const World& world)
 {
     float velocity = m_speed * deltaTime;
 
@@ -37,28 +71,34 @@ void Camera::processKeyboard(Movement direction, float deltaTime)
     {
         glm::vec3 adjustedFront = glm::normalize(glm::vec3(m_front.x, 0.0f, m_front.z));
         glm::vec3 adjustedRight = glm::normalize(glm::vec3(m_right.x, 0.0f, m_right.z));
+		glm::vec3 newPosition = m_position;
 
         switch (direction)
         {
             case FORWARD:
-                m_position += adjustedFront * velocity;
+                newPosition += adjustedFront * velocity;
                 break;
             case LEFT:
-                m_position -= adjustedRight * velocity;
+                newPosition -= adjustedRight * velocity;
                 break;
             case BACKWARD:
-                m_position -= adjustedFront * velocity;
+                newPosition -= adjustedFront * velocity;
                 break;
             case RIGHT:
-                m_position += adjustedRight * velocity;
+                newPosition += adjustedRight * velocity;
                 break;
             case UP:
-                m_position += glm::vec3(0.0f, 1.0f, 0.0f) * velocity;
+                newPosition += glm::vec3(0.0f, 1.0f, 0.0f) * velocity;
                 break;
             case DOWN:
-                m_position -= glm::vec3(0.0f, 1.0f, 0.0f) * velocity;
+                newPosition -= glm::vec3(0.0f, 1.0f, 0.0f) * velocity;
                 break;
         }
+
+		if (validPosition(newPosition, world))
+		{
+			m_position = newPosition;
+		} 
     }
 }
 

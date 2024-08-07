@@ -12,7 +12,7 @@ Block::Block(Type type)
 
 Block::Block(const Block& other)
     : m_type(other.m_type),
-      m_UVs(other.m_UVs ? std::make_unique<std::array<float, Face::COUNT * s_UVsPerFace>>(*other.m_UVs) : nullptr)
+       m_UVs(other.m_UVs ? std::make_unique<std::array<float, Face::COUNT * s_UVsPerFace>>(*other.m_UVs) : nullptr)
 {
 }
 
