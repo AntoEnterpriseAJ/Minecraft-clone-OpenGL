@@ -17,8 +17,8 @@ namespace CameraDefaults
 	constexpr float FOVUpperBound    =  120.0f;
 	constexpr float FOVLowerBound    =  5.0f;
 	constexpr float sprintMultiplier =  1.5f;
-	constexpr float playerHeight	 = 1.8f;
-    constexpr float playerWidth		 = 0.5f;
+	constexpr float playerHeight	 =  1.8f;
+    constexpr float playerWidth		 =  0.5f;
 }
 
 class Camera
