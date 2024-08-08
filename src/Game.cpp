@@ -65,7 +65,7 @@ void Game::updateShaders()
 	Shader* sunShader = m_shaderManager.getShader("sunShader");
 
 	glm::mat4 view = s_camera.getViewMatrix();
-    glm::mat4 projection = glm::perspective(glm::radians(s_camera.getFOV()), GameDefaults::getAspectRatio(), 0.1f, 1000.0f);
+    glm::mat4 projection = glm::perspective(glm::radians(s_camera.getFOV()), GameDefaults::getAspectRatio(), 0.01f, 1000.0f);
 
 	glm::mat4 model{1.0f};
 	model = glm::translate(model, m_sun.getPosition());
@@ -194,12 +194,13 @@ void Game::drawDebugAxis()
 	//model = glm::translate(model, glm::vec3(0.0f, 20.0f, 0.0f));
 	model = glm::scale(model, glm::vec3(200.0f, 200.0f, 200.0f));
 	glm::mat4 view = s_camera.getViewMatrix();
-	glm::mat4 projection = glm::perspective(glm::radians(s_camera.getFOV()), GameDefaults::getAspectRatio(), 0.1f, 1000.0f);
+	glm::mat4 projection = glm::perspective(glm::radians(s_camera.getFOV()), GameDefaults::getAspectRatio(), 0.01f, 1000.0f);
 
 	axisShader.setMat4("model", model);
 	axisShader.setMat4("view", view);
 	axisShader.setMat4("projection", projection);
 
+	glEnable(GL_DEPTH_TEST);
 	glLineWidth(3.0f);
 	glBindVertexArray(axisVAO);
 	axisShader.setVec3("color", 1.0f, 0.0f, 0.0f);

@@ -28,8 +28,8 @@ glm::mat4 Camera::getViewMatrix() const{
 
 bool Camera::validPosition(const glm::vec3& newPosition, const World& world) const
 {
-    constexpr float playerHeight = 2.0f;
-    constexpr float playerWidth = 0.05f;
+    constexpr float playerHeight = CameraDefaults::playerHeight;
+    constexpr float playerWidth = CameraDefaults::playerWidth;
 
     glm::vec3 offsets[] = {
         glm::vec3(playerWidth / 2, 0, playerWidth / 2),
@@ -46,10 +46,10 @@ bool Camera::validPosition(const glm::vec3& newPosition, const World& world) con
     {
         glm::vec3 point = newPosition + offset;
         int x = static_cast<int>(glm::round(point.x));
-        int y = static_cast<int>(glm::round(point.y));
+        int y = static_cast<int>(point.y);
         int z = static_cast<int>(glm::round(point.z));
 
-        if (world.getBlockAt(x, z, y - playerHeight).getType() != Block::Type::AIR)
+        if (world.getBlockAt(x, z, y - playerHeight + 1).getType() != Block::Type::AIR)
         {
             std::cout << m_position.x << " " << m_position.y << " " << m_position.z << "\n";
             std::cout << "colission at:" << newPosition.x << " " << newPosition.y << " " << newPosition.z << "\n";
