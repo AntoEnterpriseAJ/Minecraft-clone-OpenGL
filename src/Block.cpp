@@ -173,7 +173,8 @@ void Block::genUVs()
 
 void Block::genFaceUV(Face face, float bottomLeftX, float bottomLeftY)
 {
-    if (m_UVs) {
+    if (m_UVs)
+    {
         constexpr float atlasLength = 16.0f, atlasWidth = 16.0f;
 
         (*m_UVs)[face * s_UVsPerFace + 0] = bottomLeftX / atlasLength;

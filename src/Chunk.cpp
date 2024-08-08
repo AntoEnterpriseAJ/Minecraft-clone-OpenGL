@@ -90,16 +90,7 @@ void Chunk::generateMesh()
 
                 for (Block::Face face = Block::Face::FRONT; face < Block::Face::COUNT; face = (Block::Face)((int)face + 1))
                 {
-                    if (x == 0 && face == Block::Face::LEFT && m_neighbors[0] && m_neighbors[0]->getBlockAt(Size::length - 1, z, y).getType() != Block::Type::AIR)
-                        continue;
-                    if (x == Size::length - 1 && face == Block::Face::RIGHT && m_neighbors[1] && m_neighbors[1]->getBlockAt(0, z, y).getType() != Block::Type::AIR)
-                        continue;
-                    if (z == 0 && face == Block::Face::BACK && m_neighbors[2] && m_neighbors[2]->getBlockAt(x, Size::width - 1, y).getType() != Block::Type::AIR)
-                        continue;
-                    if (z == Size::width - 1 && face == Block::Face::FRONT && m_neighbors[3] && m_neighbors[3]->getBlockAt(x, 0, y).getType() != Block::Type::AIR)
-                        continue;
-
-                    if (block.isFaceVisible(face, x, y, z, m_blocks))
+                    if (isFaceVisible(face, x, y, z))
                     {
                         constexpr int verticesPerFace = 20;
 
@@ -135,7 +126,8 @@ void Chunk::generateMesh()
                             -0.5f, -0.5f,  0.5f, block.getUV(Block::Face::BOTTOM, 6), block.getUV(Block::Face::BOTTOM, 7),    // top left
                         };
 
-                        const std::vector<float> faceVertices(blockVertices.begin() + verticesPerFace * face, blockVertices.begin() + verticesPerFace * (face + 1));
+                        const std::vector<float> faceVertices(blockVertices.begin() + verticesPerFace * face,
+                                                              blockVertices.begin() + verticesPerFace * (face + 1));
 
                         std::array<unsigned int, 6> faceIndices = {
                             0, 1, 2,
@@ -184,6 +176,11 @@ void Chunk::generateMesh()
     m_EBO.unbind();
 
     m_meshGenerated = true;
+}
+
+void Chunk::setMeshGenState(bool state)
+{
+    m_meshGenerated = state;
 }
 
 
@@ -252,6 +249,56 @@ float Chunk::getWorldPositionX() const
 float Chunk::getWorldPositionZ() const
 {
     return m_worldPositionZ;
+}
+
+bool Chunk::isFaceVisible(Block::Face face, int x, int y, int z) const
+{
+    if (x == 0 && face == Block::Face::LEFT && m_neighbors[0] && m_neighbors[0]->getBlockAt(Size::length - 1, z, y).getType() != Block::Type::AIR)
+        return false;
+    if (x == Size::length - 1 && face == Block::Face::RIGHT && m_neighbors[1] && m_neighbors[1]->getBlockAt(0, z, y).getType() != Block::Type::AIR)
+        return false;
+    if (z == 0 && face == Block::Face::BACK && m_neighbors[2] && m_neighbors[2]->getBlockAt(x, Size::width - 1, y).getType() != Block::Type::AIR)
+        return false;
+    if (z == Size::width - 1 && face == Block::Face::FRONT && m_neighbors[3] && m_neighbors[3]->getBlockAt(x, 0, y).getType() != Block::Type::AIR)
+        return false;
+
+    switch (face)
+    {
+        case Block::Face::FRONT:
+        {  
+            int index = x + Chunk::length * ( (z + 1) + Chunk::width * y);
+            return (z == Chunk::width - 1) || (m_blocks[index].getType() == Block::Type::AIR);
+        }
+        case Block::Face::BACK:
+        {
+            int index = x + Chunk::length * ( (z - 1) + Chunk::width * y);
+            return (z == 0) || (m_blocks[index].getType() == Block::Type::AIR);
+        }
+        case Block::Face::LEFT:
+        {
+            int index = (x - 1) + Chunk::length * (z + Chunk::width * y);
+            return (x == 0) || (m_blocks[index].getType() == Block::Type::AIR);
+        }
+        case Block::Face::RIGHT:
+        {
+            int index = (x + 1) + Chunk::length * (z + Chunk::width * y);
+            return (x == Chunk::length - 1) || (m_blocks[index].getType() == Block::Type::AIR);
+        }
+        case Block::Face::TOP:
+        {
+            int index = x + Chunk::length * (z + Chunk::width * (y + 1));
+            return (y == Chunk::height - 1) || (m_blocks[index].getType() == Block::Type::AIR);
+        }
+        case Block::Face::BOTTOM:
+        {
+            int index = x + Chunk::length * (z + Chunk::width * (y - 1));
+            return (y == 0) || (m_blocks[index].getType() == Block::Type::AIR);
+        }
+        default:
+        {
+            return false;
+        }
+    }
 }
 
 void Chunk::setNeighbors(const std::array<Chunk*, 4>& neighbors)

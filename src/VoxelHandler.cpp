@@ -47,7 +47,6 @@ void VoxelHandler::rayCast(glm::vec3 playerPosition, glm::vec3 playerFront)
 		if (m_world.getBlockAt(x, z, y).getType() != Block::Type::AIR)
 		{
 			renderSelectedBlockOutline(voxel.x, voxel.z, voxel.y);
-			//std::cout << "found non-air block at: " << x << ", " << y << ", " << z << "\n";
 
 			if (stepDirection == 0) voxelNormal.x = -dx;
 			else if (stepDirection == 1) voxelNormal.y = -dy;
@@ -104,7 +103,7 @@ void VoxelHandler::addBlock(glm::ivec3 voxel, glm::ivec3 voxelNormal)
 	{
 		m_world.setBlockAt(addPosition.x, addPosition.z, addPosition.y, Block::Type::LOG);
 
-		m_world.getChunkAt(voxel.x, voxel.z)->m_meshGenerated = false;
+		m_world.getChunkAt(voxel.x, voxel.z)->setMeshGenState(false);
 		m_world.getChunkAt(voxel.x, voxel.z)->generateMesh();
 	}
 }
@@ -131,7 +130,7 @@ void VoxelHandler::removeSelectedBlock(int x, int z, int y)
 
 	if (chunk)
 	{
-		chunk->m_meshGenerated = false;
+		chunk->setMeshGenState(false);
 		chunk->generateMesh();
 	}
 	
@@ -146,11 +145,11 @@ void VoxelHandler::removeSelectedBlock(int x, int z, int y)
 
 	if (chunk)
 	{
-		chunk->m_meshGenerated = false;
+		chunk->setMeshGenState(false);
 		chunk->generateMesh();
 	}
 
-	m_world.getChunkAt(x, z)->m_meshGenerated = false;
+	m_world.getChunkAt(x, z)->setMeshGenState(false);
 	m_world.getChunkAt(x, z)->generateMesh();
 }
 
@@ -201,7 +200,7 @@ void VoxelHandler::renderSelectedBlockOutline(int x, int z, int y)
 
     glDrawElements(GL_LINES, indices.size(), GL_UNSIGNED_INT, 0);
 
-    glBindVertexArray(0); // Unbind VAO
+    glBindVertexArray(0);
 
     glDeleteBuffers(1, &VBO);
     glDeleteBuffers(1, &EBO);

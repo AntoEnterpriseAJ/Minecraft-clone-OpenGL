@@ -10,6 +10,7 @@ public:
 	Crosshair();
 
 	void render() override;
+
 private:
 	std::array<float, 8> m_vertices;
 

@@ -28,24 +28,13 @@ public:
 	~Game();
 
 	void render();
+
 private:
 	void loadShaders();
 	void updateShaders();
 	void processInput();
 	void configureWindow();
 	void drawDebugAxis();
-private:
-	static void updateDeltaTime(); 
-	static void framebuffer_size_callback(GLFWwindow* window, int width, int height);
-	static void mouse_callback(GLFWwindow* window, double xPos, double yPos);
-	static void scroll_callback(GLFWwindow* window, double xOffset, double yOffset);
-private:
-	static inline Camera s_camera		= Camera{GameDefaults::spawnPoint};
-	static inline bool s_firstMouse		= true;
-	static inline double s_lastMouseX	= GameDefaults::screenWidth / 2;
-	static inline double s_lastMouseY	= GameDefaults::screenHeight / 2;
-	static inline float s_deltaTime		= 0.0f;
-	static inline float s_lastFrameTime = 0.0f;
 private:
 	World m_world;
 	Skybox m_skybox;
@@ -58,4 +47,16 @@ private:
 
 	Crosshair m_crosshair;
 	Texture m_atlas;
+private:
+	static void updateDeltaTime(); 
+	static void framebuffer_size_callback(GLFWwindow* window, int width, int height);
+	static void mouse_callback(GLFWwindow* window, double xPos, double yPos);
+	static void scroll_callback(GLFWwindow* window, double xOffset, double yOffset);
+private:
+	static inline Camera s_camera		= Camera{GameDefaults::spawnPoint};
+	static inline bool s_firstMouse		= true;
+	static inline double s_lastMouseX	= GameDefaults::screenWidth / 2;
+	static inline double s_lastMouseY	= GameDefaults::screenHeight / 2;
+	static inline float s_deltaTime		= 0.0f;
+	static inline float s_lastFrameTime = 0.0f;
 };

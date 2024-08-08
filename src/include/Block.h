@@ -53,8 +53,9 @@ public:
 private:
     void genUVs();
     void genFaceUV(Face face, float bottomLeftX, float bottomLeftY);
-
+private:
     static constexpr int s_UVsPerFace = 8;
+private:
     std::unique_ptr<std::array<float, Face::COUNT * s_UVsPerFace>> m_UVs;
     Type m_type;
 };

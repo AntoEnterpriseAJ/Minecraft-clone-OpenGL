@@ -14,7 +14,7 @@ public:
 	enum Size
 	{
 		length = 16,
-		width = 16,
+		width  = 16,
 		height = 256,
 	};
 
@@ -26,25 +26,27 @@ public:
 	bool isMeshGenerated() const;
 	float getWorldPositionX() const;
 	float getWorldPositionZ() const;
+	bool isFaceVisible(Block::Face face, int x, int y, int z) const;
 
 	void generateBlocks();
 	void setNeighbors(const std::array<Chunk*, 4>& neighbors);
 	void generateMesh();
+	void setMeshGenState(bool state);
 	void placeTree(int x, int z, int y);
-
-	bool m_meshGenerated;
 
 private:
 	int getHeightAt(int x, int z) const;
-	static constexpr int s_waterLevel = 2;
-
+private:
 	std::vector<Block> m_blocks;
 	std::array<Chunk*, 4> m_neighbors;
 
+	bool m_meshGenerated;
 	int m_worldPositionX;
 	int m_worldPositionZ;
 
 	VertexArray m_VAO;
 	VertexBuffer m_VBO;
 	ElementBuffer m_EBO;
+private:
+	static constexpr int s_waterLevel = 2;
 };

@@ -18,6 +18,7 @@ public:
 		});
 
 	void render() const;
+
 private:
 	void genTextures(const std::vector<std::string>& pathToFaces);
 	void bindTexture() const;

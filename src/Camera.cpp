@@ -51,8 +51,6 @@ bool Camera::validPosition(const glm::vec3& newPosition, const World& world) con
 
         if (world.getBlockAt(x, z, y - playerHeight + 1).getType() != Block::Type::AIR)
         {
-            std::cout << m_position.x << " " << m_position.y << " " << m_position.z << "\n";
-            std::cout << "colission at:" << newPosition.x << " " << newPosition.y << " " << newPosition.z << "\n";
             return false;
         }
     }
