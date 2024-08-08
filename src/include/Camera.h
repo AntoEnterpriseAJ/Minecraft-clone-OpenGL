@@ -17,8 +17,8 @@ namespace CameraDefaults
 	constexpr float FOVUpperBound    =  120.0f;
 	constexpr float FOVLowerBound    =  5.0f;
 	constexpr float sprintMultiplier =  1.5f;
-	constexpr float playerHeight = 1.8f;
-    constexpr float playerWidth = 0.5f;
+	constexpr float playerHeight	 = 1.8f;
+    constexpr float playerWidth		 = 0.5f;
 }
 
 class Camera
@@ -37,8 +37,8 @@ public:
 
 	enum mode
 	{
-		survival = 0,
-		creative = 1,
+		survival  = 0,
+		creative  = 1,
 		spectator = 2,
 	};
 
@@ -50,15 +50,12 @@ public:
 	void processMouseCursor(double yawOffset, double pitchOffset);
 
 	float getFOV() const;
-	float getPositionX() const;
-	float getPositionY() const;
-	float getPositionZ() const;
 	glm::vec3 getPosition() const;
 	glm::vec3 getFront() const;
 	glm::vec3 getUp() const;
 	glm::vec3 getRight() const;
-	glm::vec3& getPositionRef();
 
+	glm::vec3& getPositionRef();
 	void startSprinting();
 	void stopSprinting();
 

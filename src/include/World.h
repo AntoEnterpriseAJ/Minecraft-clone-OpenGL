@@ -20,6 +20,7 @@ public:
 
 private:
 	std::pair<int, int> getCurrentChunkCoords() const;
+
 	void loadChunk(int xPos, int zPos);
 	void generateChunkBlocks(int xPos, int zPos);
 	void unloadChunk(int xPos, int zPos);
@@ -33,7 +34,7 @@ private:
 			return std::hash<int>{}(pair.first) ^ std::hash<int>{}(pair.second);
 		}
 	};
-
+private:
 	std::unordered_map<std::pair<int, int>, Chunk*, PairHash> m_chunks;
 	std::unordered_map<std::pair<int, int>, std::future<void>, PairHash> m_chunkFutures;
 	glm::vec3 m_playerPosition;

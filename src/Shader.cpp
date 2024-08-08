@@ -17,7 +17,6 @@ const char* Shader::readFromPath(const char* path)
 	std::string source = ss.str();
 	char* shaderSource = new char[source.size() + 1];
 
-	// STRCPY IS UNSAFE
 	for (int i = 0; i <= source.size(); i++)
 	{
 		shaderSource[i] = source[i];

@@ -27,8 +27,6 @@ void Game::render()
 		updateDeltaTime();
 		processInput();
 
-		drawDebugAxis();
-
 		m_shaderManager.getShader("crosshairShader")->use();
 		m_crosshair.render();
 
@@ -191,7 +189,6 @@ void Game::drawDebugAxis()
 	glEnableVertexAttribArray(0);
 
 	glm::mat4 model{1.0f};
-	//model = glm::translate(model, glm::vec3(0.0f, 20.0f, 0.0f));
 	model = glm::scale(model, glm::vec3(200.0f, 200.0f, 200.0f));
 	glm::mat4 view = s_camera.getViewMatrix();
 	glm::mat4 projection = glm::perspective(glm::radians(s_camera.getFOV()), GameDefaults::getAspectRatio(), 0.01f, 1000.0f);
@@ -251,4 +248,3 @@ void Game::scroll_callback(GLFWwindow* window, double xOffset, double yOffset)
 {
 	s_camera.processMouseScroll(yOffset);
 }
-

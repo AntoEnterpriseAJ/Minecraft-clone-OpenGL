@@ -51,8 +51,6 @@ bool Camera::validPosition(const glm::vec3& newPosition, const World& world) con
 
         if (world.getBlockAt(x, z, y - playerHeight + 1).getType() != Block::Type::AIR)
         {
-            std::cout << m_position.x << " " << m_position.y << " " << m_position.z << "\n";
-            std::cout << "colission at:" << newPosition.x << " " << newPosition.y << " " << newPosition.z << "\n";
             return false;
         }
     }
@@ -129,21 +127,6 @@ void Camera::processMouseCursor(double yawOffset, double pitchOffset)
 float Camera::getFOV() const
 {
 	return m_FOV;
-}
-
-float Camera::getPositionX() const
-{
-	return m_position.x;
-}
-
-float Camera::getPositionY() const
-{
-	return m_position.y;
-}
-
-float Camera::getPositionZ() const
-{
-	return m_position.z;
 }
 
 glm::vec3 Camera::getPosition() const

@@ -143,7 +143,8 @@ Block World::getBlockAt(int wx, int wz, int wy) const
     if (localBlockZ < 0) localBlockZ += Chunk::Size::width;
 
     auto it = m_chunks.find({chunkX, chunkZ});
-    if (it == m_chunks.end()) return Block(); // Return air block if chunk not found
+    if (it == m_chunks.end())
+        return Block();
 
     return it->second->getBlockAt(localBlockX, localBlockZ, wy);
 }
