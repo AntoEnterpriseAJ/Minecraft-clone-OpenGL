@@ -22,7 +22,7 @@ private:
 	VertexBuffer m_VBO;
 private:
 	static constexpr unsigned int s_sunIndices[] = {
-        0 , 1 , 2 , 2 , 3 , 0 ,
+        	0 , 1 , 2 , 2 , 3 , 0 ,
 		4 , 5 , 6 , 6 , 7 , 4 ,
 		8 , 9 , 10, 10, 11, 8 ,
 		12, 13, 14, 14, 15, 12,
