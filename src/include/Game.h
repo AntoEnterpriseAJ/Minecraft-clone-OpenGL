@@ -14,7 +14,7 @@
 namespace GameDefaults
 {
 	constexpr int renderDistance = 10;
-	constexpr glm::vec3 spawnPoint{0.0f, 10.0f, 0.0f};
+	constexpr glm::vec3 spawnPoint{0.0f, 15.0f, 0.0f};
 	constexpr float screenWidth = 800.0f;
 	constexpr float screenHeight = 600.0f;
 
