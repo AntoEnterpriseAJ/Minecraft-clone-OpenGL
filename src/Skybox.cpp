@@ -1,6 +1,6 @@
 #include "include/Skybox.h"
 #include "glad/glad.h"
-#include "stb_image.h"
+#include "stb/stb_image.h"
 #include <iostream>
 #include "include/VertexBufferLayout.h"
 
