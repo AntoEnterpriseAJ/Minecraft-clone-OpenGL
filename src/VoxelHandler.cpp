@@ -105,6 +105,7 @@ void VoxelHandler::addBlock(glm::ivec3 voxel, glm::ivec3 voxelNormal)
 
 		m_world.getChunkAt(voxel.x, voxel.z)->setMeshGenState(false);
 		m_world.getChunkAt(voxel.x, voxel.z)->generateMesh();
+		m_world.getChunkAt(voxel.x, voxel.z)->sendData();
 	}
 }
 
@@ -132,6 +133,7 @@ void VoxelHandler::removeSelectedBlock(int x, int z, int y)
 	{
 		chunk->setMeshGenState(false);
 		chunk->generateMesh();
+		chunk->sendData();
 	}
 	
 	if (localBlockZ == 0)
@@ -147,10 +149,12 @@ void VoxelHandler::removeSelectedBlock(int x, int z, int y)
 	{
 		chunk->setMeshGenState(false);
 		chunk->generateMesh();
+		chunk->sendData();
 	}
 
 	m_world.getChunkAt(x, z)->setMeshGenState(false);
 	m_world.getChunkAt(x, z)->generateMesh();
+	m_world.getChunkAt(x, z)->sendData();
 }
 
 void VoxelHandler::renderSelectedBlockOutline(int x, int z, int y)

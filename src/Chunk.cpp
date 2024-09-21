@@ -70,10 +70,11 @@ void Chunk::generateMesh()
 {
     if (m_meshGenerated) return;
 
-    std::vector<float> vertices;
-    std::vector<unsigned int> indices;
-    unsigned int indexOffset = 0;
+    m_vertices.clear();
+    m_indices.clear();
 
+    m_meshGenerated = true;
+    unsigned int indexOffset = 0;
     for (int x = 0; x < Size::length; ++x)
     {
         for (int z = 0; z < Size::width; ++z)
@@ -136,19 +137,19 @@ void Chunk::generateMesh()
 
                         for (int i = 0; i < faceVertices.size(); i += 5)
                         {
-                            vertices.push_back(faceVertices[i] + x + m_worldPositionX);
-                            vertices.push_back(faceVertices[i + 1] + y);
-                            vertices.push_back(faceVertices[i + 2] + z + m_worldPositionZ);
-                            vertices.push_back(faceVertices[i + 3]);
-                            vertices.push_back(faceVertices[i + 4]);
-                            vertices.push_back(Block::s_faceNormals[face * 3 + 0]);
-                            vertices.push_back(Block::s_faceNormals[face * 3 + 1]);
-                            vertices.push_back(Block::s_faceNormals[face * 3 + 2]);
+                            m_vertices.push_back(faceVertices[i] + x + m_worldPositionX);
+                            m_vertices.push_back(faceVertices[i + 1] + y);
+                            m_vertices.push_back(faceVertices[i + 2] + z + m_worldPositionZ);
+                            m_vertices.push_back(faceVertices[i + 3]);
+                            m_vertices.push_back(faceVertices[i + 4]);
+                            m_vertices.push_back(Block::s_faceNormals[face * 3 + 0]);
+                            m_vertices.push_back(Block::s_faceNormals[face * 3 + 1]);
+                            m_vertices.push_back(Block::s_faceNormals[face * 3 + 2]);
                         }
 
                         for (int i = 0; i < faceIndices.size(); ++i)
                         {
-                            indices.push_back(faceIndices[i] + indexOffset);
+                            m_indices.push_back(faceIndices[i] + indexOffset);
                         }
 
                         indexOffset += 4;
@@ -157,25 +158,6 @@ void Chunk::generateMesh()
             }
         }
     }
-
-    m_VAO.bind();
-    m_VBO.setVertices(vertices.data(), vertices.size() * sizeof(float));
-
-    VertexBufferLayout meshLayout;
-    meshLayout.addLayout(GL_FLOAT, 3, GL_FALSE);
-    meshLayout.addLayout(GL_FLOAT, 2, GL_FALSE);
-    meshLayout.addLayout(GL_FLOAT, 3, GL_FALSE);
-
-    m_VAO.addBuffer(m_VBO, meshLayout);
-
-    m_EBO.bind();
-    m_EBO.setElements(indices.data(), indices.size());
-
-    m_VAO.unbind();
-    m_VBO.unbind();
-    m_EBO.unbind();
-
-    m_meshGenerated = true;
 }
 
 void Chunk::setMeshGenState(bool state)
@@ -225,13 +207,33 @@ void Chunk::placeTree(int x, int z, int y)
     }
 }
 
+void Chunk::sendData()
+{
+    m_VAO.bind();
+    m_VBO.setVertices(m_vertices.data(), m_vertices.size() * sizeof(float));
+
+    VertexBufferLayout meshLayout;
+    meshLayout.addLayout(GL_FLOAT, 3, GL_FALSE);
+    meshLayout.addLayout(GL_FLOAT, 2, GL_FALSE);
+    meshLayout.addLayout(GL_FLOAT, 3, GL_FALSE);
+
+    m_VAO.addBuffer(m_VBO, meshLayout);
+
+    m_EBO.bind();
+    m_EBO.setElements(m_indices.data(), m_indices.size());
+
+    m_VAO.unbind();
+    m_VBO.unbind();
+    m_EBO.unbind();
+}
+
 int Chunk::getHeightAt(int x, int z) const
 {
     float chunkWorldX = m_worldPositionX + x;
     float chunkWorldZ = m_worldPositionZ + z;
 
     float height = glm::simplex(glm::vec2(chunkWorldX / 64.0f, chunkWorldZ / 64.0f));
-    height = (height + 1.0f) / 2.0f * 20.0f;
+    height = (height + 1.0f) / 2.0f * 50.0f;
 
     return height;
 }

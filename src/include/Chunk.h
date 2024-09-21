@@ -34,19 +34,23 @@ public:
 	void setMeshGenState(bool state);
 	void placeTree(int x, int z, int y);
 
+    void sendData();
+
 private:
 	int getHeightAt(int x, int z) const;
 private:
-	std::vector<Block> m_blocks;
-	std::array<Chunk*, 4> m_neighbors;
+	std::vector<Block>          m_blocks;
+	std::array<Chunk*, 4>       m_neighbors;
+    std::vector<float>          m_vertices;
+    std::vector<unsigned int>   m_indices;
 
 	bool m_meshGenerated;
 	int m_worldPositionX;
 	int m_worldPositionZ;
 
-	VertexArray m_VAO;
-	VertexBuffer m_VBO;
-	ElementBuffer m_EBO;
+	VertexArray     m_VAO;
+	VertexBuffer    m_VBO;
+	ElementBuffer   m_EBO;
 private:
 	static constexpr int s_waterLevel = 2;
 };

@@ -45,6 +45,7 @@ void World::loadChunk(int xPos, int zPos)
 void World::generateChunkBlocks(int xPos, int zPos)
 {
     m_chunks[{xPos, zPos}]->generateBlocks();
+    m_chunks[{xPos, zPos}]->generateMesh();
 }
 
 void World::unloadChunk(int xPos, int zPos)
@@ -105,7 +106,7 @@ void World::update()
     for (const auto& coordinates : readyChunks)
     {
         if (m_chunks.contains(coordinates))
-            m_chunks[coordinates]->generateMesh(); 
+            m_chunks[coordinates]->sendData(); 
     }
 }
 
