@@ -7,11 +7,11 @@ GLFWwindow* createWindow();
 
 int main()
 {
-	GLFWwindow* window = createWindow();
-	initOpenGL();
+    GLFWwindow* window = createWindow();
+    initOpenGL();
 
-	Game game(window);
-	game.render();
+    Game game(window);
+    game.render();
 
     return 0;
 }

@@ -6,15 +6,15 @@
 class VertexArray
 {
 public:
-	VertexArray();
-	~VertexArray();
+    VertexArray();
+    ~VertexArray();
 
-	void addBuffer(const VertexBuffer& vb, const VertexBufferLayout& vbLayout);
+    void addBuffer(const VertexBuffer& vb, const VertexBufferLayout& vbLayout);
 
-	void bind() const;
-	void unbind() const;
-	unsigned int getID() const;
+    void bind() const;
+    void unbind() const;
+    unsigned int getID() const;
 
 private:
-	unsigned int m_ID;
+    unsigned int m_ID;
 };

@@ -34,9 +34,9 @@ void Chunk::generateBlocks()
                 else if (y < height - 4)
                 {
                     if (rand() % 100 < 10)
-						m_blocks[index] = Block(Block::Type::COAL);
-					else
-						m_blocks[index] = Block(Block::Type::STONE);
+                        m_blocks[index] = Block(Block::Type::COAL);
+                    else
+                        m_blocks[index] = Block(Block::Type::STONE);
                 }
                 else if (y < height - 1)
                 {
@@ -56,7 +56,7 @@ void Chunk::render() const
     m_VAO.bind();
 
     glEnable(GL_DEPTH_TEST);
-	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+    glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 
     glFrontFace(GL_CCW);
     glEnable(GL_CULL_FACE);
@@ -319,5 +319,5 @@ void Chunk::setBlockTypeAt(int x, int z, int y, Block::Type type)
 {
     int index = x + Size::length * (z + Size::width * y);
 
-	m_blocks[index].setType(type);
+    m_blocks[index].setType(type);
 }

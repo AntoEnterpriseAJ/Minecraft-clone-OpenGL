@@ -74,7 +74,7 @@ int initOpenGL()
 
 GLFWwindow* createWindow()
 {
-	if (!glfwInit())
+    if (!glfwInit())
     {
         std::cerr << "Failed to initialize GLFW" << std::endl;
         exit(-1);
@@ -99,5 +99,5 @@ GLFWwindow* createWindow()
 
     glfwMakeContextCurrent(window);
 
-	return window;
+    return window;
 }

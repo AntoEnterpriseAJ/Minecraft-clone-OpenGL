@@ -7,13 +7,13 @@
 class Crosshair : public UIComponent 
 {
 public:
-	Crosshair();
+    Crosshair();
 
-	void render() override;
+    void render() override;
 
 private:
-	std::array<float, 8> m_vertices;
+    std::array<float, 8> m_vertices;
 
-	VertexArray m_VAO;
-	VertexBuffer m_VBO;
+    VertexArray m_VAO;
+    VertexBuffer m_VBO;
 };

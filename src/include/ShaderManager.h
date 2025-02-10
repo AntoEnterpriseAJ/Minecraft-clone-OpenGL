@@ -6,11 +6,11 @@
 class ShaderManager
 {
 public:
-	ShaderManager();
+    ShaderManager();
 
-	void loadShader(const std::string& shaderName, const std::string& vertexPath, const std::string& fragmentPath);
-	Shader* getShader(const std::string& shaderName);
+    void loadShader(const std::string& shaderName, const std::string& vertexPath, const std::string& fragmentPath);
+    Shader* getShader(const std::string& shaderName);
 
 private:
-	std::unordered_map<std::string, Shader*> m_shaders;
+    std::unordered_map<std::string, Shader*> m_shaders;
 };

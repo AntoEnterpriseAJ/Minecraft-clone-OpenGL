@@ -90,10 +90,10 @@ void Block::setType(Block::Type type)
     }
     
     if (m_type != type)
-	{
-		m_type = type;
-		genUVs();
-	}
+    {
+        m_type = type;
+        genUVs();
+    }
 }
 
 float Block::getUV(Face face, int index) const

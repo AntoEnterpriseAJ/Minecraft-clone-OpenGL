@@ -7,23 +7,23 @@
 #include <iostream>
 
 Camera::Camera(glm::vec3 pos, glm::vec3 front, glm::vec3 up, float yaw, float pitch)
-	: m_position{pos}, m_front{front}, m_up{up}, m_worldUp{up}, m_FOV{CameraDefaults::FOV}, m_yaw{yaw}, m_pitch{pitch},
+    : m_position{pos}, m_front{front}, m_up{up}, m_worldUp{up}, m_FOV{CameraDefaults::FOV}, m_yaw{yaw}, m_pitch{pitch},
       m_mode{mode::creative}, m_speed{CameraDefaults::speed}, m_mouseSensitivity{CameraDefaults::mouseSensitivity},
-	  m_zoomSensitivity{CameraDefaults::zoomSensitivity}, m_isSprinting{false}
+      m_zoomSensitivity{CameraDefaults::zoomSensitivity}, m_isSprinting{false}
 {
-	updateVectors();
+    updateVectors();
 }
 
 glm::mat4 Camera::getViewMatrix() const{
-	// view = translation * rotation
-	glm::mat4 viewMatrix{
-		glm::vec4(m_right.x, m_up.x, -m_front.x, 0.0f),
-		glm::vec4(m_right.y, m_up.y, -m_front.y, 0.0f),
-		glm::vec4(m_right.z, m_up.z, -m_front.z, 0.0f),
-		glm::vec4(-glm::dot(m_right, m_position), -glm::dot(m_up, m_position), glm::dot(m_front, m_position), 1.0f)
-	};
-	
-	return viewMatrix;
+    // view = translation * rotation
+    glm::mat4 viewMatrix{
+        glm::vec4(m_right.x, m_up.x, -m_front.x, 0.0f),
+        glm::vec4(m_right.y, m_up.y, -m_front.y, 0.0f),
+        glm::vec4(m_right.z, m_up.z, -m_front.z, 0.0f),
+        glm::vec4(-glm::dot(m_right, m_position), -glm::dot(m_up, m_position), glm::dot(m_front, m_position), 1.0f)
+    };
+    
+    return viewMatrix;
 }
 
 bool Camera::validPosition(const glm::vec3& newPosition, const World& world) const
@@ -69,7 +69,7 @@ void Camera::processMovement(Movement direction, float deltaTime, const World& w
     {
         glm::vec3 adjustedFront = glm::normalize(glm::vec3(m_front.x, 0.0f, m_front.z));
         glm::vec3 adjustedRight = glm::normalize(glm::vec3(m_right.x, 0.0f, m_right.z));
-		glm::vec3 newPosition = m_position;
+        glm::vec3 newPosition = m_position;
 
         switch (direction)
         {
@@ -93,84 +93,84 @@ void Camera::processMovement(Movement direction, float deltaTime, const World& w
                 break;
         }
 
-		if (validPosition(newPosition, world))
-		{
-			m_position = newPosition;
-		} 
+        if (validPosition(newPosition, world))
+        {
+            m_position = newPosition;
+        } 
     }
 }
 
 
 void Camera::processMouseScroll(float yOffset)
 {
-	m_FOV -= yOffset * m_zoomSensitivity;
+    m_FOV -= yOffset * m_zoomSensitivity;
 
-	if (m_FOV > CameraDefaults::FOVUpperBound)
-		m_FOV = CameraDefaults::FOVUpperBound;
-	if (m_FOV < CameraDefaults::FOVLowerBound)
-		m_FOV = CameraDefaults::FOVLowerBound;
+    if (m_FOV > CameraDefaults::FOVUpperBound)
+        m_FOV = CameraDefaults::FOVUpperBound;
+    if (m_FOV < CameraDefaults::FOVLowerBound)
+        m_FOV = CameraDefaults::FOVLowerBound;
 }
 
 void Camera::processMouseCursor(double yawOffset, double pitchOffset)
 {
-	m_yaw += yawOffset * m_mouseSensitivity;
-	m_pitch += pitchOffset * m_mouseSensitivity;
+    m_yaw += yawOffset * m_mouseSensitivity;
+    m_pitch += pitchOffset * m_mouseSensitivity;
 
-	if (m_pitch >= CameraDefaults::pitchUpperBound)
-		m_pitch = CameraDefaults::pitchUpperBound;
-	if (m_pitch <= -CameraDefaults::pitchUpperBound)
-		m_pitch = -CameraDefaults::pitchUpperBound;
+    if (m_pitch >= CameraDefaults::pitchUpperBound)
+        m_pitch = CameraDefaults::pitchUpperBound;
+    if (m_pitch <= -CameraDefaults::pitchUpperBound)
+        m_pitch = -CameraDefaults::pitchUpperBound;
 
-	updateVectors();
+    updateVectors();
 }
 
 float Camera::getFOV() const
 {
-	return m_FOV;
+    return m_FOV;
 }
 
 glm::vec3 Camera::getPosition() const
 {
-	return m_position;
+    return m_position;
 }
 
 glm::vec3 Camera::getFront() const
 {
-	return m_front;
+    return m_front;
 }
 
 glm::vec3 Camera::getUp() const
 {
-	return m_up;
+    return m_up;
 }
 
 glm::vec3 Camera::getRight() const
 {
-	return m_right;
+    return m_right;
 }
 
 glm::vec3& Camera::getPositionRef()
 {
-	return m_position;
+    return m_position;
 }
 
 void Camera::startSprinting()
 {
-	m_isSprinting = true;
+    m_isSprinting = true;
 }
 
 void Camera::stopSprinting()
 {
-	m_isSprinting = false;
+    m_isSprinting = false;
 }
 
 void Camera::updateVectors()
 {
-	m_front.x = cos(glm::radians(m_yaw)) * cos(glm::radians(m_pitch));
-	m_front.y = sin(glm::radians(m_pitch));
-	m_front.z = sin(glm::radians(m_yaw)) * cos(glm::radians(m_pitch));
-	m_front = glm::normalize(m_front);
+    m_front.x = cos(glm::radians(m_yaw)) * cos(glm::radians(m_pitch));
+    m_front.y = sin(glm::radians(m_pitch));
+    m_front.z = sin(glm::radians(m_yaw)) * cos(glm::radians(m_pitch));
+    m_front = glm::normalize(m_front);
 
-	m_right = glm::normalize(glm::cross(m_front, m_worldUp));
-	m_up = glm::normalize(glm::cross(m_right, m_front));
+    m_right = glm::normalize(glm::cross(m_front, m_worldUp));
+    m_up = glm::normalize(glm::cross(m_right, m_front));
 }
