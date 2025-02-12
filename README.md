@@ -35,7 +35,7 @@ A C++ project that implements a basic Minecraft-style voxel world using Modern O
 
 ---
 
-## Screenshots (Optional)
+## Screenshots
 
 ![image](https://github.com/user-attachments/assets/9dee7388-5afd-4b34-88af-10319cbdfaf8)  
 ![image](https://github.com/user-attachments/assets/e67d4531-de98-442f-9ee9-0468e9b6a363)
